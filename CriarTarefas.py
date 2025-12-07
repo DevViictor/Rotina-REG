@@ -91,8 +91,7 @@ def criar_page():
         st.image(image_logo)
 
     with cola:
-        st.header("R.E.G")
-        st.subheader("Rotina de Excelência Gerencial")
+        st.header("R.E.G - Rotina de Excelência Gerencial")
 
     st.divider()
 
