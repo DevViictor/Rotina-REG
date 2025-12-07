@@ -46,7 +46,7 @@ def tarefas_adriele():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)

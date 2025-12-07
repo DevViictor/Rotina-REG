@@ -914,8 +914,7 @@ def relatorio_boulevard():
         st.image(image_logo)
 
     with cola:
-        st.header("R.E.G")
-        st.subheader("Porcentual de conclusão")
+        st.header("R.E.G - Porcentual de conclusão")
 
     # --- Função para carregar dados de cada consultor ---
     def carregar_pedidos(consultor):

@@ -8,7 +8,7 @@ from PIL import Image
 
 def tarefas_max():
 
-    st.set_page_config(page_title="R.E.G DENISE", page_icon="🔒",layout="wide")
+    st.set_page_config(page_title="R.E.G MAX", page_icon="🔒",layout="wide")
 
     # --- Controle de acesso ---
     if "role" not in st.session_state or st.session_state.role != "Felipe":
@@ -43,7 +43,7 @@ def tarefas_max():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
