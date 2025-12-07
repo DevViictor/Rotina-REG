@@ -39,7 +39,8 @@ def relatorio_ssa1():
         st.image(image_logo)
 
     with cola:
-        st.header("R.E.G - Porcentual de conclusão")
+       st.header("R.E.G")
+       st.subheader("Porcentual de conclusão")
         
 
     # --- Função para carregar dados de cada consultor ---
@@ -118,7 +119,8 @@ def relatorio_ssa2():
         st.image(image_logo)
 
     with cola:
-       st.header("R.E.G - Porcentual de conclusão")
+       st.header("R.E.G")
+       st.subheader("Porcentual de conclusão")
 
     # --- Função para carregar dados de cada consultor ---
     def carregar_pedidos(consultor):
@@ -196,7 +198,8 @@ def relatorio_bela():
         st.image(image_logo)
 
     with cola:
-       st.header("R.E.G - Porcentual de conclusão")
+       st.header("R.E.G")
+       st.subheader("Porcentual de conclusão")
 
     # --- Função para carregar dados de cada consultor ---
     def carregar_pedidos(consultor):
@@ -273,7 +276,8 @@ def relatorio_paralela():
         st.image(image_logo)
 
     with cola:
-        st.header("R.E.G - Porcentual de conclusão")
+        st.header("R.E.G")
+        st.subheader("Porcentual de conclusão")
 
     # --- Função para carregar dados de cada consultor ---
     def carregar_pedidos(consultor):
@@ -351,7 +355,8 @@ def relatorio_parque():
         st.image(image_logo)
 
     with cola:
-        st.header("R.E.G - Porcentual de conclusão")
+        st.header("R.E.G")
+        st.subheader("Porcentual de conclusão")
 
     # --- Função para carregar dados de cada consultor ---
     def carregar_pedidos(consultor):
@@ -433,7 +438,8 @@ def relatorio_iguatemi1():
         st.image(image_logo)
 
     with cola:
-       st.header("R.E.G - Porcentual de conclusão")
+       st.header("R.E.G")
+       st.subheader("Porcentual de conclusão")
 
     # --- Função para carregar dados de cada consultor ---
     def carregar_pedidos(consultor):
@@ -512,7 +518,8 @@ def relatorio_iguatemi2():
         st.image(image_logo)
 
     with cola:
-        st.header("R.E.G - Porcentual de conclusão")
+        st.header("R.E.G")
+        st.subheader("Porcentual de conclusão")
 
     # --- Função para carregar dados de cada consultor ---
     def carregar_pedidos(consultor):
@@ -590,7 +597,8 @@ def relatorio_nort():
         st.image(image_logo)
 
     with cola:
-        st.header("R.E.G - Porcentual de conclusão")
+        st.header("R.E.G")
+        st.subheader("Porcentual de conclusão")
 
     # --- Função para carregar dados de cada consultor ---
     def carregar_pedidos(consultor):
@@ -668,7 +676,8 @@ def relatorio_barra():
         st.image(image_logo)
 
     with cola:
-        st.header("R.E.G - Porcentual de conclusão")
+        st.header("R.E.G")
+        st.subheader("Porcentual de conclusão")
 
     # --- Função para carregar dados de cada consultor ---
     def carregar_pedidos(consultor):
@@ -746,7 +755,8 @@ def relatorio_piedade():
         st.image(image_logo)
 
     with cola:
-       st.header("R.E.G - Porcentual de conclusão")
+        st.header("R.E.G")
+        st.subheader("Porcentual de conclusão")
 
     # --- Função para carregar dados de cada consultor ---
     def carregar_pedidos(consultor):
@@ -824,7 +834,8 @@ def relatorio_lapa():
         st.image(image_logo)
 
     with cola:
-        st.header("R.E.G - Porcentual de conclusão")
+        st.header("R.E.G")
+        st.subheader("Porcentual de conclusão")
 
     # --- Função para carregar dados de cada consultor ---
     def carregar_pedidos(consultor):
@@ -984,7 +995,8 @@ def relatorio_intinerantes():
         st.image(image_logo)
 
     with cola:
-        st.header("R.E.G - Porcentual de conclusão")
+        st.header("R.E.G")
+        st.subheader("Porcentual de conclusão")
 
     # --- Função para carregar dados de cada consultor ---
     def carregar_pedidos(consultor):
