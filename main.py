@@ -71,7 +71,7 @@ def run_navigation():
 
     #Victor
 
-    cadastro = st.Page(criar_page, title="Criar Tarefas")
+    cadastro = st.Page(criar_page, title="📝 Criar tarefas")
 
     #Fabiana
     Relatorio_ssa1 = (st.Page(relatorio_ssa1, title="SSA |"))
