@@ -16,8 +16,7 @@ if "planilha" not in st.session_state:
             "https://www.googleapis.com/auth/drive"
         ]
     )
-    st.session_state.planilha = {}
-    
+
     cliente = gspread.authorize(creds)
     planilha = cliente.open_by_key(planilha_chave)
 
@@ -28,7 +27,9 @@ if "planilha" not in st.session_state:
 
 # --- Função genérica para carregar dados de cada consultor ---
 def carregar_pedidos(consultor):
-    df = st.session_state.planilha.get(consultor, pd.DataFrame())
+    df = st.session_state.planilha.get(consultor)
+    if df is None:
+        df = pd.DataFrame()  # evita erro se a aba não existir
     if not df.empty and "Situação da tarefa" in df.columns:
         df["Situação da tarefa"] = df["Situação da tarefa"].apply(
             lambda x: str(x).strip().lower() == "concluído"
@@ -63,7 +64,7 @@ def mostrar_cabecalho(titulo):
     image_logo = Image.open("image/Image (2).png")
     cola, colb, colc = st.columns([4, 1, 1])
     with colc:
-        st.image(image_logo)
+        st.image(image_logo, width=100)  # limita o tamanho da imagem
     with cola:
         st.header(titulo)
 
@@ -86,7 +87,7 @@ def relatorio_fabiana_geral():
 def relatorio_felipe_geral():
     if st.session_state.get("role") != "Victor":
         st.error("⚠️ Acesso negado!")
-        st.stop() 
+        st.stop()
 
     mostrar_cabecalho("R.E.G - FELIPE SILVA")
     grupos = [
