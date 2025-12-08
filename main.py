@@ -153,17 +153,6 @@ def run_navigation():
                 Relatorio_iguatemi2,
                 Relatorio_norte
             ],
-            "🏬 JOHN COITO ": [
-                Relatorio_barra,
-                Relatorio_piedade,
-                Relatorio_lapa
-            ],
-            "🏬 CHRYS REBOUÇAS ": [
-                Relatorio_boulevard,
-            ],
-            "🏬 ITINERANTES ": [
-                Relatorio_initinerantes,
-            ],
              "Tarefas ": [
                 cadastro,
             ],
