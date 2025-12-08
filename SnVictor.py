@@ -24,6 +24,7 @@ def relatorio_carteira(nome_carteira, consultores):
     )
     cliente = gspread.authorize(creds)
     planilha = cliente.open_by_key(planilha_chave)
+    
 
     # Logo
     image_logo = Image.open("image/Image (2).png")

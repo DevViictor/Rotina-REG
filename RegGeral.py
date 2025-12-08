@@ -16,7 +16,8 @@ if "planilha" not in st.session_state:
             "https://www.googleapis.com/auth/drive"
         ]
     )
-
+    st.session_state.planilha = {}
+    
     cliente = gspread.authorize(creds)
     planilha = cliente.open_by_key(planilha_chave)
 
