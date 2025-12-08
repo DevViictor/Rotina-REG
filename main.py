@@ -5,8 +5,8 @@ from GvFelipe import tarefas_andressa, tarefas_denise , tarefas_diego ,tarefas_j
 from SnVictor import relatorio_iguatemi1,relatorio_iguatemi2,relatorio_ssa1,relatorio_ssa2,relatorio_piedade,relatorio_paralela,relatorio_barra,relatorio_bela,relatorio_boulevard,relatorio_lapa,relatorio_parque,relatorio_nort,relatorio_intinerantes
 from GVJohn import tarefas_alana , tarefas_carol , tarefas_diegol , tarefas_igor ,tarefas_marcus ,tarefas_rafel ,tarefas_sara 
 from PIL import Image
-from RegGeral import relatorio_fabiana_geral,relatorio_felipe_geral, relatorio_john_geral ,relatorio_chrys_geral
 from CriarTarefas import criar_page
+
 
 st.sidebar.image("image/Image (2).png")
 
@@ -50,12 +50,7 @@ def run_navigation():
     role = st.session_state.role
 
     #Victor
-    Relatorio_fabiana_geral = st.Page(relatorio_fabiana_geral,title="FABIANA SACRAMENTO")
-    Relatorio_felipe_geral = st.Page(relatorio_felipe_geral,title="FELIPE SILVA")
-    Relatorio_johon_geral = st.Page(relatorio_john_geral,title="JOHN COITO")
-    Relatorio_chrys_geral= st.Page(relatorio_chrys_geral,title="CHRYS REBOUÇAS")
-
-    
+     
     #CriarTarefas
     cadastro = st.Page(criar_page, title="📝 Criar tarefas")
 
@@ -142,19 +137,8 @@ def run_navigation():
 
     # Menus por role
     if role == "Victor":
-        
+
         menu = {
-            "R.E.G": [
-                Relatorio_fabiana_geral,
-                Relatorio_felipe_geral,
-                Relatorio_johon_geral,
-                Relatorio_chrys_geral
-
-            ],
-            
-        }
-
-        menu2 = {
     
             "🏬 FABIANA SACRAMENTO ": [
                 Relatorio_ssa1,
@@ -179,21 +163,19 @@ def run_navigation():
             ],
             "🏬 ITINERANTES ": [
                 Relatorio_initinerantes,
-            ]
+            ],
+             "Tarefas ": [
+                cadastro,
+            ],
+            
 
         }
     
     elif role == "Felipe":
 
+        
+
         menu = {
-            "R.E.G": [
-                Relatorio_felipe_geral  
-
-            ],
-            
-        }
-
-        menu2 = {
             "🏬 Loja Iguatemi |": [
                 Tarefas_Denise,
                 Tarefas_max
@@ -213,16 +195,6 @@ def run_navigation():
 
 
         menu = {
-            "R.E.G": [
-                Relatorio_fabiana_geral,
-                
-
-            ],
-            
-        }
-
-
-        menu2 = {
             "🏬 Loja SSA |": [
                 Tarefas_Ana,
                 Tarefas_francisca,
@@ -251,13 +223,6 @@ def run_navigation():
 
 
         menu = {
-            "R.E.G": [
-                Relatorio_johon_geral,
-            ],
-            
-        }
-
-        menu = {
             "🏬 Loja Barra": [
                 Tarefas_alana,
                 Tarefas_carol,
@@ -277,13 +242,6 @@ def run_navigation():
     
     elif role == "Chrys":
 
-        menu = {
-            "R.E.G": [
-             
-                Relatorio_chrys_geral
-            ],
-            
-        }
 
         menu = {
             "🏬 Loja BOULEVARD": [
@@ -292,21 +250,14 @@ def run_navigation():
                 Tarefas_Gilvania,
             ]
         }
-    
-    menu3 = {
-            "Tarefas": [
-                cadastro
 
-            ],
-            
-        }
     
 
     # Criar navegação
    
-    menu_total = {**menu,**menu2,**menu3}
+  
 
-    nav = st.navigation(menu_total)
+    nav = st.navigation(menu)
 
     
 

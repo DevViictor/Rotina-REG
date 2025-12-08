@@ -26,7 +26,7 @@ if "role" not in st.session_state:
     st.session_state["role"] = "Victor" 
 
 # --- Função genérica para qualquer carteira ---
-def relatorio_carteira(nome_carteira, consultores):
+def relatorio_fabiana_loja(nome_carteira, consultores):
     # Controle de acesso
     
     if st.session_state.get("role") != "Victor":
@@ -65,16 +65,8 @@ def relatorio_carteira(nome_carteira, consultores):
     st.dataframe(pd.DataFrame(resumo))
 
 
-relatorio_carteira("CARTEIRA SSA1", ["Ana","Francisca","Vinicius"])
-relatorio_carteira("CARTEIRA SSA2", ["Vitor","Mailan"])
-relatorio_carteira("CARTEIRA BELA VISTA", ["Vanessa","Danilo"])
-relatorio_carteira("CARTEIRA PARALELA", ["Crislaine","Neide"])
-relatorio_carteira("CARTEIRA PARQUE", ["Denise_Paque","Adrielle"])
-relatorio_carteira("CARTEIRA IGUATEMI1", ["Denise","Max"])
-relatorio_carteira("CARTEIRA IGUATEMI2", ["Andressa","Diego"])
-relatorio_carteira("CARTEIRA NORTE SHOP", ["Jairo","Wander"])
-relatorio_carteira("CARTEIRA BARRA", ["Igor","Carol","Alana"])
-relatorio_carteira("CARTEIRA PIEDADE", ["DiegoL","Marcus"])
-relatorio_carteira("CARTEIRA LAPA", ["Sara","Rafel"])
-relatorio_carteira("CARTEIRA BOULEVARD", ["Camyla","Bruno","Gilvania"])
-relatorio_carteira("CARTEIRA INTINERANTES", ["Lazaro","Lee","MarcusI"])
+relatorio_fabiana_loja("CARTEIRA SSA1", ["Ana","Francisca","Vinicius"])
+relatorio_fabiana_loja("CARTEIRA SSA2", ["Vitor","Mailan"])
+relatorio_fabiana_loja("CARTEIRA BELA VISTA", ["Vanessa","Danilo"])
+relatorio_fabiana_loja("CARTEIRA PARALELA", ["Crislaine","Neide"])
+relatorio_fabiana_loja("CARTEIRA PARQUE", ["Denise_Paque","Adrielle"])
