@@ -186,6 +186,14 @@ def run_navigation():
     elif role == "Felipe":
 
         menu = {
+            "R.E.G": [
+                Relatorio_felipe_geral  
+
+            ],
+            
+        }
+
+        menu2 = {
             "🏬 Loja Iguatemi |": [
                 Tarefas_Denise,
                 Tarefas_max
@@ -202,7 +210,19 @@ def run_navigation():
         }
 
     elif role == "Fabiana":
+
+
         menu = {
+            "R.E.G": [
+                Relatorio_fabiana_geral,
+                
+
+            ],
+            
+        }
+
+
+        menu2 = {
             "🏬 Loja SSA |": [
                 Tarefas_Ana,
                 Tarefas_francisca,
@@ -228,6 +248,15 @@ def run_navigation():
             
     
     elif role == "Johm":
+
+
+        menu = {
+            "R.E.G": [
+                Relatorio_johon_geral,
+            ],
+            
+        }
+
         menu = {
             "🏬 Loja Barra": [
                 Tarefas_alana,
@@ -247,6 +276,15 @@ def run_navigation():
         }
     
     elif role == "Chrys":
+
+        menu = {
+            "R.E.G": [
+             
+                Relatorio_chrys_geral
+            ],
+            
+        }
+
         menu = {
             "🏬 Loja BOULEVARD": [
                 Tarefas_Camyla,
