@@ -1,38 +1,18 @@
 import streamlit as st
-from CriarTarefas import criar_page
-from RelatorioVictor import relatorio_page
-from TarefasDenise import tarefas_denise
-from TarefasMax import tarefas_max
-from TarefasAndressa import tarefas_andressa
-from TarefasDiego import tarefas_diego
-from TarefasWanderlei import tarefas_wanderlei
-from TarefasJairo import tarefas_jairo
-from TarefasFrancisca import tarefas_francisca
-from TarefasAna import tarefas_ana
-from TarefasVinicius import tarefas_vinicius
-from TarefasMailan import tarefas_mailan
-from TarefasVitor import tarefas_vitor
-from TarefasDanilo import tarefas_danilo
-from TarefasVanessa import tarefas_vanessa
-from TarefasNeide import tarefas_neide
-from TarefasCrislane import tarefas_crislane
-from TarefasDeniseP import tarefas_deniseP
-from TareafasAdriele import tarefas_adriele
-from TarefasIgor import tarefas_igor
-from TarefasCarol import tarefas_carol
-from TarefasAlana import tarefas_alana
-from TarefasDiegoL import tarefas_diegol
-from TarefasMarcus import tarefas_marcus
-from TarefasSara import tarefas_Sara
-from TarefasRafel import tarefas_rafel
+from GvFabiana import tarefas_adriele,tarefas_ana,tarefas_crislane,tarefas_danilo,tarefas_deniseP,tarefas_francisca,tarefas_mailan,tarefas_neide,tarefas_vanessa,tarefas_vinicius,tarefas_vitor
 from GvChrys import tarefas_bruno,tarefas_camyla,tarefas_gilvania
+from GvFelipe import tarefas_andressa, tarefas_denise , tarefas_diego ,tarefas_jairo ,tarefas_max, tarefas_wanderlei
 from SnVictor import relatorio_iguatemi1,relatorio_iguatemi2,relatorio_ssa1,relatorio_ssa2,relatorio_piedade,relatorio_paralela,relatorio_barra,relatorio_bela,relatorio_boulevard,relatorio_lapa,relatorio_parque,relatorio_nort,relatorio_intinerantes
-
-
+from GVJohn import tarefas_alana , tarefas_carol , tarefas_diegol , tarefas_igor ,tarefas_marcus ,tarefas_rafel ,tarefas_sara 
+from PIL import Image
+from RegGeral import relatorio_fabiana_geral,relatorio_felipe_geral, relatorio_john_geral ,relatorio_chrys_geral
+from CriarTarefas import criar_page
 
 st.sidebar.image("image/Image (2).png")
 
-st.set_page_config(page_title="Login", page_icon="🔒")
+icon = Image.open("image/vivo.png")
+
+st.set_page_config(page_title="Login", page_icon=icon)
 
 
 # Obter usuários do secrets
@@ -70,7 +50,13 @@ def run_navigation():
     role = st.session_state.role
 
     #Victor
+    Relatorio_fabiana_geral = st.Page(relatorio_fabiana_geral,title="FABIANA SACRAMENTO")
+    Relatorio_felipe_geral = st.Page(relatorio_felipe_geral,title="FELIPE SILVA")
+    Relatorio_johon_geral = st.Page(relatorio_john_geral,title="JOHN COITO")
+    Relatorio_chrys_geral= st.Page(relatorio_chrys_geral,title="CHRYS REBOUÇAS")
 
+    
+    #CriarTarefas
     cadastro = st.Page(criar_page, title="📝 Criar tarefas")
 
     #Fabiana
@@ -141,7 +127,7 @@ def run_navigation():
     Tarefas_marcus = st.Page(tarefas_marcus,title="Marcus")
     #Lapa
     Tarefas_Rafeael = st.Page(tarefas_rafel,title="Rafael")
-    Tarefas_Sara = st.Page(tarefas_Sara,title="Sara")
+    Tarefas_Sara = st.Page(tarefas_sara,title="Sara")
     
     #Chrys
 
@@ -151,13 +137,25 @@ def run_navigation():
     Tarefas_Gilvania = st.Page(tarefas_gilvania,title="Gilvania")
 
 
+    #Relatorio GERAL
+
 
     # Menus por role
-    if role == "admin":
+    if role == "Victor":
+        
         menu = {
-            "Menu": [
-                cadastro,
+            "R.E.G": [
+                Relatorio_fabiana_geral,
+                Relatorio_felipe_geral,
+                Relatorio_johon_geral,
+                Relatorio_chrys_geral
+
             ],
+            
+        }
+
+        menu2 = {
+    
             "🏬 FABIANA SACRAMENTO ": [
                 Relatorio_ssa1,
                 Relatorio_ssa2,
@@ -171,7 +169,7 @@ def run_navigation():
                 Relatorio_iguatemi2,
                 Relatorio_norte
             ],
-            "🏬 JOHM COITO ": [
+            "🏬 JOHN COITO ": [
                 Relatorio_barra,
                 Relatorio_piedade,
                 Relatorio_lapa
@@ -182,7 +180,6 @@ def run_navigation():
             "🏬 INTINERANTES ": [
                 Relatorio_initinerantes,
             ]
-
 
         }
     
@@ -257,10 +254,23 @@ def run_navigation():
                 Tarefas_Gilvania,
             ]
         }
-        
+    
+    menu3 = {
+            "Tarefas": [
+                cadastro
+
+            ],
+            
+        }
+    
 
     # Criar navegação
-    nav = st.navigation(menu)
+   
+    menu_total = {**menu,**menu2,**menu3}
+
+    nav = st.navigation(menu_total)
+
+    
 
     # Sidebar com usuário
     st.sidebar.write(f"👤 Usuário: **{st.session_state.user}**")
@@ -268,6 +278,7 @@ def run_navigation():
 
     # Rodar página selecionada
     nav.run()
+    
 
 # -----------------------------------------
 # EXECUÇÃO PRINCIPAL
@@ -276,3 +287,4 @@ if not st.session_state.logged_in:
     login()
 else:
     run_navigation()
+

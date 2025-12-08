@@ -1,4 +1,3 @@
-#SSA|
 import streamlit as st
 import gspread
 import pandas as pd
@@ -7,15 +6,17 @@ import requests
 import datetime as dt
 from PIL import Image
 
+
 icon = Image.open("image/vivo.png")
 
+#BARRA
 
-def tarefas_ana():
+def tarefas_igor():
 
-    st.set_page_config(page_title="R.E.G ANA MERCIA", page_icon=icon,layout="wide")
+    st.set_page_config(page_title="R.E.G IGOR", page_icon=icon,layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Fabiana":
+    if "role" not in st.session_state or st.session_state.role != "John":
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -42,10 +43,9 @@ def tarefas_ana():
         requests.post("https://api.pushover.net/1/messages.json", data={
             "token": api_token,
             "user": user_key,
-            "message": f"Olá {"ANA MERCIA"}, {mensagem}"
+            "message": f"Olá {"Igor"}, {mensagem}"
         })
 
-   
 
     image_logo = Image.open("image/Image (2).png")
 
@@ -55,13 +55,13 @@ def tarefas_ana():
         st.image(image_logo)
 
     with cola:
-         st.title("📝 R.E.G - ANA MERCIA")
+         st.title("📝 R.E.G - IGOR")
 
  
     # --- Função para carregar pedidos de uma aba ---
     def carregar_pedidos():
         try:
-            aba = planilha.worksheet("Ana")
+            aba = planilha.worksheet("IGOR")
             dados = aba.get_all_records()
             df = pd.DataFrame(dados)
             if "Situação da tarefa" in df.columns:
@@ -99,888 +99,21 @@ def tarefas_ana():
         # --- Contagem de pendentes e concluídas ---
         concluidas = df_consultor["Situação da tarefa"].sum()
         pendentes = len(df_consultor) - concluidas
-        st.markdown(f"**Consultor:** ANA MERCIA")
+        st.markdown(f"**Consultor:** Igor")
         st.markdown(f"**✅ Concluídas:** {concluidas}   |   **🕒 Pendentes:** {pendentes}")
 
         # --- Mostrar DataFrame ---
         st.dataframe(df_consultor)
 
 
-def tarefas_francisca():
+icon = Image.open("image/vivo.png")
 
-    st.set_page_config(page_title="R.E.G FRANCISCA", page_icon=icon,layout="wide")
+def tarefas_carol():
 
-    # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Fabiana":
-        st.error("⚠️ Acesso negado!")
-        st.stop()
-
-    # --- Configuração Google Sheets ---
-    gcp_info = st.secrets["gcp"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-
-    # --- Função de notificação ---
-    def notificacao(mensagem):
-        user_key = st.secrets["notificacao"]["user_key"]
-        api_token = st.secrets["notificacao"]["api_token"]
-        requests.post("https://api.pushover.net/1/messages.json", data={
-            "token": api_token,
-            "user": user_key,
-            "message": f"Olá {"FRANCISCA"}, {mensagem}"
-        })
-
-   
-
-    image_logo = Image.open("image/Image (2).png")
-
-    cola,colb,colc = st.columns([7,1,1])
-
-    with colc :
-        st.image(image_logo)
-
-    with cola:
-         st.title("📝 R.E.G - FRANCISCA")
-
- 
-    # --- Função para carregar pedidos de uma aba ---
-    def carregar_pedidos():
-        try:
-            aba = planilha.worksheet("Francisca")
-            dados = aba.get_all_records()
-            df = pd.DataFrame(dados)
-            if "Situação da tarefa" in df.columns:
-                df["Situação da tarefa"] = df["Situação da tarefa"].apply(lambda x: str(x).strip().lower() == "concluído")
-            return df
-        except gspread.WorksheetNotFound:
-            return pd.DataFrame()
-
-    # --- Função para verificar tarefas prestes a vencer e enviar notificação ---
-    def verificar_e_notificar(df, consultor):
-        agora = dt.datetime.now()
-        avisos = []
-        for _, row in df.iterrows():
-            if not row.get("Situação da tarefa", False) and "Hora final" in row:
-                try:
-                    hora_limite = dt.datetime.strptime(str(row["Hora final"]), "%H:%M")
-                    hora_limite = hora_limite.replace(year=agora.year, month=agora.month, day=agora.day)
-                    if 0 <= (hora_limite - agora).total_seconds() <= 1800:  # próximas 30 min
-                        avisos.append(f"Tarefa '{row['Tarefa']}' vence às {row['Hora final']}")
-                except:
-                    continue
-        if avisos:
-            mensagem = "Você tem tarefas prestes a vencer! " + " | ".join(avisos)
-            notificacao(consultor, mensagem)
-        return avisos
-
-    # --- Carregar dados do consultor selecionado ---
-    df_consultor = carregar_pedidos()
-
-    if df_consultor.empty:
-        st.warning("Nenhuma tarefa encontrada para este consultor.")
-    else:
-        # --- Verificar e notificar automaticamente ---
-
-        # --- Contagem de pendentes e concluídas ---
-        concluidas = df_consultor["Situação da tarefa"].sum()
-        pendentes = len(df_consultor) - concluidas
-        st.markdown(f"**Consultor:** FRANCISCA")
-        st.markdown(f"**✅ Concluídas:** {concluidas}   |   **🕒 Pendentes:** {pendentes}")
-
-        # --- Mostrar DataFrame ---
-        st.dataframe(df_consultor)
-
-
-def tarefas_vinicius():
-
-    st.set_page_config(page_title="R.E.G VINICIUS", page_icon=icon,layout="wide")
+    st.set_page_config(page_title="R.E.G CAROL", page_icon=icon,layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Fabiana":
-        st.error("⚠️ Acesso negado!")
-        st.stop()
-
-    # --- Configuração Google Sheets ---
-    gcp_info = st.secrets["gcp"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-
-    # --- Função de notificação ---
-    def notificacao(mensagem):
-        user_key = st.secrets["notificacao"]["user_key"]
-        api_token = st.secrets["notificacao"]["api_token"]
-        requests.post("https://api.pushover.net/1/messages.json", data={
-            "token": api_token,
-            "user": user_key,
-            "message": f"Olá {"VINICIUS"}, {mensagem}"
-        })
-
-   
-
-    image_logo = Image.open("image/Image (2).png")
-
-    cola,colb,colc = st.columns([7,1,1])
-
-    with colc :
-        st.image(image_logo)
-
-    with cola:
-         st.title("📝 R.E.G - VINICIUS")
-
- 
-    # --- Função para carregar pedidos de uma aba ---
-    def carregar_pedidos():
-        try:
-            aba = planilha.worksheet("Vinicius")
-            dados = aba.get_all_records()
-            df = pd.DataFrame(dados)
-            if "Situação da tarefa" in df.columns:
-                df["Situação da tarefa"] = df["Situação da tarefa"].apply(lambda x: str(x).strip().lower() == "concluído")
-            return df
-        except gspread.WorksheetNotFound:
-            return pd.DataFrame()
-
-    # --- Função para verificar tarefas prestes a vencer e enviar notificação ---
-    def verificar_e_notificar(df, consultor):
-        agora = dt.datetime.now()
-        avisos = []
-        for _, row in df.iterrows():
-            if not row.get("Situação da tarefa", False) and "Hora final" in row:
-                try:
-                    hora_limite = dt.datetime.strptime(str(row["Hora final"]), "%H:%M")
-                    hora_limite = hora_limite.replace(year=agora.year, month=agora.month, day=agora.day)
-                    if 0 <= (hora_limite - agora).total_seconds() <= 1800:  # próximas 30 min
-                        avisos.append(f"Tarefa '{row['Tarefa']}' vence às {row['Hora final']}")
-                except:
-                    continue
-        if avisos:
-            mensagem = "Você tem tarefas prestes a vencer! " + " | ".join(avisos)
-            notificacao(consultor, mensagem)
-        return avisos
-
-    # --- Carregar dados do consultor selecionado ---
-    df_consultor = carregar_pedidos()
-
-    if df_consultor.empty:
-        st.warning("Nenhuma tarefa encontrada para este consultor.")
-    else:
-        # --- Verificar e notificar automaticamente ---
-
-        # --- Contagem de pendentes e concluídas ---
-        concluidas = df_consultor["Situação da tarefa"].sum()
-        pendentes = len(df_consultor) - concluidas
-        st.markdown(f"**Consultor:** VINICIUS")
-        st.markdown(f"**✅ Concluídas:** {concluidas}   |   **🕒 Pendentes:** {pendentes}")
-
-        # --- Mostrar DataFrame ---
-        st.dataframe(df_consultor)
-
-
-#SSA|
-
-def tarefas_vitor():
-
-    st.set_page_config(page_title="R.E.G VITOR", page_icon=icon,layout="wide")
-
-    # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Fabiana":
-        st.error("⚠️ Acesso negado!")
-        st.stop()
-
-    # --- Configuração Google Sheets ---
-    gcp_info = st.secrets["gcp"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-
-    # --- Função de notificação ---
-    def notificacao(mensagem):
-        user_key = st.secrets["notificacao"]["user_key"]
-        api_token = st.secrets["notificacao"]["api_token"]
-        requests.post("https://api.pushover.net/1/messages.json", data={
-            "token": api_token,
-            "user": user_key,
-            "message": f"Olá {"VITOR"}, {mensagem}"
-        })
-
-   
-
-    image_logo = Image.open("image/Image (2).png")
-
-    cola,colb,colc = st.columns([7,1,1])
-
-    with colc :
-        st.image(image_logo)
-
-    with cola:
-         st.title("📝 R.E.G - VITOR")
-
- 
-    # --- Função para carregar pedidos de uma aba ---
-    def carregar_pedidos():
-        try:
-            aba = planilha.worksheet("vitor")
-            dados = aba.get_all_records()
-            df = pd.DataFrame(dados)
-            if "Situação da tarefa" in df.columns:
-                df["Situação da tarefa"] = df["Situação da tarefa"].apply(lambda x: str(x).strip().lower() == "concluído")
-            return df
-        except gspread.WorksheetNotFound:
-            return pd.DataFrame()
-
-    # --- Função para verificar tarefas prestes a vencer e enviar notificação ---
-    def verificar_e_notificar(df, consultor):
-        agora = dt.datetime.now()
-        avisos = []
-        for _, row in df.iterrows():
-            if not row.get("Situação da tarefa", False) and "Hora final" in row:
-                try:
-                    hora_limite = dt.datetime.strptime(str(row["Hora final"]), "%H:%M")
-                    hora_limite = hora_limite.replace(year=agora.year, month=agora.month, day=agora.day)
-                    if 0 <= (hora_limite - agora).total_seconds() <= 1800:  # próximas 30 min
-                        avisos.append(f"Tarefa '{row['Tarefa']}' vence às {row['Hora final']}")
-                except:
-                    continue
-        if avisos:
-            mensagem = "Você tem tarefas prestes a vencer! " + " | ".join(avisos)
-            notificacao(consultor, mensagem)
-        return avisos
-
-    # --- Carregar dados do consultor selecionado ---
-    df_consultor = carregar_pedidos()
-
-    if df_consultor.empty:
-        st.warning("Nenhuma tarefa encontrada para este consultor.")
-    else:
-        # --- Verificar e notificar automaticamente ---
-
-        # --- Contagem de pendentes e concluídas ---
-        concluidas = df_consultor["Situação da tarefa"].sum()
-        pendentes = len(df_consultor) - concluidas
-        st.markdown(f"**Consultor:** VITOR")
-        st.markdown(f"**✅ Concluídas:** {concluidas}   |   **🕒 Pendentes:** {pendentes}")
-
-        # --- Mostrar DataFrame ---
-        st.dataframe(df_consultor)
-
-def tarefas_mailan():
-
-    st.set_page_config(page_title="R.E.G MAILAN", page_icon="🔒",layout="wide")
-
-    # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Fabiana":
-        st.error("⚠️ Acesso negado!")
-        st.stop()
-
-    # --- Configuração Google Sheets ---
-    gcp_info = st.secrets["gcp"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-
-    # --- Função de notificação ---
-    def notificacao(mensagem):
-        user_key = st.secrets["notificacao"]["user_key"]
-        api_token = st.secrets["notificacao"]["api_token"]
-        requests.post("https://api.pushover.net/1/messages.json", data={
-            "token": api_token,
-            "user": user_key,
-            "message": f"Olá {"MAILAN"}, {mensagem}"
-        })
-
-   
-
-    image_logo = Image.open("image/Image (2).png")
-
-    cola,colb,colc = st.columns([7,1,1])
-
-    with colc :
-        st.image(image_logo)
-
-    with cola:
-         st.title("📝 R.E.G - MAILAN")
-
- 
-    # --- Função para carregar pedidos de uma aba ---
-    def carregar_pedidos():
-        try:
-            aba = planilha.worksheet("mailan")
-            dados = aba.get_all_records()
-            df = pd.DataFrame(dados)
-            if "Situação da tarefa" in df.columns:
-                df["Situação da tarefa"] = df["Situação da tarefa"].apply(lambda x: str(x).strip().lower() == "concluído")
-            return df
-        except gspread.WorksheetNotFound:
-            return pd.DataFrame()
-
-    # --- Função para verificar tarefas prestes a vencer e enviar notificação ---
-    def verificar_e_notificar(df, consultor):
-        agora = dt.datetime.now()
-        avisos = []
-        for _, row in df.iterrows():
-            if not row.get("Situação da tarefa", False) and "Hora final" in row:
-                try:
-                    hora_limite = dt.datetime.strptime(str(row["Hora final"]), "%H:%M")
-                    hora_limite = hora_limite.replace(year=agora.year, month=agora.month, day=agora.day)
-                    if 0 <= (hora_limite - agora).total_seconds() <= 1800:  # próximas 30 min
-                        avisos.append(f"Tarefa '{row['Tarefa']}' vence às {row['Hora final']}")
-                except:
-                    continue
-        if avisos:
-            mensagem = "Você tem tarefas prestes a vencer! " + " | ".join(avisos)
-            notificacao(consultor, mensagem)
-        return avisos
-
-    # --- Carregar dados do consultor selecionado ---
-    df_consultor = carregar_pedidos()
-
-    if df_consultor.empty:
-        st.warning("Nenhuma tarefa encontrada para este consultor.")
-    else:
-        # --- Verificar e notificar automaticamente ---
-
-        # --- Contagem de pendentes e concluídas ---
-        concluidas = df_consultor["Situação da tarefa"].sum()
-        pendentes = len(df_consultor) - concluidas
-        st.markdown(f"**Consultor:** MAILAN")
-        st.markdown(f"**✅ Concluídas:** {concluidas}   |   **🕒 Pendentes:** {pendentes}")
-
-        # --- Mostrar DataFrame ---
-        st.dataframe(df_consultor)
-
-
-#Bela vista
-
-def tarefas_vanessa():
-
-    st.set_page_config(page_title="R.E.G Vanessa", page_icon=icon,layout="wide")
-
-    # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Fabiana":
-        st.error("⚠️ Acesso negado!")
-        st.stop()
-
-    # --- Configuração Google Sheets ---
-    gcp_info = st.secrets["gcp"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-
-    # --- Função de notificação ---
-    def notificacao(mensagem):
-        user_key = st.secrets["notificacao"]["user_key"]
-        api_token = st.secrets["notificacao"]["api_token"]
-        requests.post("https://api.pushover.net/1/messages.json", data={
-            "token": api_token,
-            "user": user_key,
-            "message": f"Olá {"Vanessa"}, {mensagem}"
-        })
-
-   
-
-    image_logo = Image.open("image/Image (2).png")
-
-    cola,colb,colc = st.columns([7,1,1])
-
-    with colc :
-        st.image(image_logo)
-
-    with cola:
-         st.title("📝 R.E.G - Vanessa")
-
- 
-    # --- Função para carregar pedidos de uma aba ---
-    def carregar_pedidos():
-        try:
-            aba = planilha.worksheet("Vanessa")
-            dados = aba.get_all_records()
-            df = pd.DataFrame(dados)
-            if "Situação da tarefa" in df.columns:
-                df["Situação da tarefa"] = df["Situação da tarefa"].apply(lambda x: str(x).strip().lower() == "concluído")
-            return df
-        except gspread.WorksheetNotFound:
-            return pd.DataFrame()
-
-    # --- Função para verificar tarefas prestes a vencer e enviar notificação ---
-    def verificar_e_notificar(df, consultor):
-        agora = dt.datetime.now()
-        avisos = []
-        for _, row in df.iterrows():
-            if not row.get("Situação da tarefa", False) and "Hora final" in row:
-                try:
-                    hora_limite = dt.datetime.strptime(str(row["Hora final"]), "%H:%M")
-                    hora_limite = hora_limite.replace(year=agora.year, month=agora.month, day=agora.day)
-                    if 0 <= (hora_limite - agora).total_seconds() <= 1800:  # próximas 30 min
-                        avisos.append(f"Tarefa '{row['Tarefa']}' vence às {row['Hora final']}")
-                except:
-                    continue
-        if avisos:
-            mensagem = "Você tem tarefas prestes a vencer! " + " | ".join(avisos)
-            notificacao(consultor, mensagem)
-        return avisos
-
-    # --- Carregar dados do consultor selecionado ---
-    df_consultor = carregar_pedidos()
-
-    if df_consultor.empty:
-        st.warning("Nenhuma tarefa encontrada para este consultor.")
-    else:
-        # --- Verificar e notificar automaticamente ---
-
-        # --- Contagem de pendentes e concluídas ---
-        concluidas = df_consultor["Situação da tarefa"].sum()
-        pendentes = len(df_consultor) - concluidas
-        st.markdown(f"**Consultor:** VANESSA")
-        st.markdown(f"**✅ Concluídas:** {concluidas}   |   **🕒 Pendentes:** {pendentes}")
-
-        # --- Mostrar DataFrame ---
-        st.dataframe(df_consultor)
-
-def tarefas_danilo():
-
-    st.set_page_config(page_title="R.E.G Vanessa", page_icon=icon,layout="wide")
-
-    # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Fabiana":
-        st.error("⚠️ Acesso negado!")
-        st.stop()
-
-    # --- Configuração Google Sheets ---
-    gcp_info = st.secrets["gcp"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-
-    # --- Função de notificação ---
-    def notificacao(mensagem):
-        user_key = st.secrets["notificacao"]["user_key"]
-        api_token = st.secrets["notificacao"]["api_token"]
-        requests.post("https://api.pushover.net/1/messages.json", data={
-            "token": api_token,
-            "user": user_key,
-            "message": f"Olá {"Vanessa"}, {mensagem}"
-        })
-
-   
-
-    image_logo = Image.open("image/Image (2).png")
-
-    cola,colb,colc = st.columns([7,1,1])
-
-    with colc :
-        st.image(image_logo)
-
-    with cola:
-         st.title("📝 R.E.G - Vanessa")
-
- 
-    # --- Função para carregar pedidos de uma aba ---
-    def carregar_pedidos():
-        try:
-            aba = planilha.worksheet("danilo")
-            dados = aba.get_all_records()
-            df = pd.DataFrame(dados)
-            if "Situação da tarefa" in df.columns:
-                df["Situação da tarefa"] = df["Situação da tarefa"].apply(lambda x: str(x).strip().lower() == "concluído")
-            return df
-        except gspread.WorksheetNotFound:
-            return pd.DataFrame()
-
-    # --- Função para verificar tarefas prestes a vencer e enviar notificação ---
-    def verificar_e_notificar(df, consultor):
-        agora = dt.datetime.now()
-        avisos = []
-        for _, row in df.iterrows():
-            if not row.get("Situação da tarefa", False) and "Hora final" in row:
-                try:
-                    hora_limite = dt.datetime.strptime(str(row["Hora final"]), "%H:%M")
-                    hora_limite = hora_limite.replace(year=agora.year, month=agora.month, day=agora.day)
-                    if 0 <= (hora_limite - agora).total_seconds() <= 1800:  # próximas 30 min
-                        avisos.append(f"Tarefa '{row['Tarefa']}' vence às {row['Hora final']}")
-                except:
-                    continue
-        if avisos:
-            mensagem = "Você tem tarefas prestes a vencer! " + " | ".join(avisos)
-            notificacao(consultor, mensagem)
-        return avisos
-
-    # --- Carregar dados do consultor selecionado ---
-    df_consultor = carregar_pedidos()
-
-    if df_consultor.empty:
-        st.warning("Nenhuma tarefa encontrada para este consultor.")
-    else:
-        # --- Verificar e notificar automaticamente ---
-
-        # --- Contagem de pendentes e concluídas ---
-        concluidas = df_consultor["Situação da tarefa"].sum()
-        pendentes = len(df_consultor) - concluidas
-        st.markdown(f"**Consultor:** DANILO")
-        st.markdown(f"**✅ Concluídas:** {concluidas}   |   **🕒 Pendentes:** {pendentes}")
-
-        # --- Mostrar DataFrame ---
-        st.dataframe(df_consultor)
-
-
-#Paralela
-def tarefas_crislane():
-
-    st.set_page_config(page_title="R.E.G CRISLAINE", page_icon=icon,layout="wide")
-
-    # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Fabiana":
-        st.error("⚠️ Acesso negado!")
-        st.stop()
-
-    # --- Configuração Google Sheets ---
-    gcp_info = st.secrets["gcp"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-
-    # --- Função de notificação ---
-    def notificacao(mensagem):
-        user_key = st.secrets["notificacao"]["user_key"]
-        api_token = st.secrets["notificacao"]["api_token"]
-        requests.post("https://api.pushover.net/1/messages.json", data={
-            "token": api_token,
-            "user": user_key,
-            "message": f"Olá {"Vanessa"}, {mensagem}"
-        })
-
-   
-
-    image_logo = Image.open("image/Image (2).png")
-
-    cola,colb,colc = st.columns([7,1,1])
-
-    with colc :
-        st.image(image_logo)
-
-    with cola:
-         st.title("📝 R.E.G - CRISLAINE")
-
- 
-    # --- Função para carregar pedidos de uma aba ---
-    def carregar_pedidos():
-        try:
-            aba = planilha.worksheet("Crislaine")
-            dados = aba.get_all_records()
-            df = pd.DataFrame(dados)
-            if "Situação da tarefa" in df.columns:
-                df["Situação da tarefa"] = df["Situação da tarefa"].apply(lambda x: str(x).strip().lower() == "concluído")
-            return df
-        except gspread.WorksheetNotFound:
-            return pd.DataFrame()
-
-    # --- Função para verificar tarefas prestes a vencer e enviar notificação ---
-    def verificar_e_notificar(df, consultor):
-        agora = dt.datetime.now()
-        avisos = []
-        for _, row in df.iterrows():
-            if not row.get("Situação da tarefa", False) and "Hora final" in row:
-                try:
-                    hora_limite = dt.datetime.strptime(str(row["Hora final"]), "%H:%M")
-                    hora_limite = hora_limite.replace(year=agora.year, month=agora.month, day=agora.day)
-                    if 0 <= (hora_limite - agora).total_seconds() <= 1800:  # próximas 30 min
-                        avisos.append(f"Tarefa '{row['Tarefa']}' vence às {row['Hora final']}")
-                except:
-                    continue
-        if avisos:
-            mensagem = "Você tem tarefas prestes a vencer! " + " | ".join(avisos)
-            notificacao(consultor, mensagem)
-        return avisos
-
-    # --- Carregar dados do consultor selecionado ---
-    df_consultor = carregar_pedidos()
-
-    if df_consultor.empty:
-        st.warning("Nenhuma tarefa encontrada para este consultor.")
-    else:
-        # --- Verificar e notificar automaticamente ---
-
-        # --- Contagem de pendentes e concluídas ---
-        concluidas = df_consultor["Situação da tarefa"].sum()
-        pendentes = len(df_consultor) - concluidas
-        st.markdown(f"**Consultor:** Crislaine")
-        st.markdown(f"**✅ Concluídas:** {concluidas}   |   **🕒 Pendentes:** {pendentes}")
-
-        # --- Mostrar DataFrame ---
-        st.dataframe(df_consultor)
-
-
-def tarefas_neide():
-
-    st.set_page_config(page_title="R.E.G NEIDE", page_icon=icon,layout="wide")
-
-    # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "":
-        st.error("⚠️ Acesso negado!")
-        st.stop()
-
-    # --- Configuração Google Sheets ---Fabiana
-    gcp_info = st.secrets["gcp"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-
-    # --- Função de notificação ---
-    def notificacao(mensagem):
-        user_key = st.secrets["notificacao"]["user_key"]
-        api_token = st.secrets["notificacao"]["api_token"]
-        requests.post("https://api.pushover.net/1/messages.json", data={
-            "token": api_token,
-            "user": user_key,
-            "message": f"Olá {"Vanessa"}, {mensagem}"
-        })
-
-   
-
-    image_logo = Image.open("image/Image (2).png")
-
-    cola,colb,colc = st.columns([7,1,1])
-
-    with colc :
-        st.image(image_logo)
-
-    with cola:
-         st.title("📝 R.E.G - NEIDE")
-
- 
-    # --- Função para carregar pedidos de uma aba ---
-    def carregar_pedidos():
-        try:
-            aba = planilha.worksheet("Neide")
-            dados = aba.get_all_records()
-            df = pd.DataFrame(dados)
-            if "Situação da tarefa" in df.columns:
-                df["Situação da tarefa"] = df["Situação da tarefa"].apply(lambda x: str(x).strip().lower() == "concluído")
-            return df
-        except gspread.WorksheetNotFound:
-            return pd.DataFrame()
-
-    # --- Função para verificar tarefas prestes a vencer e enviar notificação ---
-    def verificar_e_notificar(df, consultor):
-        agora = dt.datetime.now()
-        avisos = []
-        for _, row in df.iterrows():
-            if not row.get("Situação da tarefa", False) and "Hora final" in row:
-                try:
-                    hora_limite = dt.datetime.strptime(str(row["Hora final"]), "%H:%M")
-                    hora_limite = hora_limite.replace(year=agora.year, month=agora.month, day=agora.day)
-                    if 0 <= (hora_limite - agora).total_seconds() <= 1800:  # próximas 30 min
-                        avisos.append(f"Tarefa '{row['Tarefa']}' vence às {row['Hora final']}")
-                except:
-                    continue
-        if avisos:
-            mensagem = "Você tem tarefas prestes a vencer! " + " | ".join(avisos)
-            notificacao(consultor, mensagem)
-        return avisos
-
-    # --- Carregar dados do consultor selecionado ---
-    df_consultor = carregar_pedidos()
-
-    if df_consultor.empty:
-        st.warning("Nenhuma tarefa encontrada para este consultor.")
-    else:
-        # --- Verificar e notificar automaticamente ---
-
-        # --- Contagem de pendentes e concluídas ---
-        concluidas = df_consultor["Situação da tarefa"].sum()
-        pendentes = len(df_consultor) - concluidas
-        st.markdown(f"**Consultor:** Neide")
-        st.markdown(f"**✅ Concluídas:** {concluidas}   |   **🕒 Pendentes:** {pendentes}")
-
-        # --- Mostrar DataFrame ---
-        st.dataframe(df_consultor)
-
-
-#Parque shop
-
-def tarefas_deniseP():
-
-    st.set_page_config(page_title="R.E.G DENISE", page_icon=icon,layout="wide")
-
-    # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Fabiana":
-        st.error("⚠️ Acesso negado!")
-        st.stop()
-
-    # --- Configuração Google Sheets ---
-    gcp_info = st.secrets["gcp"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-
-    # --- Função de notificação ---
-    def notificacao(mensagem):
-        user_key = st.secrets["notificacao"]["user_key"]
-        api_token = st.secrets["notificacao"]["api_token"]
-        requests.post("https://api.pushover.net/1/messages.json", data={
-            "token": api_token,
-            "user": user_key,
-            "message": f"Olá {"Vanessa"}, {mensagem}"
-        })
-
-   
-
-    image_logo = Image.open("image/Image (2).png")
-
-    cola,colb,colc = st.columns([7,1,1])
-
-    with colc :
-        st.image(image_logo)
-
-    with cola:
-         st.title("📝 R.E.G - DENISE")
-
- 
-    # --- Função para carregar pedidos de uma aba ---
-    def carregar_pedidos():
-        try:
-            aba = planilha.worksheet("Denise_Parque")
-            dados = aba.get_all_records()
-            df = pd.DataFrame(dados)
-            if "Situação da tarefa" in df.columns:
-                df["Situação da tarefa"] = df["Situação da tarefa"].apply(lambda x: str(x).strip().lower() == "concluído")
-            return df
-        except gspread.WorksheetNotFound:
-            return pd.DataFrame()
-
-    # --- Função para verificar tarefas prestes a vencer e enviar notificação ---
-    def verificar_e_notificar(df, consultor):
-        agora = dt.datetime.now()
-        avisos = []
-        for _, row in df.iterrows():
-            if not row.get("Situação da tarefa", False) and "Hora final" in row:
-                try:
-                    hora_limite = dt.datetime.strptime(str(row["Hora final"]), "%H:%M")
-                    hora_limite = hora_limite.replace(year=agora.year, month=agora.month, day=agora.day)
-                    if 0 <= (hora_limite - agora).total_seconds() <= 1800:  # próximas 30 min
-                        avisos.append(f"Tarefa '{row['Tarefa']}' vence às {row['Hora final']}")
-                except:
-                    continue
-        if avisos:
-            mensagem = "Você tem tarefas prestes a vencer! " + " | ".join(avisos)
-            notificacao(consultor, mensagem)
-        return avisos
-
-    # --- Carregar dados do consultor selecionado ---
-    df_consultor = carregar_pedidos()
-
-    if df_consultor.empty:
-        st.warning("Nenhuma tarefa encontrada para este consultor.")
-    else:
-        # --- Verificar e notificar automaticamente ---
-
-        # --- Contagem de pendentes e concluídas ---
-        concluidas = df_consultor["Situação da tarefa"].sum()
-        pendentes = len(df_consultor) - concluidas
-        st.markdown(f"**Consultor:** Denise")
-        st.markdown(f"**✅ Concluídas:** {concluidas}   |   **🕒 Pendentes:** {pendentes}")
-
-        # --- Mostrar DataFrame ---
-        st.dataframe(df_consultor)
-
-
-def tarefas_adriele():
-
-    st.set_page_config(page_title="R.E.G ADRIELLE", page_icon=icon,layout="wide")
-
-    # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Fabiana":
+    if "role" not in st.session_state or st.session_state.role != "John":
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -1011,7 +144,6 @@ def tarefas_adriele():
         })
 
 
-
     image_logo = Image.open("image/Image (2).png")
 
     cola,colb,colc = st.columns([7,1,1])
@@ -1020,13 +152,13 @@ def tarefas_adriele():
         st.image(image_logo)
 
     with cola:
-         st.title("📝 R.E.G - ADRIELLE")
+         st.title("📝 R.E.G - CAROL")
 
  
     # --- Função para carregar pedidos de uma aba ---
     def carregar_pedidos():
         try:
-            aba = planilha.worksheet("Adrielle")
+            aba = planilha.worksheet("Carol")
             dados = aba.get_all_records()
             df = pd.DataFrame(dados)
             if "Situação da tarefa" in df.columns:
@@ -1064,11 +196,497 @@ def tarefas_adriele():
         # --- Contagem de pendentes e concluídas ---
         concluidas = df_consultor["Situação da tarefa"].sum()
         pendentes = len(df_consultor) - concluidas
-        st.markdown(f"**Consultor:** Adrielle")
+        st.markdown(f"**Consultor:** Max")
         st.markdown(f"**✅ Concluídas:** {concluidas}   |   **🕒 Pendentes:** {pendentes}")
 
         # --- Mostrar DataFrame ---
         st.dataframe(df_consultor)
+
+
+icon = Image.open("image/vivo.png")
+
+def tarefas_alana():
+
+    st.set_page_config(page_title="R.E.G ALANA", page_icon=icon,layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role != "John":
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # --- Configuração Google Sheets ---
+    gcp_info = st.secrets["gcp"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+
+    # --- Função de notificação ---
+    def notificacao(mensagem):
+        user_key = st.secrets["notificacao"]["user_key"]
+        api_token = st.secrets["notificacao"]["api_token"]
+        requests.post("https://api.pushover.net/1/messages.json", data={
+            "token": api_token,
+            "user": user_key,
+            "message": f"Olá {"Alana"}, {mensagem}"
+        })
+
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola,colb,colc = st.columns([7,1,1])
+
+    with colc :
+        st.image(image_logo)
+
+    with cola:
+         st.title("📝 R.E.G - ALANA")
+
+ 
+    # --- Função para carregar pedidos de uma aba ---
+    def carregar_pedidos():
+        try:
+            aba = planilha.worksheet("Alana")
+            dados = aba.get_all_records()
+            df = pd.DataFrame(dados)
+            if "Situação da tarefa" in df.columns:
+                df["Situação da tarefa"] = df["Situação da tarefa"].apply(lambda x: str(x).strip().lower() == "concluído")
+            return df
+        except gspread.WorksheetNotFound:
+            return pd.DataFrame()
+
+    # --- Função para verificar tarefas prestes a vencer e enviar notificação ---
+    def verificar_e_notificar(df, consultor):
+        agora = dt.datetime.now()
+        avisos = []
+        for _, row in df.iterrows():
+            if not row.get("Situação da tarefa", False) and "Hora final" in row:
+                try:
+                    hora_limite = dt.datetime.strptime(str(row["Hora final"]), "%H:%M")
+                    hora_limite = hora_limite.replace(year=agora.year, month=agora.month, day=agora.day)
+                    if 0 <= (hora_limite - agora).total_seconds() <= 1800:  # próximas 30 min
+                        avisos.append(f"Tarefa '{row['Tarefa']}' vence às {row['Hora final']}")
+                except:
+                    continue
+        if avisos:
+            mensagem = "Você tem tarefas prestes a vencer! " + " | ".join(avisos)
+            notificacao(consultor, mensagem)
+        return avisos
+
+    # --- Carregar dados do consultor selecionado ---
+    df_consultor = carregar_pedidos()
+
+    if df_consultor.empty:
+        st.warning("Nenhuma tarefa encontrada para este consultor.")
+    else:
+        # --- Verificar e notificar automaticamente ---
+
+        # --- Contagem de pendentes e concluídas ---
+        concluidas = df_consultor["Situação da tarefa"].sum()
+        pendentes = len(df_consultor) - concluidas
+        st.markdown(f"**Consultor:** Alana")
+        st.markdown(f"**✅ Concluídas:** {concluidas}   |   **🕒 Pendentes:** {pendentes}")
+
+        # --- Mostrar DataFrame ---
+        st.dataframe(df_consultor)
+
+
+#Piedade
+
+icon = Image.open("image/vivo.png")
+
+def tarefas_diegol():
+
+    st.set_page_config(page_title="R.E.G DIEGO", page_icon=icon,layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role != "John":
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # --- Configuração Google Sheets ---
+    gcp_info = st.secrets["gcp"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+
+    # --- Função de notificação ---
+    def notificacao(mensagem):
+        user_key = st.secrets["notificacao"]["user_key"]
+        api_token = st.secrets["notificacao"]["api_token"]
+        requests.post("https://api.pushover.net/1/messages.json", data={
+            "token": api_token,
+            "user": user_key,
+            "message": f"Olá {"Diego"}, {mensagem}"
+        })
+
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola,colb,colc = st.columns([7,1,1])
+
+    with colc :
+        st.image(image_logo)
+
+    with cola:
+         st.title("📝 R.E.G - DIEGO")
+
+ 
+    # --- Função para carregar pedidos de uma aba ---
+    def carregar_pedidos():
+        try:
+            aba = planilha.worksheet("DiegoL")
+            dados = aba.get_all_records()
+            df = pd.DataFrame(dados)
+            if "Situação da tarefa" in df.columns:
+                df["Situação da tarefa"] = df["Situação da tarefa"].apply(lambda x: str(x).strip().lower() == "concluído")
+            return df
+        except gspread.WorksheetNotFound:
+            return pd.DataFrame()
+
+    # --- Função para verificar tarefas prestes a vencer e enviar notificação ---
+    def verificar_e_notificar(df, consultor):
+        agora = dt.datetime.now()
+        avisos = []
+        for _, row in df.iterrows():
+            if not row.get("Situação da tarefa", False) and "Hora final" in row:
+                try:
+                    hora_limite = dt.datetime.strptime(str(row["Hora final"]), "%H:%M")
+                    hora_limite = hora_limite.replace(year=agora.year, month=agora.month, day=agora.day)
+                    if 0 <= (hora_limite - agora).total_seconds() <= 1800:  # próximas 30 min
+                        avisos.append(f"Tarefa '{row['Tarefa']}' vence às {row['Hora final']}")
+                except:
+                    continue
+        if avisos:
+            mensagem = "Você tem tarefas prestes a vencer! " + " | ".join(avisos)
+            notificacao(consultor, mensagem)
+        return avisos
+
+    # --- Carregar dados do consultor selecionado ---
+    df_consultor = carregar_pedidos()
+
+    if df_consultor.empty:
+        st.warning("Nenhuma tarefa encontrada para este consultor.")
+    else:
+        # --- Verificar e notificar automaticamente ---
+
+        # --- Contagem de pendentes e concluídas ---
+        concluidas = df_consultor["Situação da tarefa"].sum()
+        pendentes = len(df_consultor) - concluidas
+        st.markdown(f"**Consultor:** Diego")
+        st.markdown(f"**✅ Concluídas:** {concluidas}   |   **🕒 Pendentes:** {pendentes}")
+
+        # --- Mostrar DataFrame ---
+        st.dataframe(df_consultor)
+
+
+
+
+def tarefas_marcus():
+
+    st.set_page_config(page_title="R.E.G MARCUS", page_icon=icon,layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role != "John":
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # --- Configuração Google Sheets ---
+    gcp_info = st.secrets["gcp"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+
+    # --- Função de notificação ---
+    def notificacao(mensagem):
+        user_key = st.secrets["notificacao"]["user_key"]
+        api_token = st.secrets["notificacao"]["api_token"]
+        requests.post("https://api.pushover.net/1/messages.json", data={
+            "token": api_token,
+            "user": user_key,
+            "message": f"Olá {"Marcus"}, {mensagem}"
+        })
+
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola,colb,colc = st.columns([7,1,1])
+
+    with colc :
+        st.image(image_logo)
+
+    with cola:
+         st.title("📝 R.E.G - MAX")
+
+ 
+    # --- Função para carregar pedidos de uma aba ---
+    def carregar_pedidos():
+        try:
+            aba = planilha.worksheet("Max")
+            dados = aba.get_all_records()
+            df = pd.DataFrame(dados)
+            if "Situação da tarefa" in df.columns:
+                df["Situação da tarefa"] = df["Situação da tarefa"].apply(lambda x: str(x).strip().lower() == "concluído")
+            return df
+        except gspread.WorksheetNotFound:
+            return pd.DataFrame()
+
+    # --- Função para verificar tarefas prestes a vencer e enviar notificação ---
+    def verificar_e_notificar(df, consultor):
+        agora = dt.datetime.now()
+        avisos = []
+        for _, row in df.iterrows():
+            if not row.get("Situação da tarefa", False) and "Hora final" in row:
+                try:
+                    hora_limite = dt.datetime.strptime(str(row["Hora final"]), "%H:%M")
+                    hora_limite = hora_limite.replace(year=agora.year, month=agora.month, day=agora.day)
+                    if 0 <= (hora_limite - agora).total_seconds() <= 1800:  # próximas 30 min
+                        avisos.append(f"Tarefa '{row['Tarefa']}' vence às {row['Hora final']}")
+                except:
+                    continue
+        if avisos:
+            mensagem = "Você tem tarefas prestes a vencer! " + " | ".join(avisos)
+            notificacao(consultor, mensagem)
+        return avisos
+
+    # --- Carregar dados do consultor selecionado ---
+    df_consultor = carregar_pedidos()
+
+    if df_consultor.empty:
+        st.warning("Nenhuma tarefa encontrada para este consultor.")
+    else:
+        # --- Verificar e notificar automaticamente ---
+
+        # --- Contagem de pendentes e concluídas ---
+        concluidas = df_consultor["Situação da tarefa"].sum()
+        pendentes = len(df_consultor) - concluidas
+        st.markdown(f"**Consultor:** Max")
+        st.markdown(f"**✅ Concluídas:** {concluidas}   |   **🕒 Pendentes:** {pendentes}")
+
+        # --- Mostrar DataFrame ---
+        st.dataframe(df_consultor)
+
+
+#LAPA
+
+def tarefas_sara():
+
+    st.set_page_config(page_title="R.E.G SARA", page_icon=icon,layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role != "John":
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # --- Configuração Google Sheets ---
+    gcp_info = st.secrets["gcp"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+
+    # --- Função de notificação ---
+    def notificacao(mensagem):
+        user_key = st.secrets["notificacao"]["user_key"]
+        api_token = st.secrets["notificacao"]["api_token"]
+        requests.post("https://api.pushover.net/1/messages.json", data={
+            "token": api_token,
+            "user": user_key,
+            "message": f"Olá {"SARA"}, {mensagem}"
+        })
+
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola,colb,colc = st.columns([7,1,1])
+
+    with colc :
+        st.image(image_logo)
+
+    with cola:
+         st.title("📝 R.E.G - SARA")
+
+ 
+    # --- Função para carregar pedidos de uma aba ---
+    def carregar_pedidos():
+        try:
+            aba = planilha.worksheet("Sara")
+            dados = aba.get_all_records()
+            df = pd.DataFrame(dados)
+            if "Situação da tarefa" in df.columns:
+                df["Situação da tarefa"] = df["Situação da tarefa"].apply(lambda x: str(x).strip().lower() == "concluído")
+            return df
+        except gspread.WorksheetNotFound:
+            return pd.DataFrame()
+
+    # --- Função para verificar tarefas prestes a vencer e enviar notificação ---
+    def verificar_e_notificar(df, consultor):
+        agora = dt.datetime.now()
+        avisos = []
+        for _, row in df.iterrows():
+            if not row.get("Situação da tarefa", False) and "Hora final" in row:
+                try:
+                    hora_limite = dt.datetime.strptime(str(row["Hora final"]), "%H:%M")
+                    hora_limite = hora_limite.replace(year=agora.year, month=agora.month, day=agora.day)
+                    if 0 <= (hora_limite - agora).total_seconds() <= 1800:  # próximas 30 min
+                        avisos.append(f"Tarefa '{row['Tarefa']}' vence às {row['Hora final']}")
+                except:
+                    continue
+        if avisos:
+            mensagem = "Você tem tarefas prestes a vencer! " + " | ".join(avisos)
+            notificacao(consultor, mensagem)
+        return avisos
+
+    # --- Carregar dados do consultor selecionado ---
+    df_consultor = carregar_pedidos()
+
+    if df_consultor.empty:
+        st.warning("Nenhuma tarefa encontrada para este consultor.")
+    else:
+        # --- Verificar e notificar automaticamente ---
+
+        # --- Contagem de pendentes e concluídas ---
+        concluidas = df_consultor["Situação da tarefa"].sum()
+        pendentes = len(df_consultor) - concluidas
+        st.markdown(f"**Consultor:** Sara")
+        st.markdown(f"**✅ Concluídas:** {concluidas}   |   **🕒 Pendentes:** {pendentes}")
+
+        # --- Mostrar DataFrame ---
+        st.dataframe(df_consultor)
+
+
+def tarefas_rafel():
+
+    st.set_page_config(page_title="R.E.G RAFAEL", page_icon=icon,layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role != "John":
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # --- Configuração Google Sheets ---
+    gcp_info = st.secrets["gcp"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+
+    # --- Função de notificação ---
+    def notificacao(mensagem):
+        user_key = st.secrets["notificacao"]["user_key"]
+        api_token = st.secrets["notificacao"]["api_token"]
+        requests.post("https://api.pushover.net/1/messages.json", data={
+            "token": api_token,
+            "user": user_key,
+            "message": f"Olá {"Rafael"}, {mensagem}"
+        })
+
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola,colb,colc = st.columns([7,1,1])
+
+    with colc :
+        st.image(image_logo)
+
+    with cola:
+         st.title("📝 R.E.G - RAFAEL")
+
+ 
+    # --- Função para carregar pedidos de uma aba ---
+    def carregar_pedidos():
+        try:
+            aba = planilha.worksheet("Rafael")
+            dados = aba.get_all_records()
+            df = pd.DataFrame(dados)
+            if "Situação da tarefa" in df.columns:
+                df["Situação da tarefa"] = df["Situação da tarefa"].apply(lambda x: str(x).strip().lower() == "concluído")
+            return df
+        except gspread.WorksheetNotFound:
+            return pd.DataFrame()
+
+    # --- Função para verificar tarefas prestes a vencer e enviar notificação ---
+    def verificar_e_notificar(df, consultor):
+        agora = dt.datetime.now()
+        avisos = []
+        for _, row in df.iterrows():
+            if not row.get("Situação da tarefa", False) and "Hora final" in row:
+                try:
+                    hora_limite = dt.datetime.strptime(str(row["Hora final"]), "%H:%M")
+                    hora_limite = hora_limite.replace(year=agora.year, month=agora.month, day=agora.day)
+                    if 0 <= (hora_limite - agora).total_seconds() <= 1800:  # próximas 30 min
+                        avisos.append(f"Tarefa '{row['Tarefa']}' vence às {row['Hora final']}")
+                except:
+                    continue
+        if avisos:
+            mensagem = "Você tem tarefas prestes a vencer! " + " | ".join(avisos)
+            notificacao(consultor, mensagem)
+        return avisos
+
+    # --- Carregar dados do consultor selecionado ---
+    df_consultor = carregar_pedidos()
+
+    if df_consultor.empty:
+        st.warning("Nenhuma tarefa encontrada para este consultor.")
+    else:
+        # --- Verificar e notificar automaticamente ---
+
+        # --- Contagem de pendentes e concluídas ---
+        concluidas = df_consultor["Situação da tarefa"].sum()
+        pendentes = len(df_consultor) - concluidas
+        st.markdown(f"**Consultor:** RafaeL")
+        st.markdown(f"**✅ Concluídas:** {concluidas}   |   **🕒 Pendentes:** {pendentes}")
+
+        # --- Mostrar DataFrame ---
+        st.dataframe(df_consultor)
+
 
 
 

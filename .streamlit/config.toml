@@ -5,3 +5,4 @@ backgroundColor = "#800080"
 secondaryBackgroundColor = "#310327ff" # Laranja médio (caixas internas, cards)
 textColor = "#ffffffff"                 # Texto preto para contraste
 font = "sans serif"
+

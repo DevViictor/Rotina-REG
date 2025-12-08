@@ -7,7 +7,7 @@ from PIL import Image
 
 def criar_page():
 
-    if "role" not in st.session_state or st.session_state.role != "admin":
+    if "role" not in st.session_state or st.session_state.role != "Victor":
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -24,57 +24,91 @@ def criar_page():
     )
     client = gspread.authorize(creds)
 
+    icon = Image.open("image/vivo.png")
+
     st.set_page_config(page_title="R.E.G",
-                    layout="wide",
-                    page_icon="📝")
-
-
+                       layout="wide",
+                       page_icon=icon)
 
     # --- LISTAS ---
     nomes_por_loja = {
-    # --- GV 1 - FABIANA SACRAMENTO ---
-    "LOJA SSA |": ["Ana", "Francisca", "Vinicius"],
-    "LOJA SSA ||": ["Vitor", "Mailan"],
-    "LOJA BELA VISTA": ["Vanessa", "Danilo"],
-    "LOJA PARALELA": ["Crislaine", "Neide"],
-    "LOJA PARQUE SHOP": ["Denise", "Adrielle"],
+        # --- GV 1 - FABIANA SACRAMENTO ---
+        "LOJA SSA |": ["Ana", "Francisca", "Vinicius"],
+        "LOJA SSA ||": ["Vitor", "Mailan"],
+        "LOJA BELA VISTA": ["Vanessa", "Danilo"],
+        "LOJA PARALELA": ["Crislaine", "Neide"],
+        "LOJA PARQUE SHOP": ["Denise", "Adrielle"],
 
-    # --- GV 2 - FELIPE SILVA ---
-    "LOJA IGUATEMI | BA": ["Max", "Denise"],
-    "LOJA IGUATEMI || BA": ["Diego", "Andressa"],
-    "LOJA NORT SHOP": ["Jairo", "Wanderlei"],
+        # --- GV 2 - FELIPE SILVA ---
+        "LOJA IGUATEMI | BA": ["Max", "Denise"],
+        "LOJA IGUATEMI || BA": ["Diego", "Andressa"],
+        "LOJA NORT SHOP": ["Jairo", "Wanderlei"],
 
-    # --- GV 1 - JOHM COITO ---
-    "LOJA BARRA": ["Igor", "Carol", "Alana"],
-    "LOJA PIEDADE": ["Diego", "Marcus"],
-    "LOJA LAPA": ["Sara", "Rafael"],
+        # --- GV 1 - JOHM COITO ---
+        "LOJA BARRA": ["Igor", "Carol", "Alana"],
+        "LOJA PIEDADE": ["Diego", "Marcus"],
+        "LOJA LAPA": ["Sara", "Rafael"],
 
-    # --- GV 2 - CHRYS REBOUÇAS ---
-    "LOJA BOULEVARD": ["Camyla", "Bruno", "Gilvania"],
+        # --- GV 2 - CHRYS REBOUÇAS ---
+        "LOJA BOULEVARD": ["Camyla", "Bruno", "Gilvania"],
 
-    # --- ITINERANTES ---
-    "ITINERANTES": ["Lázaro", "Lee", "Marcus"],
-}
+        # --- ITINERANTES ---
+        "ITINERANTES": ["Lázaro", "Lee", "Marcus"],
+    }
 
+    carteiras = {
+        "TODOS OS GLS": sum(nomes_por_loja.values(), []),
 
-    lojas = [" ","LOJA IGUATEMI | BA" , "LOJA IGUATEMI || BA" , "LOJA SSA |" , "LOJA SSA ||" , "LOJA BELA VISTA" , "LOJA PARALELA", "LOJA PARQUE SHOP","LOJA NORT SHOP" , "LOJA BARRA" , "LOJA PIEDADE" , "LOJA LAPA","LOJA BOULEVARD" ]
+        "GLS DA CARTEIRA DE FABIANA":
+            nomes_por_loja["LOJA SSA |"] +
+            nomes_por_loja["LOJA SSA ||"] +
+            nomes_por_loja["LOJA BELA VISTA"] +
+            nomes_por_loja["LOJA PARALELA"] +
+            nomes_por_loja["LOJA PARQUE SHOP"],
+
+        "GLS DA CARTEIRA DE FELIPE":
+            nomes_por_loja["LOJA IGUATEMI | BA"] +
+            nomes_por_loja["LOJA IGUATEMI || BA"] +
+            nomes_por_loja["LOJA NORT SHOP"],
+
+        "GLS DA CARTEIRA DE CRIS":
+            nomes_por_loja["LOJA BARRA"] +
+            nomes_por_loja["LOJA PIEDADE"] +
+            nomes_por_loja["LOJA LAPA"] +
+            nomes_por_loja["LOJA BOULEVARD"],
+
+        "TODOS OS ITINERANTES": nomes_por_loja["ITINERANTES"],
+    }
+
+    lojas = [" ", "LOJA IGUATEMI | BA", "LOJA IGUATEMI || BA", "LOJA SSA |",
+             "LOJA SSA ||", "LOJA BELA VISTA", "LOJA PARALELA",
+             "LOJA PARQUE SHOP", "LOJA NORT SHOP", "LOJA BARRA",
+             "LOJA PIEDADE", "LOJA LAPA", "LOJA BOULEVARD"]
+
+    para = [" ","TODOS OS GLS", 
+            "GLS DA CARTEIRA DE FABIANA",
+            "GLS DA CARTEIRA DE FELIPE",
+            "GLS DA CARTEIRA DE CRIS",
+            "TODOS OS ITINERANTES"]
+
+    tipos_recorrencia = ["", "Não recorrente", "Diária", "Semanal",
+                         "Semanal Laboral(seg a sex)", "Mensal", "Anual"]
+
     
-    tipos_recorrencia = ["","Não recorrente", "Diária", "Semanal", "Mensal"]
 
     # --- FUNÇÃO NOTIFICAÇÃO ---
-    def notificacao(loja):
+    def notificacao(loja,):
         user_key = st.secrets["notificacao"]["user_key"]
         api_token = st.secrets["notificacao"]["api_token"]
 
-        messagem = f"Novas tarefas foram criadas. \n Loja {loja}. \nVisualize o painel de tarefas."
+        messagem = f"Novas tarefas foram criadas.\nLoja: {loja}.\nVisualize o painel de tarefas."
 
         requests.post("https://api.pushover.net/1/messages.json", 
-            data={
-            "token": api_token,
-            "user": user_key,
-            "message": messagem
-            
-        })
+                      data={
+                          "token": api_token,
+                          "user": user_key,
+                          "message": messagem
+                      })
 
     # --- CARREGAR MODELOS ---
     aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefas")
@@ -85,9 +119,9 @@ def criar_page():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([4,1,1])
+    cola, colb, colc = st.columns([4, 1, 1])
 
-    with colc :
+    with colc:
         st.image(image_logo)
 
     with cola:
@@ -100,7 +134,13 @@ def criar_page():
 
     st.divider()
 
-    loja = st.selectbox("Loja :", lojas)
+    # --- SELECIONA CARTEIRA AQUI! (ANTES de montar lista de nomes) ---
+    envio = st.selectbox("Carteira :", para)
+
+    # --- Agora sim a lista de nomes é carregada corretamente ---
+    lista_nomes = [""] + carteiras.get(envio, [])
+
+    
 
     with st.form("Forms"):
 
@@ -120,11 +160,6 @@ def criar_page():
             recorrencia_default = ""
 
         # --- CAMPOS ---
-        
-        lista_nomes = [""] + nomes_por_loja.get(loja, [])
-
-        nome = st.selectbox("Nome do GL :", lista_nomes)
-
         titulo = st.text_input("Título da tarefa :", value=titulo_default)
         descricao = st.text_input("Descrição da tarefa :", value=descricao_default)
 
@@ -147,14 +182,21 @@ def criar_page():
             recorrencia = st.selectbox(
                 "Tipo de recorrência :",
                 tipos_recorrencia,
-                index=tipos_recorrencia.index(recorrencia_default) if recorrencia_default in tipos_recorrencia else 0
+                index=tipos_recorrencia.index(recorrencia_default)
+                if recorrencia_default in tipos_recorrencia else 0
             )
 
-        # --- BOTÕES ---
+        cold, cole = st.columns(2)
+
+        with cold:
+            nome = st.selectbox("Nome do GL :", lista_nomes)
+
+        with cole:
+            loja = st.selectbox("Loja :", lojas)
+
         col1_btn, col2_btn = st.columns(2)
         enviar = col1_btn.form_submit_button("Enviar tarefa")
         salvar_tarefas = col2_btn.form_submit_button("Salvar como modelo")
-
 
     # ENVIAR TAREFA
     if enviar:
