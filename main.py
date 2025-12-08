@@ -208,8 +208,7 @@ def run_navigation():
         }
             
     
-    elif role == "Johm":
-
+    elif role == "John":
 
         menu = {
             "🏬 Loja Barra": [
