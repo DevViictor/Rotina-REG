@@ -6,6 +6,7 @@ from PIL import Image
 
 # --- CONFIG GOOGLE SHEETS (somente uma vez) ---
 if "planilha" not in st.session_state:
+    st.session_state.planilha = {}
     gcp_info = st.secrets["gcp"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
