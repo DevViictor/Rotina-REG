@@ -177,7 +177,7 @@ def run_navigation():
             "🏬 CHRYS REBOUÇAS ": [
                 Relatorio_boulevard,
             ],
-            "🏬 INTINERANTES ": [
+            "🏬 ITINERANTES ": [
                 Relatorio_initinerantes,
             ]
 
