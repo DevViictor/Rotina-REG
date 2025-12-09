@@ -10,6 +10,10 @@ from RegGeralFelipe import relatorio_iguatemi1,relatorio_iguatemi2,relatorio_nor
 from RegGeralChrys import relatorio_boulevard, relatorio_chrys_geral
 from RegGeralJohn import relatorio_barra , relatorio_lapa ,relatorio_piedade , relatorio_john_geral
 from RegItirerantes import relatorio_intinerantes
+from VisualizarTarefas import visualizar_tarefas
+from TarefasProntas import modelos_prontos
+
+
 
 st.sidebar.image("image/Image (2).png")
 
@@ -63,7 +67,7 @@ def run_navigation():
 
 
     #CriarTarefas
-    cadastro = st.Page(criar_page, title="📝 Criar tarefas")
+    cadastro = st.Page(criar_page, title="📝 Criar")
 
     #Fabiana
     Relatorio_ssa1 = (st.Page(relatorio_ssa1, title="SSA |"))
@@ -143,7 +147,11 @@ def run_navigation():
     Tarefas_Gilvania = st.Page(tarefas_gilvania,title="Gilvania")
 
 
-    #Relatorio GERAL
+    #Tarefas
+    Visualizar_tarefas_victor = st.Page(visualizar_tarefas,title="📝 Criadas")
+
+    #modelos
+    Visualizar_modelos = st.Page(modelos_prontos,title="📝 Modelos ")
 
 
     # Menus por role
@@ -193,7 +201,9 @@ def run_navigation():
         menu3 = {
     
             "TAREFAS": [
-                cadastro,            
+                cadastro,
+                Visualizar_tarefas_victor,
+                Visualizar_modelos            
             ],
         }
     

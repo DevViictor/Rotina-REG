@@ -186,6 +186,8 @@ def criar_page():
                 if recorrencia_default in tipos_recorrencia else 0
             )
 
+        por = ["Victor"]
+        criada = st.selectbox("Criador da terefa: ",por)
         cold, cole = st.columns(2)
 
         with cold:
@@ -212,6 +214,7 @@ def criar_page():
 
         pagina.append_row([
             novo_id,
+            criada,
             loja,
             nome,
             titulo,
@@ -227,8 +230,11 @@ def criar_page():
 
     # SALVAR MODELO
     if salvar_tarefas:
-
+        pagina = client.open_by_key(planilha_chave).worksheet("ModelosTarefas")
+        
+        novo_id = len(pagina.get_all_records()) + 1
         aba_modelos.append_row([
+            novo_id,
             titulo,
             descricao,
             hora_inicial.strftime("%H:%M"),
@@ -236,5 +242,6 @@ def criar_page():
             data.strftime("%d/%m/%Y"),
             recorrencia,
         ])
+       
 
         st.success("Modelo salvo com sucesso!")
