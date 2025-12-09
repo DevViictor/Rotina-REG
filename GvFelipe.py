@@ -47,7 +47,7 @@ def tarefas_max():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -126,7 +126,7 @@ def tarefas_denise():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -208,7 +208,7 @@ def tarefas_diego():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -286,7 +286,7 @@ def tarefas_andressa():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -382,7 +382,7 @@ def tarefas_jairo():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -476,7 +476,7 @@ def tarefas_wanderlei():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)

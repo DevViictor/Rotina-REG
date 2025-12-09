@@ -2,11 +2,14 @@ import streamlit as st
 from GvFabiana import tarefas_adriele,tarefas_ana,tarefas_crislane,tarefas_danilo,tarefas_deniseP,tarefas_francisca,tarefas_mailan,tarefas_neide,tarefas_vanessa,tarefas_vinicius,tarefas_vitor
 from GvChrys import tarefas_bruno,tarefas_camyla,tarefas_gilvania
 from GvFelipe import tarefas_andressa, tarefas_denise , tarefas_diego ,tarefas_jairo ,tarefas_max, tarefas_wanderlei
-from SnVictor import relatorio_iguatemi1,relatorio_iguatemi2,relatorio_ssa1,relatorio_ssa2,relatorio_piedade,relatorio_paralela,relatorio_barra,relatorio_bela,relatorio_boulevard,relatorio_lapa,relatorio_parque,relatorio_nort,relatorio_intinerantes
 from GVJohn import tarefas_alana , tarefas_carol , tarefas_diegol , tarefas_igor ,tarefas_marcus ,tarefas_rafel ,tarefas_sara 
 from PIL import Image
 from CriarTarefas import criar_page
-
+from RegGeralFabiana import relatorio_ssa1,relatorio_ssa2 , relatorio_bela ,relatorio_paralela ,relatorio_parque,relatorio_fabiana_geral
+from RegGeralFelipe import relatorio_iguatemi1,relatorio_iguatemi2,relatorio_nort , relatorio_felipe_geral
+from RegGeralChrys import relatorio_boulevard, relatorio_chrys_geral
+from RegGeralJohn import relatorio_barra , relatorio_lapa ,relatorio_piedade , relatorio_john_geral
+from RegItirerantes import relatorio_intinerantes
 
 st.sidebar.image("image/Image (2).png")
 
@@ -51,6 +54,14 @@ def run_navigation():
 
     #Victor
      
+    #geral
+    Relatorio_fabiana = (st.Page(relatorio_fabiana_geral, title="FABIANA SACRAMENTO"))
+    Relatorio_felipe = (st.Page(relatorio_felipe_geral, title="FELIPE SILVA"))
+    Relatorio_john = (st.Page(relatorio_john_geral, title="JOHN COITO"))
+    Relatorio_chrys = (st.Page(relatorio_chrys_geral, title="CHRYS REBOUÇAS"))
+    
+
+
     #CriarTarefas
     cadastro = st.Page(criar_page, title="📝 Criar tarefas")
 
@@ -78,7 +89,7 @@ def run_navigation():
 
     #Intinerantes
 
-    Relatorio_initinerantes = (st.Page(relatorio_intinerantes, title="Intinerantes"))
+    Relatorio_itinerantes = (st.Page(relatorio_intinerantes, title="Itinerantes"))
     
     #FElipe:
     
@@ -140,6 +151,17 @@ def run_navigation():
 
         menu = {
     
+            "🏬 R.E.G ": [
+                Relatorio_fabiana,
+                Relatorio_felipe,
+                Relatorio_john,
+                Relatorio_chrys
+
+                
+            ],
+        }
+        menu2 = {
+    
             "🏬 FABIANA SACRAMENTO ": [
                 Relatorio_ssa1,
                 Relatorio_ssa2,
@@ -153,18 +175,38 @@ def run_navigation():
                 Relatorio_iguatemi2,
                 Relatorio_norte
             ],
-             "Tarefas ": [
-                cadastro,
+            "🏬 JOHN COITO": [
+                Relatorio_barra,
+                Relatorio_piedade,
+                Relatorio_lapa
             ],
-            
-
+            "🏬 Chrys": [
+                Relatorio_boulevard,
+                
+            ],
+            "🏬 Itinerantes": [
+                Relatorio_itinerantes,
+                
+            ],
+        }
+        
+        menu3 = {
+    
+            "TAREFAS": [
+                cadastro,            
+            ],
         }
     
     elif role == "Felipe":
 
-        
-
         menu = {
+            "🏬 R.E.G": [
+                Relatorio_felipe
+                ,
+            ],
+        }
+
+        menu2 = {
             "🏬 Loja Iguatemi |": [
                 Tarefas_Denise,
                 Tarefas_max
@@ -177,13 +219,26 @@ def run_navigation():
                 Tarefas_jairo,
                 Tarefas_wanderlei
             ],
-            
+        }
+
+        menu3 = {
+    
+            "TAREFAS": [
+                cadastro,
+            ],
         }
 
     elif role == "Fabiana":
 
 
         menu = {
+            "🏬 R.E.G": [
+                Relatorio_fabiana
+    
+            ],
+        }
+
+        menu2 = {
             "🏬 Loja SSA |": [
                 Tarefas_Ana,
                 Tarefas_francisca,
@@ -206,11 +261,25 @@ def run_navigation():
                 Tarefas_deniseP,
             ],
         }
+        menu3 = {
+    
+            "TAREFAS": [
+                cadastro,
+            ],
+        }
             
     
     elif role == "John":
 
         menu = {
+            "🏬 R.E.G": [
+                Relatorio_john
+    
+            ],
+        }
+
+
+        menu2 = {
             "🏬 Loja Barra": [
                 Tarefas_alana,
                 Tarefas_carol,
@@ -227,25 +296,45 @@ def run_navigation():
             ],
 
         }
+        menu3 = {
+    
+            "TAREFAS": [
+                cadastro,
+            ],
+        }
     
     elif role == "Chrys":
 
-
         menu = {
+            "🏬 R.E.G": [
+                Relatorio_chrys
+    
+            ],
+        }
+
+
+
+        menu2 = {
             "🏬 Loja BOULEVARD": [
                 Tarefas_Camyla,
                 Tarefas_Bruno,
                 Tarefas_Gilvania,
             ]
         }
+        menu3 = {
+    
+            "TAREFAS": [
+                cadastro,
+            ],
+        }
 
     
 
     # Criar navegação
    
-  
+    soma = {**menu,**menu2,**menu3}
 
-    nav = st.navigation(menu)
+    nav = st.navigation(soma)
 
     
 

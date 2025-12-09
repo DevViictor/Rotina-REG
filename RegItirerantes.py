@@ -32,7 +32,7 @@ def relatorio_carteira(nome_carteira, consultores):
     with colc:
         st.image(image_logo)
     with cola:
-        st.header(f"R.E.G - CARTEIRA {nome_carteira.upper()}")
+        st.header(f"R.E.G - {nome_carteira.upper()}")
 
     # Função para carregar pedidos de cada consultor
     def carregar_pedidos(consultor):
@@ -72,44 +72,5 @@ def relatorio_carteira(nome_carteira, consultores):
     # Mostrar resumo
     st.dataframe(pd.DataFrame(resumo))
 
-# --- Chamadas de exemplo ---
-# --- Iguatemi ---
-# --- Chamadas de exemplo ---
-def relatorio_ssa1():
-    relatorio_carteira("SSA1", ["Ana","Francisca","Vinicius"])
-
-def relatorio_ssa2():
-    relatorio_carteira("SSA2", ["Vitor","Mailan"])
-
-def relatorio_bela():
-    relatorio_carteira("BELA VISTA", ["Vanessa","Danilo"])
-
-def relatorio_paralela():
-    relatorio_carteira("PARALELA", ["Crislaine","Neide"])
-
-def relatorio_parque():
-    relatorio_carteira("PARQUE", ["Denise_Paque","Adrielle"])
-
-def relatorio_iguatemi1():
-    relatorio_carteira("IGUATEMI1", ["Denise","Max"])
-
-def relatorio_iguatemi2():
-    relatorio_carteira("IGUATEMI2", ["Andressa","Diego"])
-
-def relatorio_nort():
-    relatorio_carteira("NORTE SHOP", ["Jairo","Wander"])
-
-def relatorio_barra():
-    relatorio_carteira("BARRA", ["Igor","Carol","Alana"])
-
-def relatorio_piedade():
-    relatorio_carteira("PIEDADE", ["DiegoL","Marcus"])
-
-def relatorio_lapa():
-    relatorio_carteira("LAPA", ["Sara","Rafel"])
-
-def relatorio_boulevard():
-    relatorio_carteira("BOULEVARD", ["Camyla","Bruno","Gilvania"])
-
 def relatorio_intinerantes():
-    relatorio_carteira("INTINERANTES", ["Lazaro","Lee","MarcusI"])
+    relatorio_carteira("ITINERANTES", ["Lazaro","Lee","MarcusI"])

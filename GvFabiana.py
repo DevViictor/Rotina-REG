@@ -49,7 +49,7 @@ def tarefas_ana():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -145,7 +145,7 @@ def tarefas_francisca():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -241,7 +241,7 @@ def tarefas_vinicius():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -339,7 +339,7 @@ def tarefas_vitor():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -434,7 +434,7 @@ def tarefas_mailan():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -532,7 +532,7 @@ def tarefas_vanessa():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -627,7 +627,7 @@ def tarefas_danilo():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -724,7 +724,7 @@ def tarefas_crislane():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -786,7 +786,7 @@ def tarefas_neide():
     st.set_page_config(page_title="R.E.G NEIDE", page_icon=icon,layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "":
+    if "role" not in st.session_state or st.session_state.role != "Fabiana":
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -820,7 +820,7 @@ def tarefas_neide():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -918,7 +918,7 @@ def tarefas_deniseP():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -1014,7 +1014,7 @@ def tarefas_adriele():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)

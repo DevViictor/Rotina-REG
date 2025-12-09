@@ -49,7 +49,7 @@ def tarefas_igor():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -146,7 +146,7 @@ def tarefas_carol():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -243,7 +243,7 @@ def tarefas_alana():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -342,7 +342,7 @@ def tarefas_diegol():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -439,7 +439,7 @@ def tarefas_marcus():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -536,7 +536,7 @@ def tarefas_sara():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)
@@ -631,7 +631,7 @@ def tarefas_rafel():
 
     image_logo = Image.open("image/Image (2).png")
 
-    cola,colb,colc = st.columns([7,1,1])
+    cola,colb,colc = st.columns([4,1,1])
 
     with colc :
         st.image(image_logo)

@@ -7,7 +7,7 @@ from PIL import Image
 
 def criar_page():
 
-    if "role" not in st.session_state or st.session_state.role != "Victor":
+    if "role" not in st.session_state or st.session_state.role not in ["Victor","Felipe","John","Fabiana","Chrys"]:
         st.error("⚠️ Acesso negado!")
         st.stop()
 
