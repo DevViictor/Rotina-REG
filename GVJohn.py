@@ -445,13 +445,13 @@ def tarefas_marcus():
         st.image(image_logo)
 
     with cola:
-         st.title("📝 R.E.G - MAX")
+         st.title("📝 R.E.G - MARCUS")
 
  
     # --- Função para carregar pedidos de uma aba ---
     def carregar_pedidos():
         try:
-            aba = planilha.worksheet("Max")
+            aba = planilha.worksheet("Marcus")
             dados = aba.get_all_records()
             df = pd.DataFrame(dados)
             if "Situação da tarefa" in df.columns:

@@ -4,14 +4,14 @@ from GvChrys import tarefas_bruno,tarefas_camyla,tarefas_gilvania
 from GvFelipe import tarefas_andressa, tarefas_denise , tarefas_diego ,tarefas_jairo ,tarefas_max, tarefas_wanderlei
 from GVJohn import tarefas_alana , tarefas_carol , tarefas_diegol , tarefas_igor ,tarefas_marcus ,tarefas_rafel ,tarefas_sara 
 from PIL import Image
-from CriarTarefas import criar_page
+from CriarTarefas import criar_page,criar_page_fabiana,criar_page_chrys,criar_page_felipe,criar_page_john
 from RegGeralFabiana import relatorio_ssa1,relatorio_ssa2 , relatorio_bela ,relatorio_paralela ,relatorio_parque,relatorio_fabiana_geral
 from RegGeralFelipe import relatorio_iguatemi1,relatorio_iguatemi2,relatorio_nort , relatorio_felipe_geral
 from RegGeralChrys import relatorio_boulevard, relatorio_chrys_geral
 from RegGeralJohn import relatorio_barra , relatorio_lapa ,relatorio_piedade , relatorio_john_geral
 from RegItirerantes import relatorio_intinerantes
-from VisualizarTarefas import visualizar_tarefas
-from TarefasProntas import modelos_prontos
+from VisualizarTarefas import visualizar_tarefas,visualizar_tarefas_fabiana, visualizar_tarefas_chrys ,visualizar_tarefas_felipe ,visualizar_tarefas_john
+from TarefasProntas import modelos_prontos,modelos_prontos_fabiana, modelos_prontos_chrys, modelos_prontos_felipe, modelos_prontos_john
 
 
 
@@ -68,6 +68,10 @@ def run_navigation():
 
     #CriarTarefas
     cadastro = st.Page(criar_page, title="📝 Criar")
+    cadastro_fabiana = st.Page(criar_page_fabiana, title="📝 Criar")
+    cadastro_felipe =  st.Page(criar_page_felipe, title="📝 Criar")
+    cadastro_john =  st.Page(criar_page_john, title="📝 Criar")
+    cadastro_chrys =  st.Page(criar_page_chrys, title="📝 Criar")
 
     #Fabiana
     Relatorio_ssa1 = (st.Page(relatorio_ssa1, title="SSA |"))
@@ -149,9 +153,19 @@ def run_navigation():
 
     #Tarefas
     Visualizar_tarefas_victor = st.Page(visualizar_tarefas,title="📝 Criadas")
+    Visualizar_tarefas_fabiana = st.Page(visualizar_tarefas_fabiana,title="📝 Criadas ")
+    Visualizar_tarefas_felipe = st.Page(visualizar_tarefas_felipe,title="📝 Criadas ")
+    Visualizar_tarefas_johon = st.Page(visualizar_tarefas_john,title="📝 Criadas ")
+    Visualizar_tarefas_chrys = st.Page(visualizar_tarefas_chrys,title="📝 Criadas ")
+
 
     #modelos
     Visualizar_modelos = st.Page(modelos_prontos,title="📝 Modelos ")
+    Visualizar_modelos_fabiana = st.Page(modelos_prontos_fabiana,title="📝 Modelos ")
+    Visualizar_modelos_felipe = st.Page(modelos_prontos_felipe,title="📝 Modelos ")
+    Visualizar_modelos_john = st.Page(modelos_prontos_john,title="📝 Modelos ")
+    Visualizar_modelos_chrys = st.Page(modelos_prontos_chrys,title="📝 Modelos ")
+
 
 
     # Menus por role
@@ -234,7 +248,9 @@ def run_navigation():
         menu3 = {
     
             "TAREFAS": [
-                cadastro,
+                cadastro_felipe,
+                Visualizar_tarefas_felipe,
+                Visualizar_modelos_felipe
             ],
         }
 
@@ -274,7 +290,9 @@ def run_navigation():
         menu3 = {
     
             "TAREFAS": [
-                cadastro,
+                cadastro_fabiana,
+                Visualizar_tarefas_fabiana,
+                Visualizar_modelos_fabiana
             ],
         }
             
@@ -309,7 +327,9 @@ def run_navigation():
         menu3 = {
     
             "TAREFAS": [
-                cadastro,
+                cadastro_john,
+                Visualizar_tarefas_johon,
+                Visualizar_modelos_john
             ],
         }
     
@@ -334,7 +354,9 @@ def run_navigation():
         menu3 = {
     
             "TAREFAS": [
-                cadastro,
+                cadastro_chrys,
+                Visualizar_tarefas_chrys,
+                Visualizar_modelos_chrys
             ],
         }
 

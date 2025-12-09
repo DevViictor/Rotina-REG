@@ -29,62 +29,423 @@ def modelos_prontos():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Título", "Descrição da tarefa","Tipo de recorrência"]
-    planilha_Dados = planilha_Dados[colunas_desejadas]
-    
-    icon = Image.open("image/vivo.png")
-    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+    if planilha_Dados.empty:
+        st.warning("Nenhum modelo encontrado.")
+    else:
 
-    image_logo = Image.open("image/Image (2).png")
+        colunas_desejadas = ["ID", "Título", "Descrição da tarefa","Tipo de recorrência"]
+        planilha_Dados = planilha_Dados[colunas_desejadas]
+        
+        icon = Image.open("image/vivo.png")
+        st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
 
-    cola, colb, colc = st.columns([4,1,1])
+        image_logo = Image.open("image/Image (2).png")
 
-    
-    with colc:
-                st.image(image_logo)
+        cola, colb, colc = st.columns([4,1,1])
 
-    with cola:
-                st.title("📝 R.E.G - MODELOS")
-    # ---------------------------
-    # CHECKBOX PARA EXCLUSÃO
-    # ---------------------------
-    planilha_Dados["Excluir"] = False
+        
+        with colc:
+                    st.image(image_logo)
 
-    st.write("Modelos de tarefas salvos: ")
-    tabela_editada = st.data_editor(
-        planilha_Dados,
-        hide_index=True,
-        use_container_width=True
+        with cola:
+                    st.title("📝 R.E.G - MODELOS")
+        # ---------------------------
+        # CHECKBOX PARA EXCLUSÃO
+        # ---------------------------
+        planilha_Dados["Excluir"] = False
+
+        st.write("Modelos de tarefas salvos: ")
+        tabela_editada = st.data_editor(
+            planilha_Dados,
+            hide_index=True,
+            use_container_width=True
+        )
+
+        ids_para_excluir = tabela_editada[tabela_editada["Excluir"] == True]["ID"].tolist()
+
+        # ---------------------------
+        # FUNÇÃO EXCLUSÃO NO GOOGLE
+        # ---------------------------
+        def excluir_por_id(id_valor, aba):
+                valores = aba.col_values(1)  # coluna A
+
+                try:
+                        linha = valores.index(str(id_valor)) + 1
+                        aba.delete_rows(linha)
+                        return True
+                except ValueError:
+                        return False
+
+        # ---------------------------
+        # BOTÃO DE EXCLUSÃO
+        # ---------------------------
+        if st.button("🗑️ Excluir tarefa"):
+                if not ids_para_excluir:
+                        st.warning("Nenhuma tarefa marcada.")
+                else:
+                        aba = planilha.worksheet("ModelosTarefas")
+                        count = 0
+
+                        for id_valor in ids_para_excluir:
+                                if excluir_por_id(id_valor, aba):
+                                        count += 1
+
+                        st.success(f"{count} tarefa(s) excluída(s) com sucesso!")
+                        st.rerun()
+
+
+def modelos_prontos_felipe():
+    gcp_info = st.secrets["taf"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+            dict(gcp_info),
+            scopes=[
+                    "https://www.googleapis.com/auth/spreadsheets",
+                    "https://www.googleapis.com/auth/drive"
+            ]
     )
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
 
-    ids_para_excluir = tabela_editada[tabela_editada["Excluir"] == True]["ID"].tolist()
-
-    # ---------------------------
-    # FUNÇÃO EXCLUSÃO NO GOOGLE
-    # ---------------------------
-    def excluir_por_id(id_valor, aba):
-            valores = aba.col_values(1)  # coluna A
-
-            try:
-                    linha = valores.index(str(id_valor)) + 1
-                    aba.delete_rows(linha)
-                    return True
-            except ValueError:
-                    return False
+    def carregar_pedidos():
+            aba = planilha.worksheet("ModelosTarefasFelipe")
+            dados = aba.get_all_records()
+            return pd.DataFrame(dados)
 
     # ---------------------------
-    # BOTÃO DE EXCLUSÃO
+    # CARREGAR E FILTRAR DADOS
     # ---------------------------
-    if st.button("🗑️ Excluir tarefa"):
-            if not ids_para_excluir:
-                    st.warning("Nenhuma tarefa marcada.")
-            else:
-                    aba = planilha.worksheet("ModelosTarefas")
-                    count = 0
+    planilha_Dados = carregar_pedidos()
+    if planilha_Dados.empty:
+        st.warning("Nenhum modelo encontrado.")
+    else:
 
-                    for id_valor in ids_para_excluir:
-                            if excluir_por_id(id_valor, aba):
-                                    count += 1
+        colunas_desejadas = ["ID", "Título", "Descrição da tarefa","Tipo de recorrência"]
+        planilha_Dados = planilha_Dados[colunas_desejadas]
+        
+        icon = Image.open("image/vivo.png")
+        st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
 
-                    st.success(f"{count} tarefa(s) excluída(s) com sucesso!")
-                    st.rerun()
+        image_logo = Image.open("image/Image (2).png")
+
+        cola, colb, colc = st.columns([4,1,1])
+
+        
+        with colc:
+                    st.image(image_logo)
+
+        with cola:
+                    st.title("📝 R.E.G - MODELOS")
+        # ---------------------------
+        # CHECKBOX PARA EXCLUSÃO
+        # ---------------------------
+        planilha_Dados["Excluir"] = False
+
+        st.write("Modelos de tarefas salvos: ")
+        tabela_editada = st.data_editor(
+            planilha_Dados,
+            hide_index=True,
+            use_container_width=True
+        )
+
+        ids_para_excluir = tabela_editada[tabela_editada["Excluir"] == True]["ID"].tolist()
+
+        # ---------------------------
+        # FUNÇÃO EXCLUSÃO NO GOOGLE
+        # ---------------------------
+        def excluir_por_id(id_valor, aba):
+                valores = aba.col_values(1)  # coluna A
+
+                try:
+                        linha = valores.index(str(id_valor)) + 1
+                        aba.delete_rows(linha)
+                        return True
+                except ValueError:
+                        return False
+
+        # ---------------------------
+        # BOTÃO DE EXCLUSÃO
+        # ---------------------------
+        if st.button("🗑️ Excluir tarefa"):
+                if not ids_para_excluir:
+                        st.warning("Nenhuma tarefa marcada.")
+                else:
+                        aba = planilha.worksheet("ModelosTarefasFelipe")
+                        count = 0
+
+                        for id_valor in ids_para_excluir:
+                                if excluir_por_id(id_valor, aba):
+                                        count += 1
+
+                        st.success(f"{count} tarefa(s) excluída(s) com sucesso!")
+                        st.rerun()
+
+
+def modelos_prontos_fabiana():
+    gcp_info = st.secrets["taf"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+            dict(gcp_info),
+            scopes=[
+                    "https://www.googleapis.com/auth/spreadsheets",
+                    "https://www.googleapis.com/auth/drive"
+            ]
+    )
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+            aba = planilha.worksheet("ModelosTarefasFabiana")
+            dados = aba.get_all_records()
+            return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    if planilha_Dados.empty:
+        st.warning("Nenhum modelo encontrado.")
+    else:
+        colunas_desejadas = ["ID", "Título", "Descrição da tarefa","Tipo de recorrência"]
+        planilha_Dados = planilha_Dados[colunas_desejadas]
+        
+        icon = Image.open("image/vivo.png")
+        st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+        image_logo = Image.open("image/Image (2).png")
+
+        cola, colb, colc = st.columns([4,1,1])
+
+        
+        with colc:
+                    st.image(image_logo)
+
+        with cola:
+                    st.title("📝 R.E.G - MODELOS")
+        # ---------------------------
+        # CHECKBOX PARA EXCLUSÃO
+        # ---------------------------
+        planilha_Dados["Excluir"] = False
+
+        st.write("Modelos de tarefas salvos: ")
+        tabela_editada = st.data_editor(
+            planilha_Dados,
+            hide_index=True,
+            use_container_width=True
+        )
+
+        ids_para_excluir = tabela_editada[tabela_editada["Excluir"] == True]["ID"].tolist()
+
+        # ---------------------------
+        # FUNÇÃO EXCLUSÃO NO GOOGLE
+        # ---------------------------
+        def excluir_por_id(id_valor, aba):
+                valores = aba.col_values(1)  # coluna A
+
+                try:
+                        linha = valores.index(str(id_valor)) + 1
+                        aba.delete_rows(linha)
+                        return True
+                except ValueError:
+                        return False
+
+        # ---------------------------
+        # BOTÃO DE EXCLUSÃO
+        # ---------------------------
+        if st.button("🗑️ Excluir tarefa"):
+                if not ids_para_excluir:
+                        st.warning("Nenhuma tarefa marcada.")
+                else:
+                        aba = planilha.worksheet("ModelosTarefasFabiana")
+                        count = 0
+
+                        for id_valor in ids_para_excluir:
+                                if excluir_por_id(id_valor, aba):
+                                        count += 1
+
+                        st.success(f"{count} tarefa(s) excluída(s) com sucesso!")
+                        st.rerun()
+
+
+
+
+def modelos_prontos_john():
+    gcp_info = st.secrets["taf"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+            dict(gcp_info),
+            scopes=[
+                    "https://www.googleapis.com/auth/spreadsheets",
+                    "https://www.googleapis.com/auth/drive"
+            ]
+    )
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+            aba = planilha.worksheet("ModelosTarefasJohn")
+            dados = aba.get_all_records()
+            return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    if planilha_Dados.empty:
+        st.warning("Nenhum modelo encontrado.")
+    else:
+
+        colunas_desejadas = ["ID", "Título", "Descrição da tarefa","Tipo de recorrência"]
+        planilha_Dados = planilha_Dados[colunas_desejadas]
+        
+        icon = Image.open("image/vivo.png")
+        st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+        image_logo = Image.open("image/Image (2).png")
+
+        cola, colb, colc = st.columns([4,1,1])
+
+        
+        with colc:
+                    st.image(image_logo)
+
+        with cola:
+                    st.title("📝 R.E.G - MODELOS")
+        # ---------------------------
+        # CHECKBOX PARA EXCLUSÃO
+        # ---------------------------
+        planilha_Dados["Excluir"] = False
+
+        st.write("Modelos de tarefas salvos: ")
+        tabela_editada = st.data_editor(
+            planilha_Dados,
+            hide_index=True,
+            use_container_width=True
+        )
+
+        ids_para_excluir = tabela_editada[tabela_editada["Excluir"] == True]["ID"].tolist()
+
+        # ---------------------------
+        # FUNÇÃO EXCLUSÃO NO GOOGLE
+        # ---------------------------
+        def excluir_por_id(id_valor, aba):
+                valores = aba.col_values(1)  # coluna A
+
+                try:
+                        linha = valores.index(str(id_valor)) + 1
+                        aba.delete_rows(linha)
+                        return True
+                except ValueError:
+                        return False
+
+        # ---------------------------
+        # BOTÃO DE EXCLUSÃO
+        # ---------------------------
+        if st.button("🗑️ Excluir tarefa"):
+                if not ids_para_excluir:
+                        st.warning("Nenhuma tarefa marcada.")
+                else:
+                        aba = planilha.worksheet("ModelosTarefasJohn")
+                        count = 0
+
+                        for id_valor in ids_para_excluir:
+                                if excluir_por_id(id_valor, aba):
+                                        count += 1
+
+                        st.success(f"{count} tarefa(s) excluída(s) com sucesso!")
+                        st.rerun()
+
+
+
+def modelos_prontos_chrys():
+    gcp_info = st.secrets["taf"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+            dict(gcp_info),
+            scopes=[
+                    "https://www.googleapis.com/auth/spreadsheets",
+                    "https://www.googleapis.com/auth/drive"
+            ]
+    )
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+            aba = planilha.worksheet("ModelosTarefasChrys")
+            dados = aba.get_all_records()
+            return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    if planilha_Dados.empty:
+        st.warning("Nenhum modelo encontrado.")
+    else:
+
+        colunas_desejadas = ["ID", "Título", "Descrição da tarefa","Tipo de recorrência"]
+        planilha_Dados = planilha_Dados[colunas_desejadas]
+        
+        icon = Image.open("image/vivo.png")
+        st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+        image_logo = Image.open("image/Image (2).png")
+
+        cola, colb, colc = st.columns([4,1,1])
+
+        
+        with colc:
+                    st.image(image_logo)
+
+        with cola:
+                    st.title("📝 R.E.G - MODELOS")
+        # ---------------------------
+        # CHECKBOX PARA EXCLUSÃO
+        # ---------------------------
+        planilha_Dados["Excluir"] = False
+
+        st.write("Modelos de tarefas salvos: ")
+        tabela_editada = st.data_editor(
+            planilha_Dados,
+            hide_index=True,
+            use_container_width=True
+        )
+
+        ids_para_excluir = tabela_editada[tabela_editada["Excluir"] == True]["ID"].tolist()
+
+        # ---------------------------
+        # FUNÇÃO EXCLUSÃO NO GOOGLE
+        # ---------------------------
+        def excluir_por_id(id_valor, aba):
+                valores = aba.col_values(1)  # coluna A
+
+                try:
+                        linha = valores.index(str(id_valor)) + 1
+                        aba.delete_rows(linha)
+                        return True
+                except ValueError:
+                        return False
+
+        # ---------------------------
+        # BOTÃO DE EXCLUSÃO
+        # ---------------------------
+        if st.button("🗑️ Excluir tarefa"):
+                if not ids_para_excluir:
+                        st.warning("Nenhuma tarefa marcada.")
+                else:
+                        aba = planilha.worksheet("ModelosTarefasChrys")
+                        count = 0
+
+                        for id_valor in ids_para_excluir:
+                                if excluir_por_id(id_valor, aba):
+                                        count += 1
+
+                        st.success(f"{count} tarefa(s) excluída(s) com sucesso!")
+                        st.rerun()
