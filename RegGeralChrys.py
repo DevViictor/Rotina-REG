@@ -46,7 +46,7 @@ def obter_resumo(planilha, consultores):
 
 def relatorio_chrys_geral():
     # Controle de acesso
-    if "role" not in st.session_state or st.session_state.role not in ["Victor","Chrys"]:
+    if "role" not in st.session_state or st.session_state.role != "Victor":
         st.error("⚠️ Acesso negado!")
         st.stop()
 
