@@ -29,7 +29,7 @@ def modelos_prontos():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Título", "Descrição da tarefa","Hora inicial","Hora final" ,"Data","Tipo de recorrência"]
+    colunas_desejadas = ["ID", "Título", "Descrição da tarefa","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
     
     icon = Image.open("image/vivo.png")
