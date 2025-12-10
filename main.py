@@ -12,7 +12,7 @@ from RegGeralJohn import relatorio_barra , relatorio_lapa ,relatorio_piedade , r
 from RegItirerantes import relatorio_intinerantes
 from VisualizarTarefas import visualizar_tarefas,visualizar_tarefas_fabiana, visualizar_tarefas_chrys ,visualizar_tarefas_felipe ,visualizar_tarefas_john
 from TarefasProntas import modelos_prontos,modelos_prontos_fabiana, modelos_prontos_chrys, modelos_prontos_felipe, modelos_prontos_john
-
+from GlsTarefas import tarefas_iguatemi, tarefas_barra , tarefas_bela ,tarefas_iguatemi2 ,tarefas_itinerante ,tarefas_lapa,tarefas_nort,tarefas_parela,tarefas_parque,tarefas_piedade,tarefas_ssa1,tarefas_ssa2,tarefas_boulevard
 
 
 st.sidebar.image("image/Image (2).png")
@@ -158,7 +158,33 @@ def run_navigation():
     Visualizar_tarefas_johon = st.Page(visualizar_tarefas_john,title="📝 Criadas ")
     Visualizar_tarefas_chrys = st.Page(visualizar_tarefas_chrys,title="📝 Criadas ")
 
+    #tarefas_loja
+    #FELIPE
+    Tarefas_iguatemi = st.Page(tarefas_iguatemi,title="🏬 LOJA IGUATEMI |")
+    Tarefas_iguatemi2  = st.Page(tarefas_iguatemi2,title="🏬 LOJA IGUATEMI ||")
+    Tarefas_norte  = st.Page(tarefas_nort,title="🏬 LOJA NORT SHOP")
+    
+    #FABIANA
+    Tarefas_ssa1 = st.Page(tarefas_ssa1,title="🏬 LOJA SSA1")
+    Tarefas_ssa2 = st.Page(tarefas_ssa2,title="🏬 LOJA SSA2")
+    Tarefas_bela = st.Page(tarefas_bela,title="🏬 LOJA BELA VISTA")
+    Tarefas_parela = st.Page(tarefas_parela,title="🏬 LOJA PARARELA")
+    Tarefas_parque = st.Page(tarefas_parque,title="🏬 LOJA PARQUE")
 
+    #JHON
+    Tarefas_barra = st.Page(tarefas_barra,title="🏬 LOJA BARRA")
+    Tarefas_piedade = st.Page(tarefas_piedade,title="🏬 LOJA PIEDADE")
+    Tarefas_lapa = st.Page(tarefas_lapa,title="🏬 LOJA LAPA")
+    
+    #CHRYS
+    Tarefas_boulevard = st.Page(tarefas_boulevard,title="🏬 LOJA BOULEVARD")
+    
+    #Itinerantes
+    Tarefas_itinerantes = st.Page(tarefas_itinerante,title="🏬 ITINERANTES")
+    
+    
+    
+    
     #modelos
     Visualizar_modelos = st.Page(modelos_prontos,title="📝 Modelos ")
     Visualizar_modelos_fabiana = st.Page(modelos_prontos_fabiana,title="📝 Modelos ")
@@ -341,9 +367,6 @@ def run_navigation():
     
             ],
         }
-
-
-
         menu2 = {
             "🏬 Loja BOULEVARD": [
                 Tarefas_Camyla,
@@ -360,6 +383,37 @@ def run_navigation():
             ],
         }
 
+    #Lojas
+    elif role in ["Iguatemi1","Iguatemi2","Bela","Nort","Paralela","Salvador1","Salvador2","Parque","Barra","Piedade","Lapa","Boulevard","Itinerantes"]:
+
+        menu = {
+            "Carteira Felipe e Itinerantes": [
+                Tarefas_iguatemi,
+                Tarefas_iguatemi2,
+                Tarefas_norte,
+                Tarefas_itinerantes
+            ],
+        }
+        menu2 = {
+            " Carteira Fabiana": [
+                Tarefas_ssa1,
+                Tarefas_ssa2,
+                Tarefas_bela,
+                Tarefas_parela,
+                Tarefas_parque
+            ]
+        }
+        menu3 = {
+    
+            "Carteira John e Chrys": [
+                Tarefas_barra,
+                Tarefas_piedade,
+                Tarefas_lapa,
+                Tarefas_boulevard
+            ],
+        }
+
+
     
 
     # Criar navegação
@@ -367,7 +421,6 @@ def run_navigation():
     soma = {**menu,**menu2,**menu3}
 
     nav = st.navigation(soma)
-
     
 
     # Sidebar com usuário
@@ -376,6 +429,7 @@ def run_navigation():
 
     # Rodar página selecionada
     nav.run()
+   
     
 
 # -----------------------------------------

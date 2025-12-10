@@ -37,7 +37,7 @@ def criar_page():
         "LOJA SSA ||": ["Vitor", "Mailan"],
         "LOJA BELA VISTA": ["Vanessa", "Danilo"],
         "LOJA PARALELA": ["Crislaine", "Neide"],
-        "LOJA PARQUE SHOP": ["Denise", "Adrielle"],
+        "LOJA PARQUE SHOP": ["Denise_Parque", "Adrielle"],
 
         # --- GV 2 - FELIPE SILVA ---
         "LOJA IGUATEMI | BA": ["Max", "Denise"],
@@ -286,7 +286,7 @@ def criar_page_fabiana():
         "LOJA SSA ||": ["Vitor", "Mailan"],
         "LOJA BELA VISTA": ["Vanessa", "Danilo"],
         "LOJA PARALELA": ["Crislaine", "Neide"],
-        "LOJA PARQUE SHOP": ["Denise", "Adrielle"],
+        "LOJA PARQUE SHOP": ["Denise_Parque", "Adrielle"],
 
     }
 

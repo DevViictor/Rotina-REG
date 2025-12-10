@@ -7,7 +7,7 @@ from PIL import Image
 
 def visualizar_tarefas():
         # ---- Controle de acesso ----
-        if "role" not in st.session_state or st.session_state.role not in ["Fabiana","Felipe","John","Chrys"]:
+        if "role" not in st.session_state or st.session_state.role not in ["Victor","Fabiana","Felipe","John","Chrys"]:
                 st.error("⚠️ Acesso negado!")
                 st.stop()
 
@@ -30,7 +30,7 @@ def visualizar_tarefas():
                 "LOJA PIEDADE", "LOJA LAPA", "LOJA BOULEVARD"
         ],
         "GLS DA CARTEIRA DE FABIANA": [
-                 "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA ","LOJA PARALELA","LOJA PARQUE SHOP"
+                 "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA PARALELA","LOJA PARQUE SHOP"
         ],
         "GLS DA CARTEIRA DE FELIPE": [
                 "LOJA IGUATEMI | BA","LOJA IGUATEMI || BA","LOJA NORT SHOP"
@@ -368,7 +368,7 @@ def visualizar_tarefas_felipe():
         " ": [" "],
       
         "LOJA IGUATEMI | BA": ["Max","Denise"],
-        "LOJA IGUATEMI || BA": ["Diego","Andressa"],
+        
         "LOJA NORT SHOP": ["Jairo","Wanderlei"],
         }
 
