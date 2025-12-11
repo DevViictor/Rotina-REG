@@ -438,12 +438,7 @@ def run_navigation():
 if not st.session_state.logged_in:
     login()
 else:
-    if st.session_state.role not in ["Iguatemi1","Iguatemi2","Nort","Salvador1","Salvador2","Bela","Paralela","Barra","Piedade","Lapa","Boulevard"]:
-        notificacoes_fabiana()
-        notificacoes_felipe()
-        notificacoes_john()
-        notificacoes_chrys()
-        notificacoes_itinerantes()
+    
 
     run_navigation()
 
