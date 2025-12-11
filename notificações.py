@@ -40,6 +40,8 @@ def verificar_notificacoes(abas):
         aba = planilha.worksheet(nome)
         dados = aba.get_all_records()
         df = pd.DataFrame(dados)
+        if not dados:
+            continue
         df.columns = df.columns.map(lambda x: str(x).strip())
         df["Data"] = pd.to_datetime(df["Data"], dayfirst=True, errors="coerce").dt.date
 
