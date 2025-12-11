@@ -31,98 +31,75 @@ def criar_page():
                        page_icon=icon)
 
     # --- LISTAS ---
-    nomes_por_loja = {
-        # --- GV 1 - FABIANA SACRAMENTO ---
-        "LOJA SSA |": ["Ana", "Francisca", "Vinicius"],
-        "LOJA SSA ||": ["Vitor", "Mailan"],
-        "LOJA BELA VISTA": ["Vanessa", "Danilo"],
-        "LOJA PARALELA": ["Crislaine", "Neide"],
-        "LOJA PARQUE SHOP": ["Denise_Parque", "Adrielle"],
-
-        # --- GV 2 - FELIPE SILVA ---
-        "LOJA IGUATEMI | BA": ["Max", "Denise"],
-        "LOJA IGUATEMI || BA": ["Diego", "Andressa"],
-        "LOJA NORT SHOP": ["Jairo", "Wanderlei"],
-
-        # --- GV 1 - JOHM COITO ---
-        "LOJA BARRA": ["Igor", "Carol", "Alana"],
-        "LOJA PIEDADE": ["Diego", "Marcus"],
-        "LOJA LAPA": ["Sara", "Rafael"],
-
-        # --- GV 2 - CHRYS REBOUÇAS ---
-        "LOJA BOULEVARD": ["Camyla", "Bruno", "Gilvania"],
-
-        # --- ITINERANTES ---
-        "ITINERANTES": ["Lázaro", "Lee", "Marcus"],
-    }
-
-    carteiras = {
-        "TODOS OS GLS": sum(nomes_por_loja.values(), []),
-
-        "GLS DA CARTEIRA DE FABIANA":
-            nomes_por_loja["LOJA SSA |"] +
-            nomes_por_loja["LOJA SSA ||"] +
-            nomes_por_loja["LOJA BELA VISTA"] +
-            nomes_por_loja["LOJA PARALELA"] +
-            nomes_por_loja["LOJA PARQUE SHOP"],
-
-        "GLS DA CARTEIRA DE FELIPE":
-            nomes_por_loja["LOJA IGUATEMI | BA"] +
-            nomes_por_loja["LOJA IGUATEMI || BA"] +
-            nomes_por_loja["LOJA NORT SHOP"],
-
-        "GLS DA CARTEIRA DE JHON":
-            nomes_por_loja["LOJA BARRA"] +
-            nomes_por_loja["LOJA PIEDADE"] +
-            nomes_por_loja["LOJA LAPA"] +
-            nomes_por_loja["LOJA BOULEVARD"],
-
-        "GLS DA CARTEIRA DE CHRYS":
+    gvs = ["",
+        "TODOS OS GVS",
+        "GLS DA CARTEIRA DE FABIANA",
+        "GLS DA CARTEIRA DE FELIPE",
+        "GLS DA CARTEIRA DE CHRYS",
+        "GLS DA CARTEIRA DE JOHN",
+        "TODOS OS ITINERANTES"
+    ]
         
-            nomes_por_loja["LOJA BOULEVARD"],
+    lojas_por_carteira = {
+        "": [""],
+        "TODOS OS GVS": ["GVS"],
 
-        "TODOS OS ITINERANTES": nomes_por_loja["ITINERANTES"],
+        "GLS DA CARTEIRA DE FABIANA": [
+            "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA PARALELA","LOJA PARQUE SHOP"
+        ],
+        "GLS DA CARTEIRA DE FELIPE": [
+            "LOJA IGUATEMI | BA","LOJA IGUATEMI || BA","LOJA NORT SHOP"
+        ],
+        "GLS DA CARTEIRA DE JOHN": [
+            "LOJA BARRA","LOJA PIEDADE","LOJA LAPA"
+        ],
+        "GLS DA CARTEIRA DE CHRYS": [
+            "LOJA BOULEVARD"
+        ],
+        "TODOS OS ITINERANTES": ["ITINERANTES"]
     }
 
-    lojas = [" ", "LOJA IGUATEMI | BA", "LOJA IGUATEMI || BA", "LOJA SSA |",
-             "LOJA SSA ||", "LOJA BELA VISTA", "LOJA PARALELA",
-             "LOJA PARQUE SHOP", "LOJA NORT SHOP", "LOJA BARRA",
-             "LOJA PIEDADE", "LOJA LAPA", "LOJA BOULEVARD"]
-
-    para = [" ","TODOS OS GLS", 
-            "GLS DA CARTEIRA DE FABIANA",
-            "GLS DA CARTEIRA DE FELIPE",
-            "GLS DA CARTEIRA DE CRIS",
-            "TODOS OS ITINERANTES"]
+    nomes_por_loja = {
+        "": [""],
+        "GVS": ["Todos","Fabiana","Felipe","John","Chrys"],
+        "LOJA SSA |": ["Ana","Francisca","Vinicius"],
+        "LOJA SSA ||": ["Vitor","Mailan"],
+        "LOJA BELA VISTA": ["Vanessa","Danilo"],
+        "LOJA PARALELA": ["Crislaine","Neide"],
+        "LOJA PARQUE SHOP": ["Denise_Parque","Neide"],
+        "LOJA IGUATEMI | BA": ["Max","Denise"],
+        "LOJA IGUATEMI || BA": ["Diego","Andressa"],
+        "LOJA NORT SHOP": ["Jairo","Wanderlei"],
+        "LOJA BARRA": ["Igor","Carol","Alana"],
+        "LOJA PIEDADE": ["DiegoL","Marcusl"],
+        "LOJA LAPA": ["Sara","Rafel"],
+        "LOJA BOULEVARD": ["Camyla","Bruno","Gilvania"],
+        "ITINERANTES": ["Lázaro","Lee","Marcus"],
+    }
 
     tipos_recorrencia = ["", "Não recorrente", "Diária", "Semanal",
                          "Semanal Laboral(seg a sex)", "Mensal", "Anual"]
 
-    
-
     # --- FUNÇÃO NOTIFICAÇÃO ---
-    def notificacao(loja,):
+    def notificacao(loja):
         user_key = st.secrets["notificacao"]["user_key"]
         api_token = st.secrets["notificacao"]["api_token"]
-
-        messagem = f"Novas tarefas foram criadas.\nLoja: {loja}.\nVisualize o painel de tarefas."
-
+        msg = f"Novas tarefas foram criadas.\nLoja: {loja}.\nVisualize o painel de tarefas."
         requests.post("https://api.pushover.net/1/messages.json", 
                       data={
                           "token": api_token,
                           "user": user_key,
-                          "message": messagem
+                          "message": msg
                       })
 
     # --- CARREGAR MODELOS ---
     aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefas")
     dados_modelos = aba_modelos.get_all_records()
     df_modelos = pd.DataFrame(dados_modelos)
-
     lista_modelos = [""] + df_modelos["Título"].tolist() if not df_modelos.empty else [""]
 
+    # --- HEADER / LOGO ---
     image_logo = Image.open("image/Image (2).png")
-
     cola, colb, colc = st.columns([4, 1, 1])
 
     with colc:
@@ -132,23 +109,35 @@ def criar_page():
         st.header("R.E.G - Rotina de Excelência Gerencial")
 
     st.divider()
-
     st.subheader("Reutilizar tarefa")
     modelo_escolhido = st.selectbox("Selecione um modelo salvo:", lista_modelos)
-
     st.divider()
 
-    # --- SELECIONA CARTEIRA AQUI! (ANTES de montar lista de nomes) ---
-    envio = st.selectbox("Carteira :", para)
+    # ===================================================
+    # SELEÇÃO DINÂMICA - CORRIGIDA
+    # ===================================================
+    cola,colb = st.columns(2)
+    # 1) Escolhe carteira
+    with cola:
+        envio = st.selectbox("Carteira :", gvs)
 
-    # --- Agora sim a lista de nomes é carregada corretamente ---
-    lista_nomes = [""] + carteiras.get(envio, [])
+    # 2) Filtra lojas da carteira
+    lojas = [""] + lojas_por_carteira.get(envio, [])
 
-    
+    # 3) Escolhe loja
+    with colb:
+        loja_selecionada = st.selectbox("Loja :", lojas)
+
+    # 4) Filtra nomes daquela loja
+    lista_nomes = [""] + nomes_por_loja.get(loja_selecionada, [])
+
+    # ===================================================
+    # FORMULÁRIO
+    # ===================================================
 
     with st.form("Forms"):
 
-        # --- Aplicar modelo ---
+        # ----- Aplicar modelo -----
         if modelo_escolhido and modelo_escolhido in df_modelos["Título"].values:
             modelo = df_modelos[df_modelos["Título"] == modelo_escolhido].iloc[0]
             titulo_default = modelo["Título"]
@@ -163,21 +152,15 @@ def criar_page():
             hora_fim_default = "00:00"
             recorrencia_default = ""
 
-        # --- CAMPOS ---
+        # ----- CAMPOS -----
         titulo = st.text_input("Título da tarefa :", value=titulo_default)
         descricao = st.text_input("Descrição da tarefa :", value=descricao_default)
 
         col1, col2 = st.columns(2)
         with col1:
-            hora_inicial = st.time_input(
-                "Hora inicial :",
-                value=pd.to_datetime(hora_ini_default).time()
-            )
+            hora_inicial = st.time_input("Hora inicial :", value=pd.to_datetime(hora_ini_default).time())
         with col2:
-            hora_final = st.time_input(
-                "Hora final :",
-                value=pd.to_datetime(hora_fim_default).time()
-            )
+            hora_final = st.time_input("Hora final :", value=pd.to_datetime(hora_fim_default).time())
 
         col3, col4 = st.columns(2)
         with col3:
@@ -190,21 +173,23 @@ def criar_page():
                 if recorrencia_default in tipos_recorrencia else 0
             )
 
-        por = ["Victor"]
-        criada = st.selectbox("Criador da terefa: ",por)
-        cold, cole = st.columns(2)
+        criada = st.selectbox("Criador da tarefa: ", ["Victor"])
 
-        with cold:
+        colN1, colN2 = st.columns(2)
+        with colN1:
             nome = st.selectbox("Nome do GL :", lista_nomes)
 
-        with cole:
-            loja = st.selectbox("Loja :", lojas)
+        with colN2:
+            loja_final = st.text_input("Loja selecionada:", loja_selecionada, disabled=True)
 
-        col1_btn, col2_btn = st.columns(2)
-        enviar = col1_btn.form_submit_button("Enviar tarefa")
-        salvar_tarefas = col2_btn.form_submit_button("Salvar como modelo")
+        colbtn1, colbtn2 = st.columns(2)
+        enviar = colbtn1.form_submit_button("Enviar tarefa")
+        salvar_tarefas = colbtn2.form_submit_button("Salvar como modelo")
 
+    # ===================================================
     # ENVIAR TAREFA
+    # ===================================================
+
     if enviar:
 
         if not nome:
@@ -214,12 +199,12 @@ def criar_page():
         pagina = client.open_by_key(planilha_chave).worksheet(nome)
         novo_id = len(pagina.get_all_records()) + 1
 
-        notificacao(loja)
+        notificacao(loja_final)
 
         pagina.append_row([
             novo_id,
             criada,
-            loja,
+            loja_final,
             nome,
             titulo,
             descricao,
@@ -232,11 +217,12 @@ def criar_page():
 
         st.success("Tarefa enviada com sucesso!")
 
+    # ===================================================
     # SALVAR MODELO
+    # ===================================================
+
     if salvar_tarefas:
-        pagina = client.open_by_key(planilha_chave).worksheet("ModelosTarefas")
-        
-        novo_id = len(pagina.get_all_records()) + 1
+        novo_id = len(aba_modelos.get_all_records()) + 1
         aba_modelos.append_row([
             novo_id,
             titulo,
@@ -246,10 +232,8 @@ def criar_page():
             data.strftime("%d/%m/%Y"),
             recorrencia,
         ])
-       
 
         st.success("Modelo salvo com sucesso!")
-
 
 
 
@@ -280,62 +264,52 @@ def criar_page_fabiana():
                        page_icon=icon)
 
     # --- LISTAS ---
-    nomes_por_loja = {
-        # --- GV 1 - FABIANA SACRAMENTO ---
-        "LOJA SSA |": ["Ana", "Francisca", "Vinicius"],
-        "LOJA SSA ||": ["Vitor", "Mailan"],
-        "LOJA BELA VISTA": ["Vanessa", "Danilo"],
-        "LOJA PARALELA": ["Crislaine", "Neide"],
-        "LOJA PARQUE SHOP": ["Denise_Parque", "Adrielle"],
-
-    }
-
-    carteiras = {
+    gvs = ["", 
+        "GLS DA CARTEIRA DE FABIANA",
+       
         
-        "GLS DA CARTEIRA DE FABIANA":
-            nomes_por_loja["LOJA SSA |"] +
-            nomes_por_loja["LOJA SSA ||"] +
-            nomes_por_loja["LOJA BELA VISTA"] +
-            nomes_por_loja["LOJA PARALELA"] +
-            nomes_por_loja["LOJA PARQUE SHOP"],
-
+    ]
+        
+    lojas_por_carteira = {
+        "": [""],
+        "GLS DA CARTEIRA DE FABIANA": [
+            "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA PARALELA","LOJA PARQUE SHOP"
+        ],
     }
 
-    lojas = [" ", "LOJA SSA |",
-             "LOJA SSA ||", "LOJA BELA VISTA", "LOJA PARALELA",
-             "LOJA PARQUE SHOP",] 
+    nomes_por_loja = {
+        "": [""],
+        "LOJA SSA |": ["Ana","Francisca","Vinicius"],
+        "LOJA SSA ||": ["Vitor","Mailan"],
+        "LOJA BELA VISTA": ["Vanessa","Danilo"],
+        "LOJA PARALELA": ["Crislaine","Neide"],
+        "LOJA PARQUE SHOP": ["Denise_Parque","Neide"],
+        
+    }
 
-    para = [" ", 
-            "GLS DA CARTEIRA DE FABIANA",
-            ]
-    
     tipos_recorrencia = ["", "Não recorrente", "Diária", "Semanal",
                          "Semanal Laboral(seg a sex)", "Mensal", "Anual"]
 
-    
     # --- FUNÇÃO NOTIFICAÇÃO ---
-    def notificacao(loja,):
+    def notificacao(loja):
         user_key = st.secrets["notificacao"]["user_key"]
         api_token = st.secrets["notificacao"]["api_token"]
-
-        messagem = f"Novas tarefas foram criadas.\nLoja: {loja}.\nVisualize o painel de tarefas."
-
+        msg = f"Novas tarefas foram criadas.\nLoja: {loja}.\nVisualize o painel de tarefas."
         requests.post("https://api.pushover.net/1/messages.json", 
                       data={
                           "token": api_token,
                           "user": user_key,
-                          "message": messagem
+                          "message": msg
                       })
 
     # --- CARREGAR MODELOS ---
-    aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefasFabiana")
+    aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefas")
     dados_modelos = aba_modelos.get_all_records()
     df_modelos = pd.DataFrame(dados_modelos)
-
     lista_modelos = [""] + df_modelos["Título"].tolist() if not df_modelos.empty else [""]
 
+    # --- HEADER / LOGO ---
     image_logo = Image.open("image/Image (2).png")
-
     cola, colb, colc = st.columns([4, 1, 1])
 
     with colc:
@@ -345,22 +319,33 @@ def criar_page_fabiana():
         st.header("R.E.G - Rotina de Excelência Gerencial")
 
     st.divider()
-
     st.subheader("Reutilizar tarefa")
     modelo_escolhido = st.selectbox("Selecione um modelo salvo:", lista_modelos)
-
     st.divider()
 
-    # --- SELECIONA CARTEIRA AQUI! (ANTES de montar lista de nomes) ---
-    envio = st.selectbox("Carteira :", para)
+    # ===================================================
+    # SELEÇÃO DINÂMICA - CORRIGIDA
+    # ===================================================
 
-    # --- Agora sim a lista de nomes é carregada corretamente ---
-    lista_nomes = [""] + carteiras.get(envio, [])
+    # 1) Escolhe carteira
+    envio = st.selectbox("Carteira :", gvs)
 
-    
+    # 2) Filtra lojas da carteira
+    lojas = [""] + lojas_por_carteira.get(envio, [])
+
+    # 3) Escolhe loja
+    loja_selecionada = st.selectbox("Loja :", lojas)
+
+    # 4) Filtra nomes daquela loja
+    lista_nomes = [""] + nomes_por_loja.get(loja_selecionada, [])
+
+    # ===================================================
+    # FORMULÁRIO
+    # ===================================================
+
     with st.form("Forms"):
 
-        # --- Aplicar modelo ---
+        # ----- Aplicar modelo -----
         if modelo_escolhido and modelo_escolhido in df_modelos["Título"].values:
             modelo = df_modelos[df_modelos["Título"] == modelo_escolhido].iloc[0]
             titulo_default = modelo["Título"]
@@ -375,21 +360,15 @@ def criar_page_fabiana():
             hora_fim_default = "00:00"
             recorrencia_default = ""
 
-        # --- CAMPOS ---
+        # ----- CAMPOS -----
         titulo = st.text_input("Título da tarefa :", value=titulo_default)
         descricao = st.text_input("Descrição da tarefa :", value=descricao_default)
 
         col1, col2 = st.columns(2)
         with col1:
-            hora_inicial = st.time_input(
-                "Hora inicial :",
-                value=pd.to_datetime(hora_ini_default).time()
-            )
+            hora_inicial = st.time_input("Hora inicial :", value=pd.to_datetime(hora_ini_default).time())
         with col2:
-            hora_final = st.time_input(
-                "Hora final :",
-                value=pd.to_datetime(hora_fim_default).time()
-            )
+            hora_final = st.time_input("Hora final :", value=pd.to_datetime(hora_fim_default).time())
 
         col3, col4 = st.columns(2)
         with col3:
@@ -402,21 +381,23 @@ def criar_page_fabiana():
                 if recorrencia_default in tipos_recorrencia else 0
             )
 
-        por = ["Fabiana"]
-        criada = st.selectbox("Criador da terefa: ",por)
-        cold, cole = st.columns(2)
+        criada = st.selectbox("Criador da tarefa: ", ["Victor"])
 
-        with cold:
+        colN1, colN2 = st.columns(2)
+        with colN1:
             nome = st.selectbox("Nome do GL :", lista_nomes)
 
-        with cole:
-            loja = st.selectbox("Loja :", lojas)
+        with colN2:
+            loja_final = st.text_input("Loja selecionada:", loja_selecionada, disabled=True)
 
-        col1_btn, col2_btn = st.columns(2)
-        enviar = col1_btn.form_submit_button("Enviar tarefa")
-        salvar_tarefas = col2_btn.form_submit_button("Salvar como modelo")
+        colbtn1, colbtn2 = st.columns(2)
+        enviar = colbtn1.form_submit_button("Enviar tarefa")
+        salvar_tarefas = colbtn2.form_submit_button("Salvar como modelo")
 
+    # ===================================================
     # ENVIAR TAREFA
+    # ===================================================
+
     if enviar:
 
         if not nome:
@@ -426,12 +407,12 @@ def criar_page_fabiana():
         pagina = client.open_by_key(planilha_chave).worksheet(nome)
         novo_id = len(pagina.get_all_records()) + 1
 
-        notificacao(loja)
+        notificacao(loja_final)
 
         pagina.append_row([
             novo_id,
             criada,
-            loja,
+            loja_final,
             nome,
             titulo,
             descricao,
@@ -444,11 +425,12 @@ def criar_page_fabiana():
 
         st.success("Tarefa enviada com sucesso!")
 
+    # ===================================================
     # SALVAR MODELO
+    # ===================================================
+
     if salvar_tarefas:
-        pagina = client.open_by_key(planilha_chave).worksheet("ModelosTarefasFabiana")
-        
-        novo_id = len(pagina.get_all_records()) + 1
+        novo_id = len(aba_modelos.get_all_records()) + 1
         aba_modelos.append_row([
             novo_id,
             titulo,
@@ -458,7 +440,6 @@ def criar_page_fabiana():
             data.strftime("%d/%m/%Y"),
             recorrencia,
         ])
-       
 
         st.success("Modelo salvo com sucesso!")
 
@@ -492,58 +473,50 @@ def criar_page_felipe():
                        page_icon=icon)
 
     # --- LISTAS ---
-    nomes_por_loja = {
-        # --- GV 2 - FELIPE SILVA ---
-        "LOJA IGUATEMI | BA": ["Max", "Denise"],
-        "LOJA IGUATEMI || BA": ["Diego", "Andressa"],
-        "LOJA NORT SHOP": ["Jairo", "Wanderlei"],
-    }
-
-    carteiras = {
+    gvs = ["", 
         
-        "GLS DA CARTEIRA DE FELIPE":
-            nomes_por_loja["LOJA IGUATEMI | BA"] +
-            nomes_por_loja["LOJA IGUATEMI || BA"] +
-            nomes_por_loja["LOJA NORT SHOP"],
-
+        "GLS DA CARTEIRA DE FELIPE",
+   
+    ]
+        
+    lojas_por_carteira = {
+        "": [""],
+        "GLS DA CARTEIRA DE FELIPE": [
+            "LOJA IGUATEMI | BA","LOJA IGUATEMI || BA","LOJA NORT SHOP"
+        ]
     }
 
-    lojas = [" ", "LOJA IGUATEMI | BA", "LOJA IGUATEMI || BA",
-             "LOJA NORT SHOP",
-             ]
+    nomes_por_loja = {
+        "": [""], 
+        "LOJA IGUATEMI | BA": ["Max","Denise"],
+        "LOJA IGUATEMI || BA": ["Diego","Andressa"],
+        "LOJA NORT SHOP": ["Jairo","Wanderlei"],
+       
+    }
 
-    para = [" ",
-            "GLS DA CARTEIRA DE FELIPE",
-            ]
-
-    
     tipos_recorrencia = ["", "Não recorrente", "Diária", "Semanal",
                          "Semanal Laboral(seg a sex)", "Mensal", "Anual"]
 
-    
     # --- FUNÇÃO NOTIFICAÇÃO ---
-    def notificacao(loja,):
+    def notificacao(loja):
         user_key = st.secrets["notificacao"]["user_key"]
         api_token = st.secrets["notificacao"]["api_token"]
-
-        messagem = f"Novas tarefas foram criadas.\nLoja: {loja}.\nVisualize o painel de tarefas."
-
+        msg = f"Novas tarefas foram criadas.\nLoja: {loja}.\nVisualize o painel de tarefas."
         requests.post("https://api.pushover.net/1/messages.json", 
                       data={
                           "token": api_token,
                           "user": user_key,
-                          "message": messagem
+                          "message": msg
                       })
 
     # --- CARREGAR MODELOS ---
-    aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefasFelipe")
+    aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefas")
     dados_modelos = aba_modelos.get_all_records()
     df_modelos = pd.DataFrame(dados_modelos)
-
     lista_modelos = [""] + df_modelos["Título"].tolist() if not df_modelos.empty else [""]
 
+    # --- HEADER / LOGO ---
     image_logo = Image.open("image/Image (2).png")
-
     cola, colb, colc = st.columns([4, 1, 1])
 
     with colc:
@@ -553,22 +526,33 @@ def criar_page_felipe():
         st.header("R.E.G - Rotina de Excelência Gerencial")
 
     st.divider()
-
     st.subheader("Reutilizar tarefa")
     modelo_escolhido = st.selectbox("Selecione um modelo salvo:", lista_modelos)
-
     st.divider()
 
-    # --- SELECIONA CARTEIRA AQUI! (ANTES de montar lista de nomes) ---
-    envio = st.selectbox("Carteira :", para)
+    # ===================================================
+    # SELEÇÃO DINÂMICA - CORRIGIDA
+    # ===================================================
 
-    # --- Agora sim a lista de nomes é carregada corretamente ---
-    lista_nomes = [""] + carteiras.get(envio, [])
+    # 1) Escolhe carteira
+    envio = st.selectbox("Carteira :", gvs)
 
-    
+    # 2) Filtra lojas da carteira
+    lojas = [""] + lojas_por_carteira.get(envio, [])
+
+    # 3) Escolhe loja
+    loja_selecionada = st.selectbox("Loja :", lojas)
+
+    # 4) Filtra nomes daquela loja
+    lista_nomes = [""] + nomes_por_loja.get(loja_selecionada, [])
+
+    # ===================================================
+    # FORMULÁRIO
+    # ===================================================
+
     with st.form("Forms"):
 
-        # --- Aplicar modelo ---
+        # ----- Aplicar modelo -----
         if modelo_escolhido and modelo_escolhido in df_modelos["Título"].values:
             modelo = df_modelos[df_modelos["Título"] == modelo_escolhido].iloc[0]
             titulo_default = modelo["Título"]
@@ -583,21 +567,15 @@ def criar_page_felipe():
             hora_fim_default = "00:00"
             recorrencia_default = ""
 
-        # --- CAMPOS ---
+        # ----- CAMPOS -----
         titulo = st.text_input("Título da tarefa :", value=titulo_default)
         descricao = st.text_input("Descrição da tarefa :", value=descricao_default)
 
         col1, col2 = st.columns(2)
         with col1:
-            hora_inicial = st.time_input(
-                "Hora inicial :",
-                value=pd.to_datetime(hora_ini_default).time()
-            )
+            hora_inicial = st.time_input("Hora inicial :", value=pd.to_datetime(hora_ini_default).time())
         with col2:
-            hora_final = st.time_input(
-                "Hora final :",
-                value=pd.to_datetime(hora_fim_default).time()
-            )
+            hora_final = st.time_input("Hora final :", value=pd.to_datetime(hora_fim_default).time())
 
         col3, col4 = st.columns(2)
         with col3:
@@ -610,21 +588,23 @@ def criar_page_felipe():
                 if recorrencia_default in tipos_recorrencia else 0
             )
 
-        por = ["Felipe"]
-        criada = st.selectbox("Criador da terefa: ",por)
-        cold, cole = st.columns(2)
+        criada = st.selectbox("Criador da tarefa: ", ["Victor"])
 
-        with cold:
+        colN1, colN2 = st.columns(2)
+        with colN1:
             nome = st.selectbox("Nome do GL :", lista_nomes)
 
-        with cole:
-            loja = st.selectbox("Loja :", lojas)
+        with colN2:
+            loja_final = st.text_input("Loja selecionada:", loja_selecionada, disabled=True)
 
-        col1_btn, col2_btn = st.columns(2)
-        enviar = col1_btn.form_submit_button("Enviar tarefa")
-        salvar_tarefas = col2_btn.form_submit_button("Salvar como modelo")
+        colbtn1, colbtn2 = st.columns(2)
+        enviar = colbtn1.form_submit_button("Enviar tarefa")
+        salvar_tarefas = colbtn2.form_submit_button("Salvar como modelo")
 
+    # ===================================================
     # ENVIAR TAREFA
+    # ===================================================
+
     if enviar:
 
         if not nome:
@@ -634,12 +614,12 @@ def criar_page_felipe():
         pagina = client.open_by_key(planilha_chave).worksheet(nome)
         novo_id = len(pagina.get_all_records()) + 1
 
-        notificacao(loja)
+        notificacao(loja_final)
 
         pagina.append_row([
             novo_id,
             criada,
-            loja,
+            loja_final,
             nome,
             titulo,
             descricao,
@@ -652,11 +632,12 @@ def criar_page_felipe():
 
         st.success("Tarefa enviada com sucesso!")
 
+    # ===================================================
     # SALVAR MODELO
+    # ===================================================
+
     if salvar_tarefas:
-        pagina = client.open_by_key(planilha_chave).worksheet("ModelosTarefasFelipe")
-        
-        novo_id = len(pagina.get_all_records()) + 1
+        novo_id = len(aba_modelos.get_all_records()) + 1
         aba_modelos.append_row([
             novo_id,
             titulo,
@@ -666,7 +647,6 @@ def criar_page_felipe():
             data.strftime("%d/%m/%Y"),
             recorrencia,
         ])
-       
 
         st.success("Modelo salvo com sucesso!")
 
@@ -698,59 +678,52 @@ def criar_page_john():
                        page_icon=icon)
 
     # --- LISTAS ---
+    gvs = ["", 
+     
+        "GLS DA CARTEIRA DE JOHN",
+      
+    ]
+        
+    lojas_por_carteira = {
+        "": [""],
+      
+        "GLS DA CARTEIRA DE JOHN": [
+            "LOJA BARRA","LOJA PIEDADE","LOJA LAPA"
+        ]
+    }
+
     nomes_por_loja = {
+        "": [""],
         
-        # --- GV 1 - JOHM COITO ---
-        "LOJA BARRA": ["Igor", "Carol", "Alana"],
-        "LOJA PIEDADE": ["Diego", "Marcus"],
-        "LOJA LAPA": ["Sara", "Rafael"], 
+        "LOJA BARRA": ["Igor","Carol","Alana"],
+        "LOJA PIEDADE": ["DiegoL","Marcus"],
+        "LOJA LAPA": ["Sara","Rafel"],
+       
     }
-
-    carteiras = {
-        "TODOS OS GLS": sum(nomes_por_loja.values(), []),
-        
-        "GLS DA CARTEIRA DE JOHN":
-            nomes_por_loja["LOJA BARRA"] +
-            nomes_por_loja["LOJA PIEDADE"] +
-            nomes_por_loja["LOJA LAPA"],
-
-    }
-
-    lojas = [" ", 
-             "LOJA BARRA",
-             "LOJA PIEDADE", "LOJA LAPA"]
-
-    para = [" ",
-            "GLS DA CARTEIRA DE JOHN",]
 
     tipos_recorrencia = ["", "Não recorrente", "Diária", "Semanal",
                          "Semanal Laboral(seg a sex)", "Mensal", "Anual"]
 
-    
-
     # --- FUNÇÃO NOTIFICAÇÃO ---
-    def notificacao(loja,):
+    def notificacao(loja):
         user_key = st.secrets["notificacao"]["user_key"]
         api_token = st.secrets["notificacao"]["api_token"]
-
-        messagem = f"Novas tarefas foram criadas.\nLoja: {loja}.\nVisualize o painel de tarefas."
-
+        msg = f"Novas tarefas foram criadas.\nLoja: {loja}.\nVisualize o painel de tarefas."
         requests.post("https://api.pushover.net/1/messages.json", 
                       data={
                           "token": api_token,
                           "user": user_key,
-                          "message": messagem
+                          "message": msg
                       })
 
     # --- CARREGAR MODELOS ---
-    aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefasJohn")
+    aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefas")
     dados_modelos = aba_modelos.get_all_records()
     df_modelos = pd.DataFrame(dados_modelos)
-
     lista_modelos = [""] + df_modelos["Título"].tolist() if not df_modelos.empty else [""]
 
+    # --- HEADER / LOGO ---
     image_logo = Image.open("image/Image (2).png")
-
     cola, colb, colc = st.columns([4, 1, 1])
 
     with colc:
@@ -760,23 +733,33 @@ def criar_page_john():
         st.header("R.E.G - Rotina de Excelência Gerencial")
 
     st.divider()
-
     st.subheader("Reutilizar tarefa")
     modelo_escolhido = st.selectbox("Selecione um modelo salvo:", lista_modelos)
-
     st.divider()
 
-    # --- SELECIONA CARTEIRA AQUI! (ANTES de montar lista de nomes) ---
-    envio = st.selectbox("Carteira :", para)
+    # ===================================================
+    # SELEÇÃO DINÂMICA - CORRIGIDA
+    # ===================================================
 
-    # --- Agora sim a lista de nomes é carregada corretamente ---
-    lista_nomes = [""] + carteiras.get(envio, [])
+    # 1) Escolhe carteira
+    envio = st.selectbox("Carteira :", gvs)
 
-    
+    # 2) Filtra lojas da carteira
+    lojas = [""] + lojas_por_carteira.get(envio, [])
+
+    # 3) Escolhe loja
+    loja_selecionada = st.selectbox("Loja :", lojas)
+
+    # 4) Filtra nomes daquela loja
+    lista_nomes = [""] + nomes_por_loja.get(loja_selecionada, [])
+
+    # ===================================================
+    # FORMULÁRIO
+    # ===================================================
 
     with st.form("Forms"):
 
-        # --- Aplicar modelo ---
+        # ----- Aplicar modelo -----
         if modelo_escolhido and modelo_escolhido in df_modelos["Título"].values:
             modelo = df_modelos[df_modelos["Título"] == modelo_escolhido].iloc[0]
             titulo_default = modelo["Título"]
@@ -791,21 +774,15 @@ def criar_page_john():
             hora_fim_default = "00:00"
             recorrencia_default = ""
 
-        # --- CAMPOS ---
+        # ----- CAMPOS -----
         titulo = st.text_input("Título da tarefa :", value=titulo_default)
         descricao = st.text_input("Descrição da tarefa :", value=descricao_default)
 
         col1, col2 = st.columns(2)
         with col1:
-            hora_inicial = st.time_input(
-                "Hora inicial :",
-                value=pd.to_datetime(hora_ini_default).time()
-            )
+            hora_inicial = st.time_input("Hora inicial :", value=pd.to_datetime(hora_ini_default).time())
         with col2:
-            hora_final = st.time_input(
-                "Hora final :",
-                value=pd.to_datetime(hora_fim_default).time()
-            )
+            hora_final = st.time_input("Hora final :", value=pd.to_datetime(hora_fim_default).time())
 
         col3, col4 = st.columns(2)
         with col3:
@@ -818,21 +795,23 @@ def criar_page_john():
                 if recorrencia_default in tipos_recorrencia else 0
             )
 
-        por = ["John"]
-        criada = st.selectbox("Criador da terefa: ",por)
-        cold, cole = st.columns(2)
+        criada = st.selectbox("Criador da tarefa: ", ["Victor"])
 
-        with cold:
+        colN1, colN2 = st.columns(2)
+        with colN1:
             nome = st.selectbox("Nome do GL :", lista_nomes)
 
-        with cole:
-            loja = st.selectbox("Loja :", lojas)
+        with colN2:
+            loja_final = st.text_input("Loja selecionada:", loja_selecionada, disabled=True)
 
-        col1_btn, col2_btn = st.columns(2)
-        enviar = col1_btn.form_submit_button("Enviar tarefa")
-        salvar_tarefas = col2_btn.form_submit_button("Salvar como modelo")
+        colbtn1, colbtn2 = st.columns(2)
+        enviar = colbtn1.form_submit_button("Enviar tarefa")
+        salvar_tarefas = colbtn2.form_submit_button("Salvar como modelo")
 
+    # ===================================================
     # ENVIAR TAREFA
+    # ===================================================
+
     if enviar:
 
         if not nome:
@@ -842,12 +821,12 @@ def criar_page_john():
         pagina = client.open_by_key(planilha_chave).worksheet(nome)
         novo_id = len(pagina.get_all_records()) + 1
 
-        notificacao(loja)
+        notificacao(loja_final)
 
         pagina.append_row([
             novo_id,
             criada,
-            loja,
+            loja_final,
             nome,
             titulo,
             descricao,
@@ -860,11 +839,12 @@ def criar_page_john():
 
         st.success("Tarefa enviada com sucesso!")
 
+    # ===================================================
     # SALVAR MODELO
+    # ===================================================
+
     if salvar_tarefas:
-        pagina = client.open_by_key(planilha_chave).worksheet("ModelosTarefasJohn")
-        
-        novo_id = len(pagina.get_all_records()) + 1
+        novo_id = len(aba_modelos.get_all_records()) + 1
         aba_modelos.append_row([
             novo_id,
             titulo,
@@ -874,11 +854,8 @@ def criar_page_john():
             data.strftime("%d/%m/%Y"),
             recorrencia,
         ])
-       
 
         st.success("Modelo salvo com sucesso!")
-
-
 
 
 def criar_page_chrys():
@@ -907,57 +884,48 @@ def criar_page_chrys():
                        page_icon=icon)
 
     # --- LISTAS ---
-    nomes_por_loja = {
+    gvs = ["", 
         
-        # --- GV 2 - CHRYS REBOUÇAS ---
-        "LOJA BOULEVARD": ["Camyla", "Bruno", "Gilvania"],
-
-    }
-
-    carteiras = {
-        "TODOS OS GLS": sum(nomes_por_loja.values(), []),
-
-    
-        "GLS DA CARTEIRA DE CHRYS":
-        
-            nomes_por_loja["LOJA BOULEVARD"],
-
+        "GLS DA CARTEIRA DE CHRYS",
        
+    ]
+        
+    lojas_por_carteira = {
+        "": [""],
+     
+        "GLS DA CARTEIRA DE CHRYS": [
+            "LOJA BOULEVARD"
+        ]
     }
 
-    lojas = [" ", "LOJA BOULEVARD"]
-
-    para = [" ", 
-            "GLS DA CARTEIRA DE CHRYS"]
+    nomes_por_loja = {
+        "": [""],
+        "LOJA BOULEVARD": ["Camyla","Bruno","Gilvania"],
+    }
 
     tipos_recorrencia = ["", "Não recorrente", "Diária", "Semanal",
                          "Semanal Laboral(seg a sex)", "Mensal", "Anual"]
 
-    
-
     # --- FUNÇÃO NOTIFICAÇÃO ---
-    def notificacao(loja,):
+    def notificacao(loja):
         user_key = st.secrets["notificacao"]["user_key"]
         api_token = st.secrets["notificacao"]["api_token"]
-
-        messagem = f"Novas tarefas foram criadas.\nLoja: {loja}.\nVisualize o painel de tarefas."
-
+        msg = f"Novas tarefas foram criadas.\nLoja: {loja}.\nVisualize o painel de tarefas."
         requests.post("https://api.pushover.net/1/messages.json", 
                       data={
                           "token": api_token,
                           "user": user_key,
-                          "message": messagem
+                          "message": msg
                       })
 
     # --- CARREGAR MODELOS ---
-    aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefasChrys")
+    aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefas")
     dados_modelos = aba_modelos.get_all_records()
     df_modelos = pd.DataFrame(dados_modelos)
-
     lista_modelos = [""] + df_modelos["Título"].tolist() if not df_modelos.empty else [""]
 
+    # --- HEADER / LOGO ---
     image_logo = Image.open("image/Image (2).png")
-
     cola, colb, colc = st.columns([4, 1, 1])
 
     with colc:
@@ -967,23 +935,33 @@ def criar_page_chrys():
         st.header("R.E.G - Rotina de Excelência Gerencial")
 
     st.divider()
-
     st.subheader("Reutilizar tarefa")
     modelo_escolhido = st.selectbox("Selecione um modelo salvo:", lista_modelos)
-
     st.divider()
 
-    # --- SELECIONA CARTEIRA AQUI! (ANTES de montar lista de nomes) ---
-    envio = st.selectbox("Carteira :", para)
+    # ===================================================
+    # SELEÇÃO DINÂMICA - CORRIGIDA
+    # ===================================================
 
-    # --- Agora sim a lista de nomes é carregada corretamente ---
-    lista_nomes = [""] + carteiras.get(envio, [])
+    # 1) Escolhe carteira
+    envio = st.selectbox("Carteira :", gvs)
 
-    
+    # 2) Filtra lojas da carteira
+    lojas = [""] + lojas_por_carteira.get(envio, [])
+
+    # 3) Escolhe loja
+    loja_selecionada = st.selectbox("Loja :", lojas)
+
+    # 4) Filtra nomes daquela loja
+    lista_nomes = [""] + nomes_por_loja.get(loja_selecionada, [])
+
+    # ===================================================
+    # FORMULÁRIO
+    # ===================================================
 
     with st.form("Forms"):
 
-        # --- Aplicar modelo ---
+        # ----- Aplicar modelo -----
         if modelo_escolhido and modelo_escolhido in df_modelos["Título"].values:
             modelo = df_modelos[df_modelos["Título"] == modelo_escolhido].iloc[0]
             titulo_default = modelo["Título"]
@@ -998,21 +976,15 @@ def criar_page_chrys():
             hora_fim_default = "00:00"
             recorrencia_default = ""
 
-        # --- CAMPOS ---
+        # ----- CAMPOS -----
         titulo = st.text_input("Título da tarefa :", value=titulo_default)
         descricao = st.text_input("Descrição da tarefa :", value=descricao_default)
 
         col1, col2 = st.columns(2)
         with col1:
-            hora_inicial = st.time_input(
-                "Hora inicial :",
-                value=pd.to_datetime(hora_ini_default).time()
-            )
+            hora_inicial = st.time_input("Hora inicial :", value=pd.to_datetime(hora_ini_default).time())
         with col2:
-            hora_final = st.time_input(
-                "Hora final :",
-                value=pd.to_datetime(hora_fim_default).time()
-            )
+            hora_final = st.time_input("Hora final :", value=pd.to_datetime(hora_fim_default).time())
 
         col3, col4 = st.columns(2)
         with col3:
@@ -1025,21 +997,23 @@ def criar_page_chrys():
                 if recorrencia_default in tipos_recorrencia else 0
             )
 
-        por = ["Chrys"]
-        criada = st.selectbox("Criador da terefa: ",por)
-        cold, cole = st.columns(2)
+        criada = st.selectbox("Criador da tarefa: ", ["Victor"])
 
-        with cold:
+        colN1, colN2 = st.columns(2)
+        with colN1:
             nome = st.selectbox("Nome do GL :", lista_nomes)
 
-        with cole:
-            loja = st.selectbox("Loja :", lojas)
+        with colN2:
+            loja_final = st.text_input("Loja selecionada:", loja_selecionada, disabled=True)
 
-        col1_btn, col2_btn = st.columns(2)
-        enviar = col1_btn.form_submit_button("Enviar tarefa")
-        salvar_tarefas = col2_btn.form_submit_button("Salvar como modelo")
+        colbtn1, colbtn2 = st.columns(2)
+        enviar = colbtn1.form_submit_button("Enviar tarefa")
+        salvar_tarefas = colbtn2.form_submit_button("Salvar como modelo")
 
+    # ===================================================
     # ENVIAR TAREFA
+    # ===================================================
+
     if enviar:
 
         if not nome:
@@ -1049,12 +1023,12 @@ def criar_page_chrys():
         pagina = client.open_by_key(planilha_chave).worksheet(nome)
         novo_id = len(pagina.get_all_records()) + 1
 
-        notificacao(loja)
+        notificacao(loja_final)
 
         pagina.append_row([
             novo_id,
             criada,
-            loja,
+            loja_final,
             nome,
             titulo,
             descricao,
@@ -1067,11 +1041,12 @@ def criar_page_chrys():
 
         st.success("Tarefa enviada com sucesso!")
 
+    # ===================================================
     # SALVAR MODELO
+    # ===================================================
+
     if salvar_tarefas:
-        pagina = client.open_by_key(planilha_chave).worksheet("ModelosTarefasChrys")
-        
-        novo_id = len(pagina.get_all_records()) + 1
+        novo_id = len(aba_modelos.get_all_records()) + 1
         aba_modelos.append_row([
             novo_id,
             titulo,
@@ -1081,7 +1056,6 @@ def criar_page_chrys():
             data.strftime("%d/%m/%Y"),
             recorrencia,
         ])
-       
 
         st.success("Modelo salvo com sucesso!")
 

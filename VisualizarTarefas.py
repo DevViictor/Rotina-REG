@@ -47,6 +47,7 @@ def visualizar_tarefas():
         }
 
         nomes_por_loja = {
+
         " ": [" "],
         "LOJA SSA |": ["Ana","Francisca","Vinicius"],
         "LOJA SSA ||": ["Vitor","Mailan"],

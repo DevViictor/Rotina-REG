@@ -5,13 +5,23 @@ from google.oauth2.service_account import Credentials
 import requests
 import datetime as dt
 from PIL import Image
-
+from datetime import datetime, timedelta
+from streamlit_autorefresh import st_autorefresh
 
 
 def tarefas_iguatemi():
-    icon = Image.open("image/vivo.png")
 
-    st.set_page_config(page_title="R.E.G IGUATEMI", page_icon=icon, layout="wide")
+    def enviar_pushover(msg):
+        requests.post("https://api.pushover.net/1/messages.json", data={
+            "token": st.secrets["notificacao"]["api_token"],
+            "user": st.secrets["notificacao"]["user_key"],
+            "message": msg,
+            "priority": 1
+        })
+
+    # Controle de estado das notificações
+    if "notificados" not in st.session_state:
+        st.session_state.notificados = {}
 
     # --- Controle de acesso ---
     if "role" not in st.session_state or st.session_state.role != "Iguatemi1":
@@ -21,9 +31,7 @@ def tarefas_iguatemi():
     # ---------------------------
     # LISTAS E DICIONÁRIOS
     # ---------------------------
-    gvs = [
-        "GLS DA CARTEIRA DE FELIPE",
-    ]
+    gvs = ["GLS DA CARTEIRA DE FELIPE"]
 
     lojas_por_carteira = {
         " ": [" "],
@@ -46,10 +54,8 @@ def tarefas_iguatemi():
     image_logo = Image.open("image/Image (2).png")
 
     cola, colb, colc = st.columns([4, 1, 1])
-
     with colc:
         st.image(image_logo)
-
     with cola:
         st.title("📝 R.E.G - TAREFAS")
 
@@ -68,7 +74,7 @@ def tarefas_iguatemi():
         nome = st.selectbox("Nome:", nomes_filtrados)
 
     with col4:
-        data = st.date_input("Selecione a data:")
+        data_selecionada = st.date_input("Selecione a data:")
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -101,27 +107,76 @@ def tarefas_iguatemi():
         st.warning("Nenhum modelo encontrado.")
         return
 
+    # Padronizar colunas para evitar erro
+    planilha_Dados.columns = planilha_Dados.columns.str.strip()
+
+    # Converter data da planilha
     planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
+        planilha_Dados["Data"], dayfirst=True, errors="coerce"
     ).dt.date
 
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
+    # Filtrar pela data escolhida
+    planilha_filtrada = planilha_Dados[planilha_Dados["Data"] == data_selecionada]
 
-    if planilha_Dados.empty:
+    if planilha_filtrada.empty:
         st.info("Nenhuma tarefa encontrada para esta data.")
         return
 
     # ---------------------------
-    # CHECKBOX PARA CONCLUIR TAREFA
+    # 🔥 NOTIFICAÇÕES
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Situação da tarefa"].astype(str).str.lower() == "concluído"
+    agora = datetime.now()
+
+    for _, linha in planilha_filtrada.iterrows():
+
+        titulo = linha["Título"]
+        loja_tarefa = linha["Loja"]
+        gls_nome = linha["GL"]
+
+        data_str = linha["Data"]
+        inicio_str = linha["Hora inicial"]
+        fim_str = linha["Hora final"]
+
+        # Converter para datetime
+        try:
+            inicio = datetime.combine(
+                data_str,
+                datetime.strptime(inicio_str, "%H:%M").time()
+            )
+
+            fim = datetime.combine(
+                data_str,
+                datetime.strptime(fim_str, "%H:%M").time()
+            )
+        except:
+            continue
+
+        chave_inicio = f"{titulo}_{inicio}_ANTES"
+        chave_fim = f"{titulo}_{fim}_DEPOIS"
+
+        # 🔥 1) Notificação 15 minutos ANTES
+        if inicio - timedelta(minutes=15) <= agora < inicio:
+            if chave_inicio not in st.session_state.notificados:
+                enviar_pushover(
+                    f"⏳ Em 15 minutos começa o periodo de realização da tarefa: {titulo} na loja {gls_nome}"
+                )
+                st.session_state.notificados[chave_inicio] = True
+
+        # 🔥 2) Notificação 15 minutos DEPOIS
+        # Notificação 15 minutos DEPOIS (janela de 5 minutos)
+        if fim - timedelta(minutes=15) <= agora < fim:
+            if chave_fim not in st.session_state.notificados:
+                enviar_pushover(
+                    f"⏰ Faltam 15 minutos para terminar a tarefa: {titulo} \n GL: {gls_nome}\n Loja: {loja_tarefa}"
+                )
+                st.session_state.notificados[chave_fim] = True
+    # ---------------------------
+    planilha_filtrada["Concluir"] = (
+        planilha_filtrada["Situação da tarefa"].astype(str).str.lower() == "concluído"
     )
 
     df_editado = st.data_editor(
-        planilha_Dados,
+        planilha_filtrada,
         column_config={
             "Concluir": st.column_config.CheckboxColumn(
                 "Concluir tarefa",
@@ -136,7 +191,7 @@ def tarefas_iguatemi():
     )
 
     # ---------------------------
-    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
+    # SALVAR ALTERAÇÕES
     # ---------------------------
     col11, col12, col13, col14, col15 = st.columns(5)
 
@@ -144,7 +199,6 @@ def tarefas_iguatemi():
         if st.button("Salvar alterações"):
             aba = planilha.worksheet(nome)
             dados_atual = aba.get_all_records()
-
             df_original = pd.DataFrame(dados_atual)
 
             for _, row in df_editado.iterrows():
@@ -153,8 +207,7 @@ def tarefas_iguatemi():
                 linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
 
                 if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
+                    linha_sheet = linhas[0] + 2
                     coluna_status = df_original.columns.get_loc("Situação da tarefa") + 1
                     aba.update_cell(linha_sheet, coluna_status, row["Situação da tarefa"])
 
@@ -163,6 +216,9 @@ def tarefas_iguatemi():
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+    # 🔄 Atualiza a página a cada 60s para verificar notificações
+    st_autorefresh(interval=60000, key="check_tarefas")
 
 
 def tarefas_iguatemi2():
