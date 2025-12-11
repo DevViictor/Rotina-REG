@@ -6,7 +6,6 @@ import requests
 import datetime as dt
 from PIL import Image
 from datetime import datetime, timedelta
-from streamlit_autorefresh import st_autorefresh
 
 
 def tarefas_iguatemi():
@@ -218,9 +217,6 @@ def tarefas_iguatemi():
             st.rerun()
 
     # 🔄 Atualiza a página a cada 60s para verificar notificações
-    st_autorefresh(interval=60000, key="check_tarefas")
-
-
 def tarefas_iguatemi2():
     icon = Image.open("image/vivo.png")
 
