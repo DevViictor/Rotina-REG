@@ -13,6 +13,9 @@ from RegItirerantes import relatorio_intinerantes
 from VisualizarTarefas import visualizar_tarefas,visualizar_tarefas_fabiana, visualizar_tarefas_chrys ,visualizar_tarefas_felipe ,visualizar_tarefas_john
 from TarefasProntas import modelos_prontos,modelos_prontos_fabiana, modelos_prontos_chrys, modelos_prontos_felipe, modelos_prontos_john
 from GlsTarefas import tarefas_iguatemi, tarefas_barra , tarefas_bela ,tarefas_iguatemi2 ,tarefas_itinerante ,tarefas_lapa,tarefas_nort,tarefas_parela,tarefas_parque,tarefas_piedade,tarefas_ssa1,tarefas_ssa2,tarefas_boulevard
+from notificações import notificacoes_fabiana,notificacoes_felipe,notificacoes_john,notificacoes_chrys,notificacoes_itinerantes
+
+st.sidebar.image("image/Image (2).png")
 
 icon = Image.open("image/vivo.png")
 
@@ -435,7 +438,12 @@ def run_navigation():
 if not st.session_state.logged_in:
     login()
 else:
-    
+    if st.session_state.role not in ["Iguatemi1","Iguatemi2","Nort","Salvador1","Salvador2","Bela","Paralela","Barra","Piedade","Lapa","Boulevard"]:
+        notificacoes_fabiana()
+        notificacoes_felipe()
+        notificacoes_john()
+        notificacoes_chrys()
+        notificacoes_itinerantes()
 
     run_navigation()
 
