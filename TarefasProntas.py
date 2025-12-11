@@ -50,7 +50,6 @@ def modelos_prontos():
         with cola:
                     st.title("📝 R.E.G - MODELOS")
         
-        criada =st.selectbox("Feito :")
         # ---------------------------
         # CHECKBOX PARA EXCLUSÃO
         # ---------------------------

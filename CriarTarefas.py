@@ -72,7 +72,7 @@ def criar_page():
         "LOJA NORT SHOP": ["Todos Norte","Jairo","Wanderlei"],
         "LOJA BARRA": ["Todos Barra","Igor","Carol","Alana"],
         "LOJA PIEDADE": ["Todos Piedade","DiegoL","Marcusl"],
-        "LOJA LAPA": ["Todos Lapa","Sara","Rafel"],
+        "LOJA LAPA": ["Todos Lapa","Sara","Rafael"],
         "LOJA BOULEVARD": ["Todos Boulevard","Camyla","Bruno","Gilvania"],
         "ITINERANTES": ["Todos Itinerantes","Lázaro","Lee","Marcus"],
     }
