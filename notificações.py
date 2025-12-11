@@ -101,7 +101,7 @@ def notificacoes_felipe():
     verificar_notificacoes(["Max", "Denise", "Felipe","Diego","Andressa","Jairo","Wanderlei"])
 
 def notificacoes_john():
-    verificar_notificacoes(["Igor","Carol","Alana","DiegoL","Marcusl","Sara","Rafel"])
+    verificar_notificacoes(["Igor","Carol","Alana","DiegoL","Marcusl","Sara","Rafael"])
 
 def notificacoes_chrys():
     verificar_notificacoes(["Camyla","Bruno","Gilvania"])
