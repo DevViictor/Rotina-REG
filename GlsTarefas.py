@@ -6,7 +6,7 @@ import requests
 import datetime as dt
 from PIL import Image
 from datetime import datetime, timedelta
-from streamlit_autorefresh import st_autorefresh
+
 
 
 def tarefas_iguatemi():

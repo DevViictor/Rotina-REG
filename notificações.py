@@ -4,6 +4,7 @@ import pandas as pd
 from google.oauth2.service_account import Credentials
 import requests
 from datetime import datetime, timedelta
+from streamlit_autorefresh import st_autorefresh
 
 
 def verificar_notificacoes(abas):
