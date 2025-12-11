@@ -217,6 +217,8 @@ def tarefas_iguatemi():
             st.rerun()
 
     # 🔄 Atualiza a página a cada 60s para verificar notificações
+
+
 def tarefas_iguatemi2():
     icon = Image.open("image/vivo.png")
 
