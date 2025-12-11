@@ -163,13 +163,13 @@ def relatorio_fabiana_geral():
     }
 
     # Selectbox para filtrar loja
-    lista_lojas = ["Todas"] + list(lojas.keys())
+    lista_lojas = list(lojas.keys())
     loja_selecionada = st.selectbox("Filtrar por loja:", lista_lojas)
 
     resultados = []
 
     for loja, consultores in lojas.items():
-        if loja_selecionada != "Todas" and loja != loja_selecionada:
+        if loja_selecionada != "" and loja != loja_selecionada:
             continue
 
         df_resumo = obter_resumo(planilha, consultores)
