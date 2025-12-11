@@ -37,7 +37,11 @@ def verificar_notificacoes(abas):
 
     # Checar todas as abas
     for nome in abas:
-        aba = planilha.worksheet(nome)
+        try:
+            aba = planilha.worksheet(nome)
+        except gspread.exceptions.WorksheetNotFound:
+            st.error(f"A aba '{nome}' não existe na planilha. Verifique o nome exato.")
+            return
         dados = aba.get_all_records()
         df = pd.DataFrame(dados)
         if not dados:
