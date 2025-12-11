@@ -72,17 +72,25 @@ def relatorio_felipe_geral():
         "NORTE SHOP": ["Jairo", "Wander"],
     }
 
+    lista_lojas = ["Todas"] + list(lojas.keys())
+    loja_selecionada = st.selectbox("Filtrar por loja:", lista_lojas)
+
+
     resultados = []
 
     for loja, consultores in lojas.items():
+        if loja_selecionada != "Todas" and loja != loja_selecionada:
+            continue
+
         df_resumo = obter_resumo(planilha, consultores)
 
-        # Soma apenas as porcentagens
+        # Converter percentuais caso estejam como string
+       
         soma_percentuais = df_resumo["Percentual"].sum()
 
         resultados.append({
             "Loja": loja,
-            "Total % Concluído": f"{soma_percentuais}%"
+            "Total % Concluído": f"{soma_percentuais:.2f}%"
         })
     
     cola,colb,colc = st.columns([4,1,1])

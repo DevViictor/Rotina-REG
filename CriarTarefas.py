@@ -62,19 +62,19 @@ def criar_page():
     nomes_por_loja = {
         "": [""],
         "GVS": ["Todos","Fabiana","Felipe","John","Chrys"],
-        "LOJA SSA |": ["Ana","Francisca","Vinicius"],
-        "LOJA SSA ||": ["Vitor","Mailan"],
-        "LOJA BELA VISTA": ["Vanessa","Danilo"],
-        "LOJA PARALELA": ["Crislaine","Neide"],
-        "LOJA PARQUE SHOP": ["Denise_Parque","Neide"],
-        "LOJA IGUATEMI | BA": ["Max","Denise"],
-        "LOJA IGUATEMI || BA": ["Diego","Andressa"],
-        "LOJA NORT SHOP": ["Jairo","Wanderlei"],
-        "LOJA BARRA": ["Igor","Carol","Alana"],
-        "LOJA PIEDADE": ["DiegoL","Marcusl"],
-        "LOJA LAPA": ["Sara","Rafel"],
-        "LOJA BOULEVARD": ["Camyla","Bruno","Gilvania"],
-        "ITINERANTES": ["Lázaro","Lee","Marcus"],
+        "LOJA SSA |": ["Todos SSA |","Ana","Francisca","Vinicius"],
+        "LOJA SSA ||": ["Todos SSA ||","Vitor","Mailan"],
+        "LOJA BELA VISTA": ["Todos Bela","Vanessa","Danilo"],
+        "LOJA PARALELA": ["Todos Paralela","Crislaine","Neide"],
+        "LOJA PARQUE SHOP": ["Todos Parque","Denise_Parque","Neide"],
+        "LOJA IGUATEMI | BA": ["Todos Iguatemi |","Max","Denise"],
+        "LOJA IGUATEMI || BA": ["Todos Iguatemi ||","Diego","Andressa"],
+        "LOJA NORT SHOP": ["Todos Norte","Jairo","Wanderlei"],
+        "LOJA BARRA": ["Todos Barra","Igor","Carol","Alana"],
+        "LOJA PIEDADE": ["Todos Piedade","DiegoL","Marcusl"],
+        "LOJA LAPA": ["Todos Lapa","Sara","Rafel"],
+        "LOJA BOULEVARD": ["Todos Boulevard","Camyla","Bruno","Gilvania"],
+        "ITINERANTES": ["Todos Itinerantes","Lázaro","Lee","Marcus"],
     }
 
     tipos_recorrencia = ["", "Não recorrente", "Diária", "Semanal",
@@ -237,7 +237,6 @@ def criar_page():
 
 
 
-
 def criar_page_fabiana():
 
     if "role" not in st.session_state or st.session_state.role not in ["Victor","Felipe","John","Fabiana","Chrys"]:
@@ -279,11 +278,11 @@ def criar_page_fabiana():
 
     nomes_por_loja = {
         "": [""],
-        "LOJA SSA |": ["Ana","Francisca","Vinicius"],
-        "LOJA SSA ||": ["Vitor","Mailan"],
-        "LOJA BELA VISTA": ["Vanessa","Danilo"],
-        "LOJA PARALELA": ["Crislaine","Neide"],
-        "LOJA PARQUE SHOP": ["Denise_Parque","Neide"],
+        "LOJA SSA |": ["Todos SSA |","Ana","Francisca","Vinicius"],
+        "LOJA SSA ||": ["Todos SSA ||","Vitor","Mailan"],
+        "LOJA BELA VISTA": ["Todos Bela","Vanessa","Danilo"],
+        "LOJA PARALELA": ["Todos Paralela","Crislaine","Neide"],
+        "LOJA PARQUE SHOP": ["Todos Parque","Denise_Parque","Neide"],
         
     }
 
@@ -381,7 +380,7 @@ def criar_page_fabiana():
                 if recorrencia_default in tipos_recorrencia else 0
             )
 
-        criada = st.selectbox("Criador da tarefa: ", ["Victor"])
+        criada = st.selectbox("Criador da tarefa: ", ["Fabiana"])
 
         colN1, colN2 = st.columns(2)
         with colN1:
@@ -444,9 +443,6 @@ def criar_page_fabiana():
         st.success("Modelo salvo com sucesso!")
 
 
-
-
-
 def criar_page_felipe():
 
     if "role" not in st.session_state or st.session_state.role not in ["Victor","Felipe","John","Fabiana","Chrys"]:
@@ -473,24 +469,25 @@ def criar_page_felipe():
                        page_icon=icon)
 
     # --- LISTAS ---
-    gvs = ["", 
+    gvs = ["",
         
         "GLS DA CARTEIRA DE FELIPE",
-   
+       
     ]
         
     lojas_por_carteira = {
         "": [""],
+
         "GLS DA CARTEIRA DE FELIPE": [
             "LOJA IGUATEMI | BA","LOJA IGUATEMI || BA","LOJA NORT SHOP"
         ]
     }
 
     nomes_por_loja = {
-        "": [""], 
-        "LOJA IGUATEMI | BA": ["Max","Denise"],
-        "LOJA IGUATEMI || BA": ["Diego","Andressa"],
-        "LOJA NORT SHOP": ["Jairo","Wanderlei"],
+        "": [""],
+        "LOJA IGUATEMI | BA": ["Todos Iguatemi |","Max","Denise"],
+        "LOJA IGUATEMI || BA": ["Todos Iguatemi ||","Diego","Andressa"],
+        "LOJA NORT SHOP": ["Todos Norte","Jairo","Wanderlei"],
        
     }
 
@@ -533,15 +530,17 @@ def criar_page_felipe():
     # ===================================================
     # SELEÇÃO DINÂMICA - CORRIGIDA
     # ===================================================
-
+    cola,colb = st.columns(2)
     # 1) Escolhe carteira
-    envio = st.selectbox("Carteira :", gvs)
+    with cola:
+        envio = st.selectbox("Carteira :", gvs)
 
     # 2) Filtra lojas da carteira
     lojas = [""] + lojas_por_carteira.get(envio, [])
 
     # 3) Escolhe loja
-    loja_selecionada = st.selectbox("Loja :", lojas)
+    with colb:
+        loja_selecionada = st.selectbox("Loja :", lojas)
 
     # 4) Filtra nomes daquela loja
     lista_nomes = [""] + nomes_por_loja.get(loja_selecionada, [])
@@ -588,7 +587,7 @@ def criar_page_felipe():
                 if recorrencia_default in tipos_recorrencia else 0
             )
 
-        criada = st.selectbox("Criador da tarefa: ", ["Victor"])
+        criada = st.selectbox("Criador da tarefa: ", ["Felipe"])
 
         colN1, colN2 = st.columns(2)
         with colN1:
@@ -678,10 +677,9 @@ def criar_page_john():
                        page_icon=icon)
 
     # --- LISTAS ---
-    gvs = ["", 
-     
-        "GLS DA CARTEIRA DE JOHN",
-      
+    gvs = ["",
+    
+        "GLS DA CARTEIRA DE JOHN",    
     ]
         
     lojas_por_carteira = {
@@ -695,9 +693,9 @@ def criar_page_john():
     nomes_por_loja = {
         "": [""],
         
-        "LOJA BARRA": ["Igor","Carol","Alana"],
-        "LOJA PIEDADE": ["DiegoL","Marcus"],
-        "LOJA LAPA": ["Sara","Rafel"],
+        "LOJA BARRA": ["Todos Barra","Igor","Carol","Alana"],
+        "LOJA PIEDADE": ["Todos Piedade","DiegoL","Marcusl"],
+        "LOJA LAPA": ["Todos Lapa","Sara","Rafel"],
        
     }
 
@@ -740,15 +738,17 @@ def criar_page_john():
     # ===================================================
     # SELEÇÃO DINÂMICA - CORRIGIDA
     # ===================================================
-
+    cola,colb = st.columns(2)
     # 1) Escolhe carteira
-    envio = st.selectbox("Carteira :", gvs)
+    with cola:
+        envio = st.selectbox("Carteira :", gvs)
 
     # 2) Filtra lojas da carteira
     lojas = [""] + lojas_por_carteira.get(envio, [])
 
     # 3) Escolhe loja
-    loja_selecionada = st.selectbox("Loja :", lojas)
+    with colb:
+        loja_selecionada = st.selectbox("Loja :", lojas)
 
     # 4) Filtra nomes daquela loja
     lista_nomes = [""] + nomes_por_loja.get(loja_selecionada, [])
@@ -795,7 +795,7 @@ def criar_page_john():
                 if recorrencia_default in tipos_recorrencia else 0
             )
 
-        criada = st.selectbox("Criador da tarefa: ", ["Victor"])
+        criada = st.selectbox("Criador da tarefa: ", ["John"])
 
         colN1, colN2 = st.columns(2)
         with colN1:
@@ -857,7 +857,6 @@ def criar_page_john():
 
         st.success("Modelo salvo com sucesso!")
 
-
 def criar_page_chrys():
 
     if "role" not in st.session_state or st.session_state.role not in ["Victor","Felipe","John","Fabiana","Chrys"]:
@@ -900,7 +899,7 @@ def criar_page_chrys():
 
     nomes_por_loja = {
         "": [""],
-        "LOJA BOULEVARD": ["Camyla","Bruno","Gilvania"],
+        "LOJA BOULEVARD": ["Todos Boulevard","Camyla","Bruno","Gilvania"],
     }
 
     tipos_recorrencia = ["", "Não recorrente", "Diária", "Semanal",

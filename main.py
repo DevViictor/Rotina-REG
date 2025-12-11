@@ -13,6 +13,9 @@ from RegItirerantes import relatorio_intinerantes
 from VisualizarTarefas import visualizar_tarefas,visualizar_tarefas_fabiana, visualizar_tarefas_chrys ,visualizar_tarefas_felipe ,visualizar_tarefas_john
 from TarefasProntas import modelos_prontos,modelos_prontos_fabiana, modelos_prontos_chrys, modelos_prontos_felipe, modelos_prontos_john
 from GlsTarefas import tarefas_iguatemi, tarefas_barra , tarefas_bela ,tarefas_iguatemi2 ,tarefas_itinerante ,tarefas_lapa,tarefas_nort,tarefas_parela,tarefas_parque,tarefas_piedade,tarefas_ssa1,tarefas_ssa2,tarefas_boulevard
+from GvTarefas import tarefas_chyrs,tarefas_fabiana,tarefas_felipe,tarefas_john
+
+
 
 st.sidebar.image("image/Image (2).png")
 
@@ -157,6 +160,13 @@ def run_navigation():
     Visualizar_tarefas_johon = st.Page(visualizar_tarefas_john,title="📝 Criadas ")
     Visualizar_tarefas_chrys = st.Page(visualizar_tarefas_chrys,title="📝 Criadas ")
 
+    #TarefasGVs
+    Fabiana_Tarefa = st.Page(tarefas_fabiana,title="📝 Suas tarefas")
+    Felipe_Tarefa = st.Page(tarefas_felipe,title="📝 Suas tarefas")
+    John_Tarefa = st.Page(tarefas_john,title="📝 Suas tarefas")
+    Chrys_Tarefa = st.Page(tarefas_chyrs,title="📝 Suas tarefas")
+
+
     #tarefas_loja
     #FELIPE
     Tarefas_iguatemi = st.Page(tarefas_iguatemi,title="🏬 LOJA IGUATEMI |")
@@ -180,9 +190,6 @@ def run_navigation():
     
     #Itinerantes
     Tarefas_itinerantes = st.Page(tarefas_itinerante,title="🏬 ITINERANTES")
-    
-    
-    
     
     #modelos
     Visualizar_modelos = st.Page(modelos_prontos,title="📝 Modelos ")
@@ -275,7 +282,8 @@ def run_navigation():
             "TAREFAS": [
                 cadastro_felipe,
                 Visualizar_tarefas_felipe,
-                Visualizar_modelos_felipe
+                Visualizar_modelos_felipe,
+                Felipe_Tarefa
             ],
         }
 
@@ -317,7 +325,8 @@ def run_navigation():
             "TAREFAS": [
                 cadastro_fabiana,
                 Visualizar_tarefas_fabiana,
-                Visualizar_modelos_fabiana
+                Visualizar_modelos_fabiana,
+                Fabiana_Tarefa
             ],
         }
             
@@ -354,7 +363,8 @@ def run_navigation():
             "TAREFAS": [
                 cadastro_john,
                 Visualizar_tarefas_johon,
-                Visualizar_modelos_john
+                Visualizar_modelos_john,
+                John_Tarefa
             ],
         }
     
@@ -378,7 +388,9 @@ def run_navigation():
             "TAREFAS": [
                 cadastro_chrys,
                 Visualizar_tarefas_chrys,
-                Visualizar_modelos_chrys
+                Visualizar_modelos_chrys,
+                Chrys_Tarefa
+                
             ],
         }
 

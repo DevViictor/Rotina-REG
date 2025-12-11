@@ -133,7 +133,6 @@ def obter_resumo(planilha, consultores):
 
     return pd.DataFrame(resumo)
 
-
 def relatorio_fabiana_geral():
     # Controle de acesso
     if "role" not in st.session_state or st.session_state.role not in ["Victor","Fabiana"]:
@@ -163,28 +162,36 @@ def relatorio_fabiana_geral():
         "PARQUE": ["Denise_Paque", "Adrielle"]
     }
 
+    # Selectbox para filtrar loja
+    lista_lojas = ["Todas"] + list(lojas.keys())
+    loja_selecionada = st.selectbox("Filtrar por loja:", lista_lojas)
+
     resultados = []
 
     for loja, consultores in lojas.items():
+        if loja_selecionada != "Todas" and loja != loja_selecionada:
+            continue
+
         df_resumo = obter_resumo(planilha, consultores)
 
-        # Soma apenas as porcentagens
+        # Converter percentuais caso estejam como string
+       
         soma_percentuais = df_resumo["Percentual"].sum()
 
         resultados.append({
             "Loja": loja,
-            "Total % Concluído": f"{soma_percentuais}%"
+            "Total % Concluído": f"{soma_percentuais:.2f}%"
         })
     
-    cola,colb,colc = st.columns([4,1,1])
+    # Layout
+    cola, colc = st.columns([4,1])
     image_logo = Image.open("image/Image (2).png")
-    with colc :
+    with colc:
         st.image(image_logo)
 
-    # Exibir tabela final
     with cola:
         st.header("R.E.G - CARTEIRA FABIANA")
-    st.dataframe(pd.DataFrame(resultados))
+        st.dataframe(pd.DataFrame(resultados))
 
 
 

@@ -33,7 +33,7 @@ def modelos_prontos():
         st.warning("Nenhum modelo encontrado.")
     else:
 
-        colunas_desejadas = ["ID", "Título", "Descrição da tarefa","Tipo de recorrência"]
+        colunas_desejadas = ["ID","Título", "Descrição da tarefa","Tipo de recorrência"]
         planilha_Dados = planilha_Dados[colunas_desejadas]
         
         icon = Image.open("image/vivo.png")
@@ -49,6 +49,8 @@ def modelos_prontos():
 
         with cola:
                     st.title("📝 R.E.G - MODELOS")
+        
+        criada =st.selectbox("Feito :")
         # ---------------------------
         # CHECKBOX PARA EXCLUSÃO
         # ---------------------------

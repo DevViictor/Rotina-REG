@@ -14,7 +14,8 @@ def visualizar_tarefas():
         # ---------------------------
         # LISTAS E DICIONÁRIOS
         # ---------------------------
-        gvs = [ 
+        gvs = [
+                "TODOS OS GVS",
             "GLS DA CARTEIRA DE FABIANA",
             "GLS DA CARTEIRA DE FELIPE",
             "GLS DA CARTEIRA DE CHRYS",
@@ -23,8 +24,11 @@ def visualizar_tarefas():
         
         lojas_por_carteira = {
         " ": [" "],
+        "TODOS OS GVS": ["GVS"],
+
         "TODOS OS GLS": [
-                 "LOJA IGUATEMI | BA", "LOJA IGUATEMI || BA", "LOJA SSA |",
+
+                "LOJA IGUATEMI | BA", "LOJA IGUATEMI || BA", "LOJA SSA |",
                 "LOJA SSA ||", "LOJA BELA VISTA", "LOJA PARALELA",
                 "LOJA PARQUE SHOP", "LOJA NORT SHOP", "LOJA BARRA",
                 "LOJA PIEDADE", "LOJA LAPA", "LOJA BOULEVARD"
@@ -49,6 +53,7 @@ def visualizar_tarefas():
         nomes_por_loja = {
 
         " ": [" "],
+        "GVS": ["Todos","Fabiana","Felipe","John","Chrys"],
         "LOJA SSA |": ["Ana","Francisca","Vinicius"],
         "LOJA SSA ||": ["Vitor","Mailan"],
         "LOJA BELA VISTA": ["Vanessa","Danilo"],
@@ -97,6 +102,7 @@ def visualizar_tarefas():
         with col4:
                 data = st.date_input("Selecione a data:")
 
+        
         # ---------------------------
         # CONFIGURAÇÃO GOOGLE SHEETS
         # ---------------------------
@@ -213,11 +219,11 @@ def visualizar_tarefas_fabiana():
 
         nomes_por_loja = {
         " ": [" "],
-        "LOJA SSA |": ["Ana","Francisca","Vinicius"],
-        "LOJA SSA ||": ["Vitor","Mailan"],
-        "LOJA BELA VISTA": ["Vanessa","Danilo"],
-        "LOJA PARALELA": ["Crislaine","Neide"],
-        "LOJA PARQUE SHOP": ["Denise_Parque","Neide"],
+        "LOJA SSA |": ["Todos SSA |","Ana","Francisca","Vinicius"],
+        "LOJA SSA ||": ["Todos SSA ||","Vitor","Mailan"],
+        "LOJA BELA VISTA": ["Todos Bela","Vanessa","Danilo"],
+        "LOJA PARALELA": ["Todos Paralela","Crislaine","Neide"],
+        "LOJA PARQUE SHOP": ["Todos Parque","Denise_Parque","Neide"],
         }
 
         # ---------------------------
@@ -253,6 +259,9 @@ def visualizar_tarefas_fabiana():
         with col4:
                 data = st.date_input("Selecione a data:")
 
+        feito = ["Fabiana"]
+        
+        criada = st.selectbox("Criadora da tarefa: ",feito)
         # ---------------------------
         # CONFIGURAÇÃO GOOGLE SHEETS
         # ---------------------------
@@ -293,13 +302,15 @@ def visualizar_tarefas_fabiana():
                 ).dt.date
 
                 planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-                contagemA = planilha_Dados["Criada"].astype(str).str.contains("Victor", case=False, na=False).sum()
+                
+                planilha_Dados = planilha_Dados[planilha_Dados["Criada"] == criada]
+                contagemA = planilha_Dados["Criada"].astype(str).str.contains("Fabiana", case=False, na=False).sum()
 
                 # ---------------------------
                 # CHECKBOX PARA EXCLUSÃO
                 # ---------------------------
                 planilha_Dados["Excluir"] = False
+
 
                 st.subheader(f"Tarefas criadas para {nome}:")
                 tabela_editada = st.data_editor(
@@ -368,8 +379,8 @@ def visualizar_tarefas_felipe():
         nomes_por_loja = {
         " ": [" "],
       
-        "LOJA IGUATEMI | BA": ["Max","Denise"],
-        
+        "LOJA IGUATEMI | BA": ["Todos Iguatemi |","Max","Denise"],
+        "LOJA IGUATEMI || BA": ["Todos Iguatemi ||","Diego","Andressa"],
         "LOJA NORT SHOP": ["Jairo","Wanderlei"],
         }
 
@@ -406,7 +417,10 @@ def visualizar_tarefas_felipe():
         with col4:
                 data = st.date_input("Selecione a data:")
 
-        # ---------------------------
+        feito = ["Felipe"]
+        
+        criada = st.selectbox("Criador da tarefa: ",feito)
+        # ---------------------------   
         # CONFIGURAÇÃO GOOGLE SHEETS
         # ---------------------------
         gcp_info = st.secrets["taf"]
@@ -446,8 +460,10 @@ def visualizar_tarefas_felipe():
                 ).dt.date
 
                 planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
+                # Filtrar pelo nome da criadora selecionada
+                planilha_Dados = planilha_Dados[planilha_Dados["Criada"] == criada]
 
-                contagemA = planilha_Dados["Criada"].astype(str).str.contains("Victor", case=False, na=False).sum()
+                contagemA = planilha_Dados["Criada"].astype(str).str.contains("Felipe", case=False, na=False).sum()
 
                 # ---------------------------
                 # CHECKBOX PARA EXCLUSÃO
@@ -524,9 +540,9 @@ def visualizar_tarefas_john():
 
         nomes_por_loja = {
         " ": [" "],
-        "LOJA BARRA": ["Igor","Carol","Alana"],
-        "LOJA PIEDADE": ["DiegoL","Marcus"],
-        "LOJA LAPA": ["Sara","Rafel"],
+        "LOJA BARRA": ["Todos Barra","Igor","Carol","Alana"],
+        "LOJA PIEDADE": ["Todos Piedade","DiegoL","Marcusl"],
+        "LOJA LAPA": ["Todos Lapa","Sara","Rafel"],
         }
 
         # ---------------------------
@@ -562,6 +578,9 @@ def visualizar_tarefas_john():
         with col4:
                 data = st.date_input("Selecione a data:")
 
+        feito = ["John"]
+        
+        criada = st.selectbox("Criador da tarefa: ",feito)
         # ---------------------------
         # CONFIGURAÇÃO GOOGLE SHEETS
         # ---------------------------
@@ -594,7 +613,7 @@ def visualizar_tarefas_john():
 
                 colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data"]
                 planilha_Dados = planilha_Dados[colunas_desejadas]
-
+                planilha_Dados = planilha_Dados[planilha_Dados["Criada"] == criada]
                 planilha_Dados["Data"] = pd.to_datetime(
                         planilha_Dados["Data"],
                         dayfirst=True,
@@ -603,7 +622,7 @@ def visualizar_tarefas_john():
 
                 planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
 
-                contagemA = planilha_Dados["Criada"].astype(str).str.contains("Victor", case=False, na=False).sum()
+                contagemA = planilha_Dados["Criada"].astype(str).str.contains("John", case=False, na=False).sum()
 
                 # ---------------------------
                 # CHECKBOX PARA EXCLUSÃO
@@ -674,7 +693,7 @@ def visualizar_tarefas_chrys():
 
         nomes_por_loja = {
         " ": [" "],
-        "LOJA BOULEVARD": ["Camyla","Bruno","Gilvania"],
+        "LOJA BOULEVARD": ["Todos Boulevard","Camyla","Bruno","Gilvania"],
         }
 
         # ---------------------------
@@ -710,6 +729,10 @@ def visualizar_tarefas_chrys():
         with col4:
                 data = st.date_input("Selecione a data:")
 
+        feito = ["Chrys"]
+        
+        criada = st.selectbox("Criadora da tarefa: ",feito)
+
         # ---------------------------
         # CONFIGURAÇÃO GOOGLE SHEETS
         # ---------------------------
@@ -742,7 +765,7 @@ def visualizar_tarefas_chrys():
 
                 colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data"]
                 planilha_Dados = planilha_Dados[colunas_desejadas]
-
+                planilha_Dados = planilha_Dados[planilha_Dados["Criada"] == criada]
                 planilha_Dados["Data"] = pd.to_datetime(
                         planilha_Dados["Data"],
                         dayfirst=True,
@@ -751,7 +774,7 @@ def visualizar_tarefas_chrys():
 
                 planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
 
-                contagemA = planilha_Dados["Criada"].astype(str).str.contains("Victor", case=False, na=False).sum()
+                contagemA = planilha_Dados["Criada"].astype(str).str.contains("Chrys", case=False, na=False).sum()
 
                 # ---------------------------
                 # CHECKBOX PARA EXCLUSÃO

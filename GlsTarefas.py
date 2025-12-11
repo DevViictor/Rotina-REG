@@ -41,7 +41,7 @@ def tarefas_iguatemi():
 
     nomes_por_loja = {
         " ": [" "],
-        "LOJA IGUATEMI | BA": ["Max", "Denise"],
+        "LOJA IGUATEMI | BA": ["Max", "Denise","Todos Iguatemi |"],
     }
 
     # ---------------------------
@@ -245,7 +245,7 @@ def tarefas_iguatemi2():
 
     nomes_por_loja = {
         " ": [" "],
-        "LOJA IGUATEMI || BA": ["Diego","Andressa"],
+        "LOJA IGUATEMI || BA": ["Diego","Andressa","Todos Iguatemi ||"],
     }
 
     # ---------------------------
@@ -405,7 +405,7 @@ def tarefas_nort():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA NORT SHOP": ["Jairo","Wanderlei"],
+    "LOJA NORT SHOP": ["Todos Norte","Jairo","Wanderlei"],
     }
 
     # ---------------------------
@@ -565,7 +565,7 @@ def tarefas_ssa1():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA SSA |": ["Ana","Francisca","Vinicius"],   
+    "LOJA SSA |": ["Ana","Francisca","Vinicius","Todos SSA |"],   
     
     }
 
@@ -725,7 +725,7 @@ def tarefas_ssa2():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA SSA ||": ["Vitor","Mailan"],
+    "LOJA SSA ||": ["Vitor","Mailan","Todos SSA ||"],
     
     }
 
@@ -886,7 +886,7 @@ def tarefas_bela():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA BELA VISTA": ["Vanessa","Danilo"],
+    "LOJA BELA VISTA": ["Vanessa","Danilo","Todos Bela"],
     
     }
 
@@ -1046,7 +1046,7 @@ def tarefas_parela():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA BELA VISTA": ["Vanessa","Danilo"]
+    "LOJA BELA VISTA": ["Vanessa","Danilo","Todos Paralela"]
     }
 
 
@@ -1207,7 +1207,7 @@ def tarefas_parque():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA PARQUE SHOP": ["Denise_Parque","Neide"],
+    "LOJA PARQUE SHOP": ["Denise_Parque","Neide","Todos Parque",],
     
     }
 
@@ -1370,7 +1370,7 @@ def tarefas_barra():
     nomes_por_loja = {
     " ": [" "],
 
-    "LOJA BARRA": ["Igor","Carol","Alana"],
+    "LOJA BARRA": ["Igor","Carol","Alana","Todos Barra"],
     
     }
 
@@ -1535,7 +1535,7 @@ def tarefas_piedade():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA PIEDADE": ["DiegoL","Marcus"],
+    "LOJA PIEDADE": ["DiegoL","Marcus","Todos Piedade"],
     
     }
     # ---------------------------
@@ -1695,7 +1695,7 @@ def tarefas_lapa():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA LAPA": ["Sara","Rafael"],
+    "LOJA LAPA": ["Sara","Rafael","Todos Lapa"],
    
     }
     # ---------------------------
@@ -1854,7 +1854,7 @@ def tarefas_itinerante():
     nomes_por_loja = {
     " ": [" "],
     
-    "ITINERANTES": ["Lázaro","Lee","Marcus"],
+    "ITINERANTES": ["Lázaro","Lee","Marcus","Todos Itinerantes"],
     }
 
 
@@ -2013,7 +2013,7 @@ def tarefas_boulevard():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA BOULEVARD": ["Camyla","Bruno","Gilvania"],
+    "LOJA BOULEVARD": ["Camyla","Bruno","Gilvania","Todos Boulevard"],
     }
 
 
