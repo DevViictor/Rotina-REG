@@ -41,7 +41,7 @@ def tarefas_iguatemi():
 
     nomes_por_loja = {
         " ": [" "],
-        "LOJA IGUATEMI | BA": ["Max", "Denise","Todos Iguatemi |"],
+        "LOJA IGUATEMI | BA": ["GLS","Todos Iguatemi |","Max", "Denise"],
     }
 
     # ---------------------------
@@ -245,7 +245,7 @@ def tarefas_iguatemi2():
 
     nomes_por_loja = {
         " ": [" "],
-        "LOJA IGUATEMI || BA": ["Diego","Andressa","Todos Iguatemi ||"],
+        "LOJA IGUATEMI || BA": ["GLS","Todos Iguatemi ||""Diego","Andressa"],
     }
 
     # ---------------------------
@@ -392,7 +392,7 @@ def tarefas_nort():
     # ---------------------------
     gvs = [ 
             
-            "GLS DA CARTEIRA DE FELIPE",
+        "GLS DA CARTEIRA DE FELIPE",
     ]
            
         
@@ -405,7 +405,7 @@ def tarefas_nort():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA NORT SHOP": ["Todos Norte","Jairo","Wanderlei"],
+    "LOJA NORT SHOP": ["GLS","Todos Norte","Jairo","Wanderlei"],
     }
 
     # ---------------------------
@@ -565,7 +565,7 @@ def tarefas_ssa1():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA SSA |": ["Ana","Francisca","Vinicius","Todos SSA |"],   
+    "LOJA SSA |": ["GLS","Todos SSA |","Ana","Francisca","Vinicius"],   
     
     }
 
@@ -886,7 +886,7 @@ def tarefas_bela():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA BELA VISTA": ["Vanessa","Danilo","Todos Bela"],
+    "LOJA BELA VISTA": ["Todos SSA |","Todos Bela","Vanessa","Danilo"]
     
     }
 
@@ -1046,7 +1046,7 @@ def tarefas_parela():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA BELA VISTA": ["Vanessa","Danilo","Todos Paralela"]
+    "LOJA BELA VISTA": ["GLS","Todos Paralela","Vanessa","Danilo"]
     }
 
 
@@ -1207,7 +1207,7 @@ def tarefas_parque():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA PARQUE SHOP": ["Denise_Parque","Neide","Todos Parque",],
+    "LOJA PARQUE SHOP": ["GLS","Todos Parque","Denise_Parque","Neide"],
     
     }
 
@@ -1370,7 +1370,7 @@ def tarefas_barra():
     nomes_por_loja = {
     " ": [" "],
 
-    "LOJA BARRA": ["Igor","Carol","Alana","Todos Barra"],
+    "LOJA BARRA": ["GLS","Todos Barra","Igor","Carol","Alana"],
     
     }
 
@@ -1535,7 +1535,7 @@ def tarefas_piedade():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA PIEDADE": ["DiegoL","Marcus","Todos Piedade"],
+    "LOJA PIEDADE": ["GLS","Todos Piedade","DiegoL","Marcus"],
     
     }
     # ---------------------------
@@ -1695,7 +1695,7 @@ def tarefas_lapa():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA LAPA": ["Sara","Rafael","Todos Lapa"],
+    "LOJA LAPA": ["GLS","Todos Lapa","Sara","Rafael"],
    
     }
     # ---------------------------
@@ -2013,7 +2013,7 @@ def tarefas_boulevard():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA BOULEVARD": ["Camyla","Bruno","Gilvania","Todos Boulevard"],
+    "LOJA BOULEVARD": ["GLS","Todos Boulevard","Camyla","Bruno","Gilvania"],
     }
 
 

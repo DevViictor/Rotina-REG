@@ -7,13 +7,62 @@ import datetime as dt
 from PIL import Image
 
 
-icon = Image.open("image/vivo.png")
-
 #BARRA
 
 def tarefas_igor():
 
     st.set_page_config(page_title="R.E.G IGOR", page_icon=icon,layout="wide")
+   
+    gvs = ["",
+        "TODOS OS GVS",
+        "TODOS OS GLS",
+        "GLS DA CARTEIRA DE FABIANA",
+        "GLS DA CARTEIRA DE FELIPE",
+        "GLS DA CARTEIRA DE CHRYS",
+        "GLS DA CARTEIRA DE JOHN",
+        "TODOS OS ITINERANTES"
+    ]
+        
+    lojas_por_carteira = {
+        "": [""],
+        "TODOS OS GVS": ["GVS"],
+
+        "TODOS OS GLS": ["GLS"],
+
+        "GLS DA CARTEIRA DE FABIANA": [
+            "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA PARALELA","LOJA PARQUE SHOP"
+        ],
+        "GLS DA CARTEIRA DE FELIPE": [
+            "LOJA IGUATEMI | BA","LOJA IGUATEMI || BA","LOJA NORT SHOP"
+        ],
+        "GLS DA CARTEIRA DE JOHN": [
+            "LOJA BARRA","LOJA PIEDADE","LOJA LAPA"
+        ],
+        "GLS DA CARTEIRA DE CHRYS": [
+            "LOJA BOULEVARD"
+        ],
+        "TODOS OS ITINERANTES": ["ITINERANTES"]
+    }
+
+    nomes_por_loja = {
+        "": [""],
+        "GVS": ["Todos","Fabiana","Felipe","John","Chrys"],
+        "TODOS OS GLS": ["GLS"],
+        "TODOS OS ITINERANTES": ["ITINERANTES"],
+        "LOJA SSA |": ["Ana","Francisca","Vinicius"],
+        "LOJA SSA ||": ["Vitor","Mailan"],
+        "LOJA BELA VISTA": ["Vanessa","Danilo"],
+        "LOJA PARALELA": ["Crislaine","Neide"],
+        "LOJA PARQUE SHOP": ["Denise_Parque","Neide"],
+        "LOJA IGUATEMI | BA": ["Max","Denise"],
+        "LOJA IGUATEMI || BA": ["Diego","Andressa"],
+        "LOJA NORT SHOP": ["Jairo","Wanderlei"],
+        "LOJA BARRA": ["Igor","Carol","Alana"],
+        "LOJA PIEDADE": ["DiegoL","Marcusl"],
+        "LOJA LAPA": ["Sara","Rafael"],
+        "LOJA BOULEVARD": ["Camyla","Bruno","Gilvania"],
+        "ITINERANTES": ["Lázaro","Lee","Marcus"],
+    }
 
     # --- Controle de acesso ---
     if "role" not in st.session_state or st.session_state.role != "John":

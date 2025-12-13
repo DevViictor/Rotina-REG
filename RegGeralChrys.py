@@ -44,57 +44,6 @@ def obter_resumo(planilha, consultores):
 
 
 
-def relatorio_chrys_geral():
-    # Controle de acesso
-    if "role" not in st.session_state or st.session_state.role not in ["Victor","Chrys"]:
-        st.error("⚠️ Acesso negado!")
-        st.stop()
-
-    # Configuração Google Sheets
-    gcp_info = st.secrets["geral"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-    # Definição das lojas e seus consultores
-    lojas = {
-        "BOULEVARD": ["Camyla", "Bruno","Gilvania"],
-    }
-
-    resultados = []
-
-    for loja, consultores in lojas.items():
-        df_resumo = obter_resumo(planilha, consultores)
-
-        # Soma apenas as porcentagens
-        soma_percentuais = df_resumo["Percentual"].sum()
-
-        resultados.append({
-            "Loja": loja,
-            "Total % Concluído": f"{soma_percentuais}%"
-        })
-    
-    cola,colb,colc = st.columns([4,1,1])
-    image_logo = Image.open("image/Image (2).png")
-    with colc :
-        st.image(image_logo)
-
-    # Exibir tabela final
-    with cola:
-        st.header("R.E.G - CARTEIRA CHRYS")
-    st.dataframe(pd.DataFrame(resultados))
-
-
-
-
 # --- Função genérica para qualquer carteira ---
 def relatorio_carteira(nome_carteira, consultores):
     # Controle de acesso

@@ -133,66 +133,6 @@ def obter_resumo(planilha, consultores):
 
     return pd.DataFrame(resumo)
 
-def relatorio_fabiana_geral():
-    # Controle de acesso
-    if "role" not in st.session_state or st.session_state.role not in ["Victor","Fabiana"]:
-        st.error("⚠️ Acesso negado!")
-        st.stop()
-
-    # Configuração Google Sheets
-    gcp_info = st.secrets["geral"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-    # Definição das lojas e seus consultores
-    lojas = {
-        "SSA1": ["Ana", "Francisca", "Vinicius"],
-        "SSA2": ["Vitor", "Mailan"],
-        "BELA VISTA": ["Vanessa", "Danilo"],
-        "PARALELA": ["Crislaine", "Neide"],
-        "PARQUE": ["Denise_Paque", "Adrielle"]
-    }
-
-    # Selectbox para filtrar loja
-    lista_lojas = list(lojas.keys())
-    loja_selecionada = st.selectbox("Filtrar por loja:", lista_lojas)
-
-    resultados = []
-
-    for loja, consultores in lojas.items():
-        if loja_selecionada != "" and loja != loja_selecionada:
-            continue
-
-        df_resumo = obter_resumo(planilha, consultores)
-
-        # Converter percentuais caso estejam como string
-       
-        soma_percentuais = df_resumo["Percentual"].sum()
-
-        resultados.append({
-            "Loja": loja,
-            "Total % Concluído": f"{soma_percentuais:.2f}%"
-        })
-    
-    # Layout
-    cola, colc = st.columns([4,1])
-    image_logo = Image.open("image/Image (2).png")
-    with colc:
-        st.image(image_logo)
-
-    with cola:
-        st.header("R.E.G - CARTEIRA FABIANA")
-        st.dataframe(pd.DataFrame(resultados))
-
 
 
 

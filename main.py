@@ -5,16 +5,19 @@ from GvFelipe import tarefas_andressa, tarefas_denise , tarefas_diego ,tarefas_j
 from GVJohn import tarefas_alana , tarefas_carol , tarefas_diegol , tarefas_igor ,tarefas_marcus ,tarefas_rafel ,tarefas_sara 
 from PIL import Image
 from CriarTarefas import criar_page,criar_page_fabiana,criar_page_chrys,criar_page_felipe,criar_page_john
-from RegGeralFabiana import relatorio_ssa1,relatorio_ssa2 , relatorio_bela ,relatorio_paralela ,relatorio_parque,relatorio_fabiana_geral
-from RegGeralFelipe import relatorio_iguatemi1,relatorio_iguatemi2,relatorio_nort , relatorio_felipe_geral
-from RegGeralChrys import relatorio_boulevard, relatorio_chrys_geral
-from RegGeralJohn import relatorio_barra , relatorio_lapa ,relatorio_piedade , relatorio_john_geral
+from RegGeralFabiana import relatorio_ssa1,relatorio_ssa2 , relatorio_bela ,relatorio_paralela ,relatorio_parque
+from RegGeralFelipe import relatorio_iguatemi1,relatorio_iguatemi2,relatorio_nort 
+from RegGeralChrys import relatorio_boulevard
+from RegGeralJohn import relatorio_barra , relatorio_lapa ,relatorio_piedade 
 from RegItirerantes import relatorio_intinerantes
 from VisualizarTarefas import visualizar_tarefas,visualizar_tarefas_fabiana, visualizar_tarefas_chrys ,visualizar_tarefas_felipe ,visualizar_tarefas_john
 from TarefasProntas import modelos_prontos,modelos_prontos_fabiana, modelos_prontos_chrys, modelos_prontos_felipe, modelos_prontos_john
 from GlsTarefas import tarefas_iguatemi, tarefas_barra , tarefas_bela ,tarefas_iguatemi2 ,tarefas_itinerante ,tarefas_lapa,tarefas_nort,tarefas_parela,tarefas_parque,tarefas_piedade,tarefas_ssa1,tarefas_ssa2,tarefas_boulevard
 from GvTarefas import tarefas_chyrs,tarefas_fabiana,tarefas_felipe,tarefas_john
-
+from VisualizarTarefasGv import  visualizar_tarefas_gvs
+from NotificaTarefas import notificar_page
+from ModeloNotificacoes import notifcacao_prontas
+from VisualizarNoficações import visualizar_notificacao
 
 
 st.sidebar.image("image/Image (2).png")
@@ -61,15 +64,11 @@ def run_navigation():
     #Victor
      
     #geral
-    Relatorio_fabiana = (st.Page(relatorio_fabiana_geral, title="FABIANA SACRAMENTO"))
-    Relatorio_felipe = (st.Page(relatorio_felipe_geral, title="FELIPE SILVA"))
-    Relatorio_john = (st.Page(relatorio_john_geral, title="JOHN COITO"))
-    Relatorio_chrys = (st.Page(relatorio_chrys_geral, title="CHRYS REBOUÇAS"))
-    
-
+    Visualizar_tarefas_gvs = (st.Page( visualizar_tarefas_gvs, title="GVS"))
+   
 
     #CriarTarefas
-    cadastro = st.Page(criar_page, title="📝 Criar")
+    cadastro = st.Page(criar_page, title="📝 Criar tarefas")
     cadastro_fabiana = st.Page(criar_page_fabiana, title="📝 Criar")
     cadastro_felipe =  st.Page(criar_page_felipe, title="📝 Criar")
     cadastro_john =  st.Page(criar_page_john, title="📝 Criar")
@@ -154,11 +153,11 @@ def run_navigation():
 
 
     #Tarefas
-    Visualizar_tarefas_victor = st.Page(visualizar_tarefas,title="📝 Criadas")
-    Visualizar_tarefas_fabiana = st.Page(visualizar_tarefas_fabiana,title="📝 Criadas ")
-    Visualizar_tarefas_felipe = st.Page(visualizar_tarefas_felipe,title="📝 Criadas ")
-    Visualizar_tarefas_johon = st.Page(visualizar_tarefas_john,title="📝 Criadas ")
-    Visualizar_tarefas_chrys = st.Page(visualizar_tarefas_chrys,title="📝 Criadas ")
+    Visualizar_tarefas_victor = st.Page(visualizar_tarefas,title="📝 Tarefas criadas")
+    Visualizar_tarefas_fabiana = st.Page(visualizar_tarefas_fabiana,title="📝 Tarefas criadas ")
+    Visualizar_tarefas_felipe = st.Page(visualizar_tarefas_felipe,title="📝 Tarefas criadas ")
+    Visualizar_tarefas_johon = st.Page(visualizar_tarefas_john,title="📝 Tarefas criadas ")
+    Visualizar_tarefas_chrys = st.Page(visualizar_tarefas_chrys,title="📝 Tarefas criadas ")
 
     #TarefasGVs
     Fabiana_Tarefa = st.Page(tarefas_fabiana,title="📝 Suas tarefas")
@@ -192,11 +191,18 @@ def run_navigation():
     Tarefas_itinerantes = st.Page(tarefas_itinerante,title="🏬 ITINERANTES")
     
     #modelos
-    Visualizar_modelos = st.Page(modelos_prontos,title="📝 Modelos ")
-    Visualizar_modelos_fabiana = st.Page(modelos_prontos_fabiana,title="📝 Modelos ")
-    Visualizar_modelos_felipe = st.Page(modelos_prontos_felipe,title="📝 Modelos ")
-    Visualizar_modelos_john = st.Page(modelos_prontos_john,title="📝 Modelos ")
-    Visualizar_modelos_chrys = st.Page(modelos_prontos_chrys,title="📝 Modelos ")
+    Visualizar_modelos = st.Page(modelos_prontos,title="📝 Modelos de tarefas")
+    Visualizar_modelos_fabiana = st.Page(modelos_prontos_fabiana,title="📝 Modelos de tarefas")
+    Visualizar_modelos_felipe = st.Page(modelos_prontos_felipe,title="📝 Modelos de tarefas ")
+    Visualizar_modelos_john = st.Page(modelos_prontos_john,title="📝 Modelos de tarefas")
+    Visualizar_modelos_chrys = st.Page(modelos_prontos_chrys,title="📝 Modelos de tarefas")
+
+    #noficar
+    Criar_notificacao = st.Page(notificar_page,title="🔔 Criar notificação ")
+    Tarefas_notificacao = st.Page(visualizar_notificacao,title="🔔 Notificações de criadas ")
+    Modelos_notificacao = st.Page(notifcacao_prontas,title="🔔 Modelos de notificação ")
+    
+
 
 
 
@@ -206,12 +212,7 @@ def run_navigation():
         menu = {
     
             "🏬 R.E.G ": [
-                Relatorio_fabiana,
-                Relatorio_felipe,
-                Relatorio_john,
-                Relatorio_chrys
-
-                
+                Visualizar_tarefas_gvs
             ],
         }
         menu2 = {
@@ -246,10 +247,13 @@ def run_navigation():
         
         menu3 = {
     
-            "TAREFAS": [
+            "AÇÕES": [
                 cadastro,
                 Visualizar_tarefas_victor,
-                Visualizar_modelos            
+                Visualizar_modelos,
+                Criar_notificacao,
+                Tarefas_notificacao,
+                Modelos_notificacao    
             ],
         }
     
@@ -257,7 +261,7 @@ def run_navigation():
 
         menu = {
             "🏬 R.E.G": [
-                Relatorio_felipe
+                Felipe_Tarefa
                 ,
             ],
         }
@@ -283,7 +287,7 @@ def run_navigation():
                 cadastro_felipe,
                 Visualizar_tarefas_felipe,
                 Visualizar_modelos_felipe,
-                Felipe_Tarefa
+                
             ],
         }
 
@@ -292,7 +296,7 @@ def run_navigation():
 
         menu = {
             "🏬 R.E.G": [
-                Relatorio_fabiana
+                Fabiana_Tarefa
     
             ],
         }
@@ -326,7 +330,7 @@ def run_navigation():
                 cadastro_fabiana,
                 Visualizar_tarefas_fabiana,
                 Visualizar_modelos_fabiana,
-                Fabiana_Tarefa
+                
             ],
         }
             
@@ -335,7 +339,7 @@ def run_navigation():
 
         menu = {
             "🏬 R.E.G": [
-                Relatorio_john
+                John_Tarefa
     
             ],
         }
@@ -364,7 +368,7 @@ def run_navigation():
                 cadastro_john,
                 Visualizar_tarefas_johon,
                 Visualizar_modelos_john,
-                John_Tarefa
+                
             ],
         }
     
@@ -372,7 +376,7 @@ def run_navigation():
 
         menu = {
             "🏬 R.E.G": [
-                Relatorio_chrys
+                Chrys_Tarefa
     
             ],
         }
@@ -389,7 +393,7 @@ def run_navigation():
                 cadastro_chrys,
                 Visualizar_tarefas_chrys,
                 Visualizar_modelos_chrys,
-                Chrys_Tarefa
+                
                 
             ],
         }

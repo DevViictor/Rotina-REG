@@ -33,6 +33,7 @@ def criar_page():
     # --- LISTAS ---
     gvs = ["",
         "TODOS OS GVS",
+        "TODOS OS GLS",
         "GLS DA CARTEIRA DE FABIANA",
         "GLS DA CARTEIRA DE FELIPE",
         "GLS DA CARTEIRA DE CHRYS",
@@ -43,6 +44,8 @@ def criar_page():
     lojas_por_carteira = {
         "": [""],
         "TODOS OS GVS": ["GVS"],
+
+        "TODOS OS GLS": ["GLS"],
 
         "GLS DA CARTEIRA DE FABIANA": [
             "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA PARALELA","LOJA PARQUE SHOP"
@@ -62,19 +65,21 @@ def criar_page():
     nomes_por_loja = {
         "": [""],
         "GVS": ["Todos","Fabiana","Felipe","John","Chrys"],
-        "LOJA SSA |": ["Todos SSA |","Ana","Francisca","Vinicius"],
-        "LOJA SSA ||": ["Todos SSA ||","Vitor","Mailan"],
-        "LOJA BELA VISTA": ["Todos Bela","Vanessa","Danilo"],
-        "LOJA PARALELA": ["Todos Paralela","Crislaine","Neide"],
-        "LOJA PARQUE SHOP": ["Todos Parque","Denise_Parque","Neide"],
-        "LOJA IGUATEMI | BA": ["Todos Iguatemi |","Max","Denise"],
-        "LOJA IGUATEMI || BA": ["Todos Iguatemi ||","Diego","Andressa"],
-        "LOJA NORT SHOP": ["Todos Norte","Jairo","Wanderlei"],
-        "LOJA BARRA": ["Todos Barra","Igor","Carol","Alana"],
-        "LOJA PIEDADE": ["Todos Piedade","DiegoL","Marcusl"],
-        "LOJA LAPA": ["Todos Lapa","Sara","Rafael"],
-        "LOJA BOULEVARD": ["Todos Boulevard","Camyla","Bruno","Gilvania"],
-        "ITINERANTES": ["Todos Itinerantes","Lázaro","Lee","Marcus"],
+        "TODOS OS GLS": ["GLS"],
+        "TODOS OS ITINERANTES": ["ITINERANTES"],
+        "LOJA SSA |": ["Ana","Francisca","Vinicius"],
+        "LOJA SSA ||": ["Vitor","Mailan"],
+        "LOJA BELA VISTA": ["Vanessa","Danilo"],
+        "LOJA PARALELA": ["Crislaine","Neide"],
+        "LOJA PARQUE SHOP": ["Denise_Parque","Adrielle"],
+        "LOJA IGUATEMI | BA": ["Max","Denise"],
+        "LOJA IGUATEMI || BA": ["Diego","Andressa"],
+        "LOJA NORT SHOP": ["Jairo","Wanderlei"],
+        "LOJA BARRA": ["Igor","Carol","Alana"],
+        "LOJA PIEDADE": ["DiegoL","Marcusl"],
+        "LOJA LAPA": ["Sara","Rafael"],
+        "LOJA BOULEVARD": ["Camyla","Bruno","Gilvania"],
+        "ITINERANTES": ["Lázaro","Lee","Marcus"],
     }
 
     tipos_recorrencia = ["", "Não recorrente", "Diária", "Semanal",
@@ -265,8 +270,6 @@ def criar_page_fabiana():
     # --- LISTAS ---
     gvs = ["", 
         "GLS DA CARTEIRA DE FABIANA",
-       
-        
     ]
         
     lojas_por_carteira = {
