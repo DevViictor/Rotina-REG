@@ -65,21 +65,21 @@ def run_navigation():
 
     #FElipe:
 
-    Tarefas_carteria_felipe = st.Page(tarefas_carteira_felipe, title="R.E.G")
+    Tarefas_carteria_felipe = st.Page(tarefas_carteira_felipe, title="LOJAS")
    
 
     #Fabiana 
    
-    Tarefas_carteria_fabiana = st.Page(tarefas_carteira_fabiana, title="R.E.G")
+    Tarefas_carteria_fabiana = st.Page(tarefas_carteira_fabiana, title="LOJAS")
     
     #Johm
     
-    Tarefas_carteria_johm = st.Page(tarefas_carteira_john, title="R.E.G")
+    Tarefas_carteria_johm = st.Page(tarefas_carteira_john, title="LOJAS")
     
     
     #Chrys
 
-    Tarefas_carteria_chrys = st.Page(tarefas_carteira_chrys, title="R.E.G")
+    Tarefas_carteria_chrys = st.Page(tarefas_carteira_chrys, title="LOJAS")
    
 
 
@@ -91,10 +91,10 @@ def run_navigation():
     Visualizar_tarefas_chrys = st.Page(visualizar_tarefas_chrys,title="📝 Tarefas criadas ")
 
     #TarefasGVs
-    Fabiana_Tarefa = st.Page(tarefas_fabiana,title="📝 Suas tarefas")
-    Felipe_Tarefa = st.Page(tarefas_felipe,title="📝 Suas tarefas")
-    John_Tarefa = st.Page(tarefas_john,title="📝 Suas tarefas")
-    Chrys_Tarefa = st.Page(tarefas_chyrs,title="📝 Suas tarefas")
+    Fabiana_Tarefa = st.Page(tarefas_fabiana,title="SEU R.E.G")
+    Felipe_Tarefa = st.Page(tarefas_felipe,title="SEU R.E.G")
+    John_Tarefa = st.Page(tarefas_john,title="SEU R.E.G")
+    Chrys_Tarefa = st.Page(tarefas_chyrs,title="SEU R.E.G")
 
 
     #tarefas_loja
@@ -192,7 +192,7 @@ def run_navigation():
         }
 
         menu2 = {
-            "🏬 R.E.G. LOJAS": [
+            "🏬 R.E.G LOJAS": [
               Tarefas_carteria_fabiana
             ],
             
@@ -219,7 +219,7 @@ def run_navigation():
 
 
         menu2 = {
-            "🏬 R.E.G LOJA": [
+            "🏬 R.E.G LOJAS": [
                 Tarefas_carteria_johm
             ]
 
@@ -243,7 +243,7 @@ def run_navigation():
             ],
         }
         menu2 = {
-            "🏬 R.E.G LOJA": [
+            "🏬 R.E.G LOJAS": [
                 Tarefas_carteria_chrys
             ]
         }
