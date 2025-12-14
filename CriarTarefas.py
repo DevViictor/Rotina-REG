@@ -304,7 +304,7 @@ def criar_page_fabiana():
    
 
     # --- CARREGAR MODELOS ---
-    aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefas")
+    aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefasFabiana")
     dados_modelos = aba_modelos.get_all_records()
     df_modelos = pd.DataFrame(dados_modelos)
     lista_modelos = [""] + df_modelos["Título"].tolist() if not df_modelos.empty else [""]
@@ -503,7 +503,7 @@ def criar_page_felipe():
 
 
     # --- CARREGAR MODELOS ---
-    aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefas")
+    aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefasFelipe")
     dados_modelos = aba_modelos.get_all_records()
     df_modelos = pd.DataFrame(dados_modelos)
     lista_modelos = [""] + df_modelos["Título"].tolist() if not df_modelos.empty else [""]
@@ -706,7 +706,7 @@ def criar_page_john():
     
 
     # --- CARREGAR MODELOS ---
-    aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefas")
+    aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefasJohn")
     dados_modelos = aba_modelos.get_all_records()
     df_modelos = pd.DataFrame(dados_modelos)
     lista_modelos = [""] + df_modelos["Título"].tolist() if not df_modelos.empty else [""]
@@ -903,7 +903,7 @@ def criar_page_chrys():
     # --- FUNÇÃO NOTIFICAÇÃO ---
  
     # --- CARREGAR MODELOS ---
-    aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefas")
+    aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefasChrys")
     dados_modelos = aba_modelos.get_all_records()
     df_modelos = pd.DataFrame(dados_modelos)
     lista_modelos = [""] + df_modelos["Título"].tolist() if not df_modelos.empty else [""]
