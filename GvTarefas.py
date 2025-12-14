@@ -31,7 +31,7 @@ def tarefas_fabiana():
 
     nomes_por_loja = {
         " ": [" "],
-        "MINHAS TAREFAS": ["Fabiana","Todos"],
+        "MINHAS TAREFAS": ["Todos","Fabiana"],
     }
 
     # ---------------------------
@@ -70,7 +70,7 @@ def tarefas_fabiana():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["fabi"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -179,6 +179,7 @@ def tarefas_felipe():
     # ---------------------------
     gvs = [
         "GV",
+        
     ]
 
     lojas_por_carteira = {
@@ -190,7 +191,7 @@ def tarefas_felipe():
 
     nomes_por_loja = {
         " ": [" "],
-        "MINHAS TAREFAS": ["Felipe","Todos"],
+        "MINHAS TAREFAS": ["Todos","Felipe"],
     }
 
     # ---------------------------
@@ -229,7 +230,7 @@ def tarefas_felipe():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["fel"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -348,7 +349,7 @@ def tarefas_john():
 
     nomes_por_loja = {
         " ": [" "],
-        "MINHAS TAREFAS": ["John","Todos"],
+        "MINHAS TAREFAS": ["Todos","John"],
     }
 
     # ---------------------------
@@ -387,7 +388,7 @@ def tarefas_john():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["joh"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -505,7 +506,7 @@ def tarefas_chyrs():
 
     nomes_por_loja = {
         " ": [" "],
-        "MINHAS TAREFAS": ["Chrys","Todos"],
+        "MINHAS TAREFAS": ["Todos","Chrys"],
     }
 
     # ---------------------------
@@ -544,7 +545,7 @@ def tarefas_chyrs():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["chr"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(

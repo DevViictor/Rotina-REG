@@ -41,7 +41,7 @@ def tarefas_iguatemi():
 
     nomes_por_loja = {
         " ": [" "],
-        "LOJA IGUATEMI | BA": ["GLS","Todos Iguatemi |","Max", "Denise"],
+        "LOJA IGUATEMI | BA": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Iguatemi |","Max", "Denise"],
     }
 
     # ---------------------------
@@ -103,7 +103,7 @@ def tarefas_iguatemi():
     planilha_Dados = carregar_pedidos()
 
     if planilha_Dados.empty:
-        st.warning("Nenhum modelo encontrado.")
+        st.warning("Nenhuma tarefa encontrada.")
         return
 
     # Padronizar colunas para evitar erro
@@ -245,7 +245,7 @@ def tarefas_iguatemi2():
 
     nomes_por_loja = {
         " ": [" "],
-        "LOJA IGUATEMI || BA": ["GLS","Todos Iguatemi ||""Diego","Andressa"],
+        "LOJA IGUATEMI || BA": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Iguatemi ||""Diego","Andressa"],
     }
 
     # ---------------------------
@@ -309,7 +309,7 @@ def tarefas_iguatemi2():
     planilha_Dados = carregar_pedidos()
 
     if planilha_Dados.empty:
-        st.warning("Nenhum modelo encontrado.")
+        st.warning("Nenhuma tarefa encontrada.")
         return
 
     planilha_Dados["Data"] = pd.to_datetime(
@@ -383,7 +383,7 @@ def tarefas_nort():
     st.set_page_config(page_title="R.E.G IGUATEMI ||", page_icon=icon, layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Nort":
+    if "role" not in st.session_state or st.session_state.role != "Norte":
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -405,7 +405,7 @@ def tarefas_nort():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA NORT SHOP": ["GLS","Todos Norte","Jairo","Wanderlei"],
+    "LOJA NORT SHOP": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Norte","Jairo","Wanderlei"],
     }
 
     # ---------------------------
@@ -469,7 +469,7 @@ def tarefas_nort():
     planilha_Dados = carregar_pedidos()
 
     if planilha_Dados.empty:
-        st.warning("Nenhum modelo encontrado.")
+        st.warning("Nenhuma tarefa encontrada.")
         return
 
     planilha_Dados["Data"] = pd.to_datetime(
@@ -565,7 +565,7 @@ def tarefas_ssa1():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA SSA |": ["GLS","Todos SSA |","Ana","Francisca","Vinicius"],   
+    "LOJA SSA |": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos SSA |","Ana","Francisca","Vinicius"],   
     
     }
 
@@ -631,7 +631,7 @@ def tarefas_ssa1():
     planilha_Dados = carregar_pedidos()
 
     if planilha_Dados.empty:
-        st.warning("Nenhum modelo encontrado.")
+        st.warning("Nenhuma tarefa encontrada.")
         return
 
     planilha_Dados["Data"] = pd.to_datetime(
@@ -725,7 +725,7 @@ def tarefas_ssa2():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA SSA ||": ["Vitor","Mailan","Todos SSA ||"],
+    "LOJA SSA ||": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos SSA ||","Vitor","Mailan"],
     
     }
 
@@ -791,7 +791,7 @@ def tarefas_ssa2():
     planilha_Dados = carregar_pedidos()
 
     if planilha_Dados.empty:
-        st.warning("Nenhum modelo encontrado.")
+        st.warning("Nenhuma tarefa encontrada.")
         return
 
     planilha_Dados["Data"] = pd.to_datetime(
@@ -886,7 +886,7 @@ def tarefas_bela():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA BELA VISTA": ["Todos SSA |","Todos Bela","Vanessa","Danilo"]
+    "LOJA BELA VISTA": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Bela","Vanessa","Danilo"]
     
     }
 
@@ -952,7 +952,7 @@ def tarefas_bela():
     planilha_Dados = carregar_pedidos()
 
     if planilha_Dados.empty:
-        st.warning("Nenhum modelo encontrado.")
+        st.warning("Nenhuma tarefa encontrada.")
         return
 
     planilha_Dados["Data"] = pd.to_datetime(
@@ -1046,7 +1046,7 @@ def tarefas_parela():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA BELA VISTA": ["GLS","Todos Paralela","Vanessa","Danilo"]
+    "LOJA BELA VISTA": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Paralela","Vanessa","Danilo"]
     }
 
 
@@ -1111,7 +1111,7 @@ def tarefas_parela():
     planilha_Dados = carregar_pedidos()
 
     if planilha_Dados.empty:
-        st.warning("Nenhum modelo encontrado.")
+        st.warning("Nenhuma tarefa encontrada.")
         return
 
     planilha_Dados["Data"] = pd.to_datetime(
@@ -1207,7 +1207,7 @@ def tarefas_parque():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA PARQUE SHOP": ["GLS","Todos Parque","Denise_Parque","Neide"],
+    "LOJA PARQUE SHOP": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Parque","Denise_Parque","Neide"],
     
     }
 
@@ -1273,7 +1273,7 @@ def tarefas_parque():
     planilha_Dados = carregar_pedidos()
 
     if planilha_Dados.empty:
-        st.warning("Nenhum modelo encontrado.")
+        st.warning("Nenhuma tarefa encontrada.")
         return
 
     planilha_Dados["Data"] = pd.to_datetime(
@@ -1370,7 +1370,7 @@ def tarefas_barra():
     nomes_por_loja = {
     " ": [" "],
 
-    "LOJA BARRA": ["GLS","Todos Barra","Igor","Carol","Alana"],
+    "LOJA BARRA": ["GLS(GERAL)","GLS(ABERTURA)","GLS(FECHAMENTO)","Todos Barra","Igor","Carol","Alana"],
     
     }
 
@@ -1435,7 +1435,7 @@ def tarefas_barra():
     planilha_Dados = carregar_pedidos()
 
     if planilha_Dados.empty:
-        st.warning("Nenhum modelo encontrado.")
+        st.warning("Nenhuma tarefa encontrada.")
         return
 
     planilha_Dados["Data"] = pd.to_datetime(
@@ -1535,7 +1535,7 @@ def tarefas_piedade():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA PIEDADE": ["GLS","Todos Piedade","DiegoL","Marcus"],
+    "LOJA PIEDADE": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Piedade","DiegoL","Marcusl"],
     
     }
     # ---------------------------
@@ -1599,7 +1599,7 @@ def tarefas_piedade():
     planilha_Dados = carregar_pedidos()
 
     if planilha_Dados.empty:
-        st.warning("Nenhum modelo encontrado.")
+        st.warning("Nenhuma tarefa encontrada.")
         return
 
     planilha_Dados["Data"] = pd.to_datetime(
@@ -1695,7 +1695,7 @@ def tarefas_lapa():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA LAPA": ["GLS","Todos Lapa","Sara","Rafael"],
+    "LOJA LAPA": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Lapa","Sara","Rafael"],
    
     }
     # ---------------------------
@@ -1759,7 +1759,7 @@ def tarefas_lapa():
     planilha_Dados = carregar_pedidos()
 
     if planilha_Dados.empty:
-        st.warning("Nenhum modelo encontrado.")
+        st.warning("Nenhuma tarefa encontrada.")
         return
 
     planilha_Dados["Data"] = pd.to_datetime(
@@ -1919,7 +1919,7 @@ def tarefas_itinerante():
     planilha_Dados = carregar_pedidos()
 
     if planilha_Dados.empty:
-        st.warning("Nenhum modelo encontrado.")
+        st.warning("Nenhuma tarefa encontrada.")
         return
 
     planilha_Dados["Data"] = pd.to_datetime(
@@ -2013,7 +2013,7 @@ def tarefas_boulevard():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA BOULEVARD": ["GLS","Todos Boulevard","Camyla","Bruno","Gilvania"],
+    "LOJA BOULEVARD": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Boulevard","Camyla","Bruno","Gilvania"],
     }
 
 
@@ -2078,7 +2078,7 @@ def tarefas_boulevard():
     planilha_Dados = carregar_pedidos()
 
     if planilha_Dados.empty:
-        st.warning("Nenhum modelo encontrado.")
+        st.warning("Nenhuma tarefa encontrada.")
         return
 
     planilha_Dados["Data"] = pd.to_datetime(

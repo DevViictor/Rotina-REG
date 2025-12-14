@@ -1,24 +1,13 @@
 import streamlit as st
-from GvFabiana import tarefas_adriele,tarefas_ana,tarefas_crislane,tarefas_danilo,tarefas_deniseP,tarefas_francisca,tarefas_mailan,tarefas_neide,tarefas_vanessa,tarefas_vinicius,tarefas_vitor
-from GvChrys import tarefas_bruno,tarefas_camyla,tarefas_gilvania
-from GvFelipe import tarefas_andressa, tarefas_denise , tarefas_diego ,tarefas_jairo ,tarefas_max, tarefas_wanderlei
-from GVJohn import tarefas_alana , tarefas_carol , tarefas_diegol , tarefas_igor ,tarefas_marcus ,tarefas_rafel ,tarefas_sara 
+from TarefasCarteira import tarefas_carteira_chrys,tarefas_carteira_fabiana,tarefas_carteira_felipe,tarefas_carteira_john
 from PIL import Image
 from CriarTarefas import criar_page,criar_page_fabiana,criar_page_chrys,criar_page_felipe,criar_page_john
-from RegGeralFabiana import relatorio_ssa1,relatorio_ssa2 , relatorio_bela ,relatorio_paralela ,relatorio_parque
-from RegGeralFelipe import relatorio_iguatemi1,relatorio_iguatemi2,relatorio_nort 
-from RegGeralChrys import relatorio_boulevard
-from RegGeralJohn import relatorio_barra , relatorio_lapa ,relatorio_piedade 
-from RegItirerantes import relatorio_intinerantes
 from VisualizarTarefas import visualizar_tarefas,visualizar_tarefas_fabiana, visualizar_tarefas_chrys ,visualizar_tarefas_felipe ,visualizar_tarefas_john
 from TarefasProntas import modelos_prontos,modelos_prontos_fabiana, modelos_prontos_chrys, modelos_prontos_felipe, modelos_prontos_john
 from GlsTarefas import tarefas_iguatemi, tarefas_barra , tarefas_bela ,tarefas_iguatemi2 ,tarefas_itinerante ,tarefas_lapa,tarefas_nort,tarefas_parela,tarefas_parque,tarefas_piedade,tarefas_ssa1,tarefas_ssa2,tarefas_boulevard
 from GvTarefas import tarefas_chyrs,tarefas_fabiana,tarefas_felipe,tarefas_john
 from VisualizarTarefasGv import  visualizar_tarefas_gvs
-from NotificaTarefas import notificar_page
-from ModeloNotificacoes import notifcacao_prontas
-from VisualizarNoficações import visualizar_notificacao
-
+from Intinerantes import tarefas_itinerantes
 
 st.sidebar.image("image/Image (2).png")
 
@@ -74,82 +63,24 @@ def run_navigation():
     cadastro_john =  st.Page(criar_page_john, title="📝 Criar")
     cadastro_chrys =  st.Page(criar_page_chrys, title="📝 Criar")
 
-    #Fabiana
-    Relatorio_ssa1 = (st.Page(relatorio_ssa1, title="SSA |"))
-    Relatorio_ssa2 = (st.Page(relatorio_ssa2, title="SSA ||"))
-    Relatorio_bela = (st.Page(relatorio_bela, title="Bela vista"))
-    Relatorio_paralela = (st.Page(relatorio_paralela, title="Paralela"))
-    Relatorio_parque = (st.Page(relatorio_parque, title="Parque Shop"))
-    
-    #Felipe
-    
-    Relatorio_iguatemi1 = (st.Page(relatorio_iguatemi1, title="Iguatemi |"))
-    Relatorio_iguatemi2 = (st.Page(relatorio_iguatemi2, title="Iguatemi ||"))
-    Relatorio_norte = (st.Page(relatorio_nort, title="Norte shop"))
-
-    #Johm
-    Relatorio_barra = (st.Page(relatorio_barra, title="Barra"))
-    Relatorio_piedade = (st.Page(relatorio_piedade, title="Piedade"))
-    Relatorio_lapa = (st.Page(relatorio_lapa, title="Lapa"))
-    
-    #Chrys
-
-    Relatorio_boulevard = (st.Page(relatorio_boulevard, title="Boulevard"))
-
-    #Intinerantes
-
-    Relatorio_itinerantes = (st.Page(relatorio_intinerantes, title="Itinerantes"))
-    
     #FElipe:
-    
-    #IGUATEMI 1
-    Tarefas_Denise = st.Page(tarefas_denise, title="Denise")
-    Tarefas_max = st.Page(tarefas_max, title="Max")
-    #IGUATEMI 1
-    Tarefas_diego = st.Page(tarefas_diego, title="Diego")
-    Tarefas_andressa= st.Page(tarefas_andressa, title="Andressa")
-    #SALVADORNORTH
-    Tarefas_jairo= st.Page(tarefas_jairo, title="Jairo")
-    Tarefas_wanderlei= st.Page(tarefas_wanderlei, title="Wanderlei")
+
+    Tarefas_carteria_felipe = st.Page(tarefas_carteira_felipe, title="R.E.G")
+   
 
     #Fabiana 
-
-    #SSA1
-    Tarefas_Ana = st.Page(tarefas_ana,title="Ana")
-    Tarefas_francisca = st.Page(tarefas_francisca,title="Francisca")
-    Tarefas_vinicius = st.Page(tarefas_vinicius,title="Vinicius")
-    #SSA2
-    Tarefas_mailan = st.Page(tarefas_mailan,title="Mailan")
-    Tarefas_vitor = st.Page(tarefas_vitor,title="Vitor")
-    #BELA
-    Tarefas_vanessa = st.Page(tarefas_vanessa,title="Vanessa")
-    Tarefas_danilo = st.Page(tarefas_danilo,title="Danilo")
-    #Parela
-    Tarefas_crislane = st.Page(tarefas_crislane,title="Crislane")
-    Tarefas_neide = st.Page(tarefas_neide,title="Neide")
-    #Parque
-    Tarefas_adriele = st.Page(tarefas_adriele,title="Adriele")
-    Tarefas_deniseP = st.Page(tarefas_deniseP,title="Denise")
-
+   
+    Tarefas_carteria_fabiana = st.Page(tarefas_carteira_fabiana, title="R.E.G")
+    
     #Johm
     
-    #Barra
-    Tarefas_alana = st.Page(tarefas_alana,title="Alana")
-    Tarefas_carol = st.Page(tarefas_carol,title="Carol")
-    Tarefas_igor = st.Page(tarefas_igor,title="Igor")
-    #Piedade
-    Tarefas_diegol = st.Page(tarefas_diegol,title="Diego")
-    Tarefas_marcus = st.Page(tarefas_marcus,title="Marcus")
-    #Lapa
-    Tarefas_Rafeael = st.Page(tarefas_rafel,title="Rafael")
-    Tarefas_Sara = st.Page(tarefas_sara,title="Sara")
+    Tarefas_carteria_johm = st.Page(tarefas_carteira_john, title="R.E.G")
+    
     
     #Chrys
 
-    #Boulevard
-    Tarefas_Camyla = st.Page(tarefas_camyla,title="Camyla")
-    Tarefas_Bruno = st.Page(tarefas_bruno,title="Bruno")
-    Tarefas_Gilvania = st.Page(tarefas_gilvania,title="Gilvania")
+    Tarefas_carteria_chrys = st.Page(tarefas_carteira_chrys, title="R.E.G")
+   
 
 
     #Tarefas
@@ -188,7 +119,7 @@ def run_navigation():
     Tarefas_boulevard = st.Page(tarefas_boulevard,title="🏬 LOJA BOULEVARD")
     
     #Itinerantes
-    Tarefas_itinerantes = st.Page(tarefas_itinerante,title="🏬 ITINERANTES")
+    Tarefas_itinerantes = st.Page(tarefas_itinerantes,title="🏬 ITINERANTES")
     
     #modelos
     Visualizar_modelos = st.Page(modelos_prontos,title="📝 Modelos de tarefas")
@@ -198,13 +129,7 @@ def run_navigation():
     Visualizar_modelos_chrys = st.Page(modelos_prontos_chrys,title="📝 Modelos de tarefas")
 
     #noficar
-    Criar_notificacao = st.Page(notificar_page,title="🔔 Criar notificação ")
-    Tarefas_notificacao = st.Page(visualizar_notificacao,title="🔔 Notificações de criadas ")
-    Modelos_notificacao = st.Page(notifcacao_prontas,title="🔔 Modelos de notificação ")
-    
-
-
-
+   
 
     # Menus por role
     if role == "Victor":
@@ -216,44 +141,17 @@ def run_navigation():
             ],
         }
         menu2 = {
-    
-            "🏬 FABIANA SACRAMENTO ": [
-                Relatorio_ssa1,
-                Relatorio_ssa2,
-                Relatorio_bela,
-                Relatorio_paralela,
-                Relatorio_parque
-            ],
-
-            "🏬 FELIPE SILVA ": [
-                Relatorio_iguatemi1,
-                Relatorio_iguatemi2,
-                Relatorio_norte
-            ],
-            "🏬 JOHN COITO": [
-                Relatorio_barra,
-                Relatorio_piedade,
-                Relatorio_lapa
-            ],
-            "🏬 Chrys": [
-                Relatorio_boulevard,
+         "Tarefas": [
+                cadastro,
                 
-            ],
-            "🏬 Itinerantes": [
-                Relatorio_itinerantes,
-                
-            ],
+                ]
         }
         
         menu3 = {
     
-            "AÇÕES": [
-                cadastro,
+            "Salvamentos": [
                 Visualizar_tarefas_victor,
-                Visualizar_modelos,
-                Criar_notificacao,
-                Tarefas_notificacao,
-                Modelos_notificacao    
+                Visualizar_modelos,   
             ],
         }
     
@@ -267,18 +165,10 @@ def run_navigation():
         }
 
         menu2 = {
-            "🏬 Loja Iguatemi |": [
-                Tarefas_Denise,
-                Tarefas_max
+            "🏬 R.E.G LOJAS": [
+                Tarefas_carteria_felipe
             ],
-            "🏬 Loja Iguatemi ||": [
-                Tarefas_andressa,
-                Tarefas_diego
-            ],
-             "🏬 Nort Shop": [
-                Tarefas_jairo,
-                Tarefas_wanderlei
-            ],
+            
         }
 
         menu3 = {
@@ -302,27 +192,10 @@ def run_navigation():
         }
 
         menu2 = {
-            "🏬 Loja SSA |": [
-                Tarefas_Ana,
-                Tarefas_francisca,
-                Tarefas_vinicius,
+            "🏬 R.E.G. LOJAS": [
+              Tarefas_carteria_fabiana
             ],
-            "🏬 Loja SSA ||": [
-                Tarefas_mailan,
-                Tarefas_vitor,
-            ],
-            "🏬 Loja Bela Vista ": [
-                Tarefas_danilo,
-                Tarefas_vanessa,
-            ],
-             "🏬 Loja Paralela": [
-                Tarefas_crislane,
-                Tarefas_neide,
-            ],
-             "🏬 Loja Paque Shop": [
-                Tarefas_adriele,
-                Tarefas_deniseP,
-            ],
+            
         }
         menu3 = {
     
@@ -346,20 +219,9 @@ def run_navigation():
 
 
         menu2 = {
-            "🏬 Loja Barra": [
-                Tarefas_alana,
-                Tarefas_carol,
-                Tarefas_igor,
-            ],
-            "🏬 Loja Piedade": [
-                Tarefas_diegol,
-                Tarefas_marcus,
-            ],
-            "🏬 Loja Lapa": [
-                Tarefas_Sara,
-                Tarefas_Rafeael,
-                
-            ],
+            "🏬 R.E.G LOJA": [
+                Tarefas_carteria_johm
+            ]
 
         }
         menu3 = {
@@ -381,10 +243,8 @@ def run_navigation():
             ],
         }
         menu2 = {
-            "🏬 Loja BOULEVARD": [
-                Tarefas_Camyla,
-                Tarefas_Bruno,
-                Tarefas_Gilvania,
+            "🏬 R.E.G LOJA": [
+                Tarefas_carteria_chrys
             ]
         }
         menu3 = {
@@ -399,7 +259,7 @@ def run_navigation():
         }
 
     #Lojas
-    elif role in ["Iguatemi1","Iguatemi2","Bela","Nort","Paralela","Salvador1","Salvador2","Parque","Barra","Piedade","Lapa","Boulevard","Itinerantes"]:
+    elif role in ["Iguatemi1","Iguatemi2","Bela","Norte","Paralela","Salvador1","Salvador2","Parque","Barra","Piedade","Lapa","Boulevard","Itinerantes"]:
 
         menu = {
             "Carteira Felipe e Itinerantes": [

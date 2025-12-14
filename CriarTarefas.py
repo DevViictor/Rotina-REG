@@ -34,6 +34,9 @@ def criar_page():
     gvs = ["",
         "TODOS OS GVS",
         "TODOS OS GLS",
+        "TODOS OS GLS(ABERTURA)",
+        "TODOS OS GLS(INTERMEDIO)",
+        "TODOS OS GLS(FECHAMENTO)",
         "GLS DA CARTEIRA DE FABIANA",
         "GLS DA CARTEIRA DE FELIPE",
         "GLS DA CARTEIRA DE CHRYS",
@@ -45,7 +48,13 @@ def criar_page():
         "": [""],
         "TODOS OS GVS": ["GVS"],
 
-        "TODOS OS GLS": ["GLS"],
+        "TODOS OS GLS": ["TODOS OS GLS"],
+
+        "TODOS OS GLS(INTERMEDIO)": ["GLS(INTERMEDIO)"],
+
+        "TODOS OS GLS(ABERTURA)": ["GLS(ABERTURA)"],
+
+        "TODOS OS GLS(FECHAMENTO)": ["GLS(FECHAMENTO)"],
 
         "GLS DA CARTEIRA DE FABIANA": [
             "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA PARALELA","LOJA PARQUE SHOP"
@@ -65,7 +74,10 @@ def criar_page():
     nomes_por_loja = {
         "": [""],
         "GVS": ["Todos","Fabiana","Felipe","John","Chrys"],
-        "TODOS OS GLS": ["GLS"],
+        "TODOS OS GLS": ["GLS(GERAL)"],
+        "GLS(ABERTURA)":["GLS(ABERTURA)"],
+        "GLS(INTERMEDIO)":["GLS(INTERMEDIO)"],
+        "GLS(FECHAMENTO)":["GLS(FECHAMENTO)"],
         "TODOS OS ITINERANTES": ["ITINERANTES"],
         "LOJA SSA |": ["Ana","Francisca","Vinicius"],
         "LOJA SSA ||": ["Vitor","Mailan"],
@@ -249,7 +261,7 @@ def criar_page_fabiana():
         st.stop()
 
     # --- CONFIG ---
-    gcp_info = st.secrets["gcp"]
+    gcp_info = st.secrets["fabi"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -270,6 +282,8 @@ def criar_page_fabiana():
     # --- LISTAS ---
     gvs = ["", 
         "GLS DA CARTEIRA DE FABIANA",
+        "EU"
+       
     ]
         
     lojas_por_carteira = {
@@ -277,6 +291,9 @@ def criar_page_fabiana():
         "GLS DA CARTEIRA DE FABIANA": [
             "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA PARALELA","LOJA PARQUE SHOP"
         ],
+        "EU": [
+            "Minhas Tarefas"
+        ]
     }
 
     nomes_por_loja = {
@@ -286,7 +303,7 @@ def criar_page_fabiana():
         "LOJA BELA VISTA": ["Todos Bela","Vanessa","Danilo"],
         "LOJA PARALELA": ["Todos Paralela","Crislaine","Neide"],
         "LOJA PARQUE SHOP": ["Todos Parque","Denise_Parque","Neide"],
-        
+        "Minhas Tarefas": ["Fabiana"]
     }
 
     tipos_recorrencia = ["", "Não recorrente", "Diária", "Semanal",
@@ -453,7 +470,7 @@ def criar_page_felipe():
         st.stop()
 
     # --- CONFIG ---
-    gcp_info = st.secrets["gcp"]
+    gcp_info = st.secrets["fel"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -475,6 +492,7 @@ def criar_page_felipe():
     gvs = ["",
         
         "GLS DA CARTEIRA DE FELIPE",
+        "EU"
        
     ]
         
@@ -483,6 +501,9 @@ def criar_page_felipe():
 
         "GLS DA CARTEIRA DE FELIPE": [
             "LOJA IGUATEMI | BA","LOJA IGUATEMI || BA","LOJA NORT SHOP"
+        ],
+        "EU": [
+            "Minhas Tarefas"
         ]
     }
 
@@ -491,23 +512,14 @@ def criar_page_felipe():
         "LOJA IGUATEMI | BA": ["Todos Iguatemi |","Max","Denise"],
         "LOJA IGUATEMI || BA": ["Todos Iguatemi ||","Diego","Andressa"],
         "LOJA NORT SHOP": ["Todos Norte","Jairo","Wanderlei"],
+        "Minhas Tarefas": ["Felipe"]
        
     }
 
     tipos_recorrencia = ["", "Não recorrente", "Diária", "Semanal",
                          "Semanal Laboral(seg a sex)", "Mensal", "Anual"]
 
-    # --- FUNÇÃO NOTIFICAÇÃO ---
-    def notificacao(loja):
-        user_key = st.secrets["notificacao"]["user_key"]
-        api_token = st.secrets["notificacao"]["api_token"]
-        msg = f"Novas tarefas foram criadas.\nLoja: {loja}.\nVisualize o painel de tarefas."
-        requests.post("https://api.pushover.net/1/messages.json", 
-                      data={
-                          "token": api_token,
-                          "user": user_key,
-                          "message": msg
-                      })
+
 
     # --- CARREGAR MODELOS ---
     aba_modelos = client.open_by_key(planilha_chave).worksheet("ModelosTarefas")
@@ -616,8 +628,6 @@ def criar_page_felipe():
         pagina = client.open_by_key(planilha_chave).worksheet(nome)
         novo_id = len(pagina.get_all_records()) + 1
 
-        notificacao(loja_final)
-
         pagina.append_row([
             novo_id,
             criada,
@@ -661,7 +671,7 @@ def criar_page_john():
         st.stop()
 
     # --- CONFIG ---
-    gcp_info = st.secrets["gcp"]
+    gcp_info = st.secrets["joh"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -682,7 +692,8 @@ def criar_page_john():
     # --- LISTAS ---
     gvs = ["",
     
-        "GLS DA CARTEIRA DE JOHN",    
+        "GLS DA CARTEIRA DE JOHN",
+        "EU"    
     ]
         
     lojas_por_carteira = {
@@ -690,7 +701,11 @@ def criar_page_john():
       
         "GLS DA CARTEIRA DE JOHN": [
             "LOJA BARRA","LOJA PIEDADE","LOJA LAPA"
+        ],
+        "EU": [
+            "Minhas Tarefas"
         ]
+        
     }
 
     nomes_por_loja = {
@@ -699,6 +714,7 @@ def criar_page_john():
         "LOJA BARRA": ["Todos Barra","Igor","Carol","Alana"],
         "LOJA PIEDADE": ["Todos Piedade","DiegoL","Marcusl"],
         "LOJA LAPA": ["Todos Lapa","Sara","Rafel"],
+        "Minhas Tarefas": ["John"]
        
     }
 
@@ -867,7 +883,7 @@ def criar_page_chrys():
         st.stop()
 
     # --- CONFIG ---
-    gcp_info = st.secrets["gcp"]
+    gcp_info = st.secrets["chr"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -889,6 +905,7 @@ def criar_page_chrys():
     gvs = ["", 
         
         "GLS DA CARTEIRA DE CHRYS",
+        "EU"
        
     ]
         
@@ -897,12 +914,16 @@ def criar_page_chrys():
      
         "GLS DA CARTEIRA DE CHRYS": [
             "LOJA BOULEVARD"
+        ],
+        "EU": [
+            "Minhas Tarefas"
         ]
     }
 
     nomes_por_loja = {
         "": [""],
         "LOJA BOULEVARD": ["Todos Boulevard","Camyla","Bruno","Gilvania"],
+        "Minhas Tarefas": ["Chrys"]
     }
 
     tipos_recorrencia = ["", "Não recorrente", "Diária", "Semanal",

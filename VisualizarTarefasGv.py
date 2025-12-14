@@ -3,54 +3,77 @@ import gspread
 import pandas as pd
 from google.oauth2.service_account import Credentials
 from PIL import Image
-from datetime import datetime, timedelta
-import requests
+from datetime import datetime
 
 def visualizar_tarefas_gvs():
 
-    def enviar_pushover(msg):
-        requests.post("https://api.pushover.net/1/messages.json", data={
-            "token": st.secrets["notificacao"]["api_token"],
-            "user": st.secrets["notificacao"]["user_key"],
-            "message": msg,
-            "priority": 1
-        })
-
+    # ---------------------------
+    # CONFIGURAÇÃO DA PÁGINA
+    # ---------------------------
     icon = Image.open("image/vivo.png")
-    st.set_page_config(page_title="R.E.G - GVS", page_icon=icon,layout="wide")
+    st.set_page_config(
+        page_title="R.E.G - GVS",
+        page_icon=icon,
+        layout="wide"
+    )
 
-        # --- Controle de acesso ---
+    # ---------------------------
+    # CONTROLE DE ACESSO
+    # ---------------------------
     if "role" not in st.session_state or st.session_state.role != "Victor":
         st.error("⚠️ Acesso negado!")
         st.stop()
 
-    # Controle de estado das notificações
-    if "notificados" not in st.session_state:
-        st.session_state.notificados = {}
-
     # ---------------------------
     # LISTAS E DICIONÁRIOS
     # ---------------------------
-    gvs = ["GVS DE VICTOR"]
+    gvs = [
+        "GVS DE VICTOR",
+        "GLS DA CARTEIRA DE FABIANA",
+        "GLS DA CARTEIRA DE FELIPE",
+        "GLS DA CARTEIRA DE CHRYS",
+        "GLS DA CARTEIRA DE JOHN",
+        "TODOS OS ITINERANTES"
+        ]
 
     lojas_por_carteira = {
-        " ": [" "],
-        "GVS DE VICTOR": [
-           "REGIONAL"
-        ]
+        "GVS DE VICTOR": ["REGIONAL"],
+        "GLS DA CARTEIRA DE FABIANA": [
+            "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA PARALELA","LOJA PARQUE SHOP"
+        ],
+        "GLS DA CARTEIRA DE FELIPE": [
+            "LOJA IGUATEMI | BA","LOJA IGUATEMI || BA","LOJA NORT SHOP"
+        ],
+        "GLS DA CARTEIRA DE JOHN": [
+            "LOJA BARRA","LOJA PIEDADE","LOJA LAPA"
+        ],
+        "GLS DA CARTEIRA DE CHRYS": [
+            "LOJA BOULEVARD"
+        ],
+        "TODOS OS ITINERANTES": ["ITINERANTES"]                 
     }
 
     nomes_por_loja = {
-        " ": [" "],
-        "REGIONAL": ["Todos","Fabiana","Felipe", "John","Chrys"],
+        "REGIONAL": ["Todos","Fabiana", "Felipe", "John", "Chrys"],
+        "TODOS OS ITINERANTES": ["ITINERANTES"],
+        "LOJA SSA |": ["Ana","Francisca","Vinicius"],
+        "LOJA SSA ||": ["Vitor","Mailan"],
+        "LOJA BELA VISTA": ["Vanessa","Danilo"],
+        "LOJA PARALELA": ["Crislaine","Neide"],
+        "LOJA PARQUE SHOP": ["Denise_Parque","Adrielle"],
+        "LOJA IGUATEMI | BA": ["Max","Denise"],
+        "LOJA IGUATEMI || BA": ["Diego","Andressa"],
+        "LOJA NORT SHOP": ["Jairo","Wanderlei"],
+        "LOJA BARRA": ["Igor","Carol","Alana"],
+        "LOJA PIEDADE": ["DiegoL","Marcusl"],
+        "LOJA LAPA": ["Sara","Rafael"],
+        "LOJA BOULEVARD": ["Camyla","Bruno","Gilvania"],
+        "ITINERANTES": ["Lázaro","Lee","Marcus"],
     }
 
     # ---------------------------
     # INTERFACE
     # ---------------------------
-    icon = Image.open("image/vivo.png")
-    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
-
     image_logo = Image.open("image/Image (2).png")
 
     cola, colb, colc = st.columns([4, 1, 1])
@@ -64,20 +87,26 @@ def visualizar_tarefas_gvs():
     with col1:
         carteira = st.selectbox("Selecione a carteira:", gvs)
 
-    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
-
     with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+        loja = st.selectbox(
+            "Selecione a loja:",
+            lojas_por_carteira.get(carteira, [])
+        )
 
     with col3:
-        nomes_filtrados = nomes_por_loja.get(loja, [" "])
-        nome = st.selectbox("Nome:", nomes_filtrados)
+        nome = st.selectbox(
+            "Nome:",
+            nomes_por_loja.get(loja, [])
+        )
 
     with col4:
-        data_selecionada = st.date_input("Selecione a data:")
+        data_selecionada = st.date_input(
+            "Selecione o período:",
+            value=(datetime.today(), datetime.today())
+        )
 
     # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
+    # GOOGLE SHEETS
     # ---------------------------
     gcp_info = st.secrets["tafgl"]
     planilha_chave = st.secrets["planilha"]["chave"]
@@ -93,97 +122,74 @@ def visualizar_tarefas_gvs():
     cliente = gspread.authorize(creds)
     planilha = cliente.open_by_key(planilha_chave)
 
-    def carregar_pedidos():
-        aba = planilha.worksheet(nome)
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
-
-    # ---------------------------
-    # CARREGAR E FILTRAR DADOS
-    # ---------------------------
-    planilha_Dados = carregar_pedidos()
-
-    contagemT = planilha_Dados["Situação da tarefa"].count()
-    contagemC = planilha_Dados["Situação da tarefa"].astype(str).str.contains("Concluído",case=False,na=False).sum()
-    contagemP = planilha_Dados["Situação da tarefa"].astype(str).str.contains("Pendente",case=False,na=False).sum()
-
-    col11,col12,col13 = st.columns(3)
-    with col11:
-        st.text(f"📝 Total de Tarefas : {contagemT}")
-
-    with col12:
-        st.text(f" 🟢 Tarefas Concluídas : {contagemC}")
-
-    with col13:
-        st.text(f" 🟡 Tarefas Pendentes: {contagemP}")
-
+    aba = planilha.worksheet(nome)
+    planilha_Dados = pd.DataFrame(aba.get_all_records())
 
     if planilha_Dados.empty:
-        st.warning("Nenhum modelo encontrado.")
+        st.warning("Nenhuma tarefa encontrada.")
         return
 
-    # Padronizar colunas para evitar erro
+    # ---------------------------
+    # TRATAMENTO DOS DADOS
+    # ---------------------------
     planilha_Dados.columns = planilha_Dados.columns.str.strip()
 
-    # Converter data da planilha
     planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"], dayfirst=True, errors="coerce"
+        planilha_Dados["Data"],
+        dayfirst=True,
+        errors="coerce"
     ).dt.date
 
-    # Filtrar pela data escolhida
-    planilha_filtrada = planilha_Dados[planilha_Dados["Data"] == data_selecionada]
+    if not isinstance(data_selecionada, tuple) or len(data_selecionada) != 2:
+        st.warning("⚠️ Selecione um período com data inicial e final.")
+        return
+    # ---------------------------
+    # FILTRO POR DATA
+    # ---------------------------
+    data_inicio, data_fim = data_selecionada
+
+    planilha_filtrada = planilha_Dados[
+        (planilha_Dados["Data"] >= data_inicio) &
+        (planilha_Dados["Data"] <= data_fim)
+    ]
 
     if planilha_filtrada.empty:
         st.info("Nenhuma tarefa encontrada para esta data.")
         return
 
     # ---------------------------
-    # 🔥 NOTIFICAÇÕES
+    # CONTAGENS (COM FILTRO)
     # ---------------------------
-    agora = datetime.now()
+    contagemT = planilha_filtrada["Situação da tarefa"].count()
 
-    for _, linha in planilha_filtrada.iterrows():
+    contagemC = (
+        planilha_filtrada["Situação da tarefa"]
+        .astype(str)
+        .str.contains("Concluído", case=False, na=False)
+        .sum()
+    )
 
-        titulo = linha["Título"]
-        loja_tarefa = linha["Loja"]
-        gls_nome = linha["GL"]
+    contagemP = (
+        planilha_filtrada["Situação da tarefa"]
+        .astype(str)
+        .str.contains("Pendente", case=False, na=False)
+        .sum()
+    )
 
-        data_str = linha["Data"]
-        inicio_str = linha["Hora inicial"]
-        fim_str = linha["Hora final"]
+    col11, col12, col13 = st.columns(3)
+    with col11:
+        st.text(f"📝 Total de Tarefas: {contagemT}")
+    with col12:
+        st.text(f"🟢 Concluídas: {contagemC}")
+    with col13:
+        st.text(f"🟡 Pendentes: {contagemP}")
 
-        # Converter para datetime
-        try:
-            inicio = datetime.combine(
-                data_str,
-                datetime.strptime(inicio_str, "%H:%M").time()
-            )
-
-            fim = datetime.combine(
-                data_str,
-                datetime.strptime(fim_str, "%H:%M").time()
-            )
-        except:
-            continue
-
-        chave_inicio = f"{titulo}_{inicio}_ANTES"
-        chave_fim = f"{titulo}_{fim}_DEPOIS"
-
-        # 🔥 1) Notificação 15 minutos ANTES
-        if inicio - timedelta(minutes=15) <= agora < inicio:
-            if chave_inicio not in st.session_state.notificados:
-                enviar_pushover(
-                    f"⏳ Em 15 minutos começa o periodo de realização da tarefa: {titulo} na loja {gls_nome}"
-                )
-                st.session_state.notificados[chave_inicio] = True
-
-        # 🔥 2) Notificação 15 minutos DEPOIS
-        # Notificação 15 minutos DEPOIS (janela de 5 minutos)
-        if fim - timedelta(minutes=15) <= agora < fim:
-            if chave_fim not in st.session_state.notificados:
-                enviar_pushover(
-                    f"⏰ Faltam 15 minutos para terminar a tarefa: {titulo} \n GL: {gls_nome}\n Loja: {loja_tarefa}"
-                )
-                st.session_state.notificados[chave_fim] = True
     
-    st.dataframe(planilha_Dados)
+
+    # ---------------------------
+    # TABELA FINAL
+    # ---------------------------
+    st.dataframe(planilha_filtrada, use_container_width=True)
+
+    if st.button("Atualizar"):
+        st.rerun()
