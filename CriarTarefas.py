@@ -98,15 +98,7 @@ def criar_page():
                          "Semanal Laboral(seg a sex)", "Mensal", "Anual"]
 
     # --- FUNÇÃO NOTIFICAÇÃO ---
-    def notificacao(loja):
-        user_key = st.secrets["notificacao"]["user_key"]
-        api_token = st.secrets["notificacao"]["api_token"]
-        msg = f"Novas tarefas foram criadas.\nLoja: {loja}.\nVisualize o painel de tarefas."
-        requests.post("https://api.pushover.net/1/messages.json", 
-                      data={
-                          "token": api_token,
-                          "user": user_key,
-                          "message": msg
+
                       })
 
     # --- CARREGAR MODELOS ---
@@ -216,7 +208,6 @@ def criar_page():
         pagina = client.open_by_key(planilha_chave).worksheet(nome)
         novo_id = len(pagina.get_all_records()) + 1
 
-        notificacao(loja_final)
 
         pagina.append_row([
             novo_id,
