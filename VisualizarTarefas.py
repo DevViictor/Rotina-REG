@@ -15,26 +15,28 @@ def visualizar_tarefas():
         # LISTAS E DICIONÁRIOS
         # ---------------------------
         gvs = [
-                "TODOS OS GVS",
-            "GLS DA CARTEIRA DE FABIANA",
-            "GLS DA CARTEIRA DE FELIPE",
-            "GLS DA CARTEIRA DE CHRYS",
-            "GLS DA CARTEIRA DE JOHN",
-            "TODOS OS ITINERANTES"]
-        
+                "GVS DE VICTOR",
+                "TODOS OS GLS",
+                "TODOS OS GLS(ABERTURA)",
+                "TODOS OS GLS(INTERMEDIO)",
+                "TODOS OS GLS(FECHAMENTO)",
+                "GLS DA CARTEIRA DE FABIANA",
+                "GLS DA CARTEIRA DE FELIPE",
+                "GLS DA CARTEIRA DE CHRYS",
+                "GLS DA CARTEIRA DE JOHN",
+                "TODOS OS ITINERANTES"
+                ]
+                
         lojas_por_carteira = {
         " ": [" "],
-        "TODOS OS GVS": ["GVS"],
-
-        "TODOS OS GLS": [
-
-                "LOJA IGUATEMI | BA", "LOJA IGUATEMI || BA", "LOJA SSA |",
-                "LOJA SSA ||", "LOJA BELA VISTA", "LOJA PARALELA",
-                "LOJA PARQUE SHOP", "LOJA NORT SHOP", "LOJA BARRA",
-                "LOJA PIEDADE", "LOJA LAPA", "LOJA BOULEVARD"
-        ],
+        "GVS DE VICTOR": ["REGIONAL"],
+        "GLS": ["GLS(GERAL)"],
+        "TODOS OS GLS(ABERTURA)":["GLS(ABERTURA)"],
+        "TODOS OS GLS(INTERMEDIO)":["GLS(INTERMEDIO)"],
+        "TODOS OS GLS(FECHAMENTO)":["GLS(FECHAMENTO)"],
+        
         "GLS DA CARTEIRA DE FABIANA": [
-                 "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA PARALELA","LOJA PARQUE SHOP"
+                "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA PARALELA","LOJA PARQUE SHOP"
         ],
         "GLS DA CARTEIRA DE FELIPE": [
                 "LOJA IGUATEMI | BA","LOJA IGUATEMI || BA","LOJA NORT SHOP"
@@ -53,7 +55,10 @@ def visualizar_tarefas():
         nomes_por_loja = {
 
         " ": [" "],
-        "GVS": ["Todos","Fabiana","Felipe","John","Chrys"],
+        "REGIONAL": ["Todos","Fabiana", "Felipe", "John", "Chrys"],
+        "GLS(ABERTURA)":["GLS(ABERTURA)"],
+        "GLS(INTERMEDIO)":["GLS(INTERMEDIO)"],
+        "GLS(FECHAMENTO)":["GLS(FECHAMENTO)"],
         "LOJA SSA |": ["Ana","Francisca","Vinicius"],
         "LOJA SSA ||": ["Vitor","Mailan"],
         "LOJA BELA VISTA": ["Vanessa","Danilo"],

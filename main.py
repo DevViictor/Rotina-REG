@@ -53,7 +53,7 @@ def run_navigation():
     #Victor
      
     #geral
-    Visualizar_tarefas_gvs = (st.Page( visualizar_tarefas_gvs, title="GVS"))
+    Visualizar_tarefas_gvs = (st.Page( visualizar_tarefas_gvs, title="R.E.G(GERAL)"))
    
 
     #CriarTarefas

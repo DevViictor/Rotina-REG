@@ -29,6 +29,10 @@ def visualizar_tarefas_gvs():
     # ---------------------------
     gvs = [
         "GVS DE VICTOR",
+        "TODOS OS GLS",
+        "TODOS OS GLS(ABERTURA)",
+        "TODOS OS GLS(INTERMEDIO)",
+        "TODOS OS GLS(FECHAMENTO)",
         "GLS DA CARTEIRA DE FABIANA",
         "GLS DA CARTEIRA DE FELIPE",
         "GLS DA CARTEIRA DE CHRYS",
@@ -38,6 +42,10 @@ def visualizar_tarefas_gvs():
 
     lojas_por_carteira = {
         "GVS DE VICTOR": ["REGIONAL"],
+        "GLS": ["GLS(GERAL)"],
+        "TODOS OS GLS(ABERTURA)":["GLS(ABERTURA)"],
+        "TODOS OS GLS(INTERMEDIO)":["GLS(INTERMEDIO)"],
+        "TODOS OS GLS(FECHAMENTO)":["GLS(FECHAMENTO)"],
         "GLS DA CARTEIRA DE FABIANA": [
             "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA PARALELA","LOJA PARQUE SHOP"
         ],
@@ -55,6 +63,9 @@ def visualizar_tarefas_gvs():
 
     nomes_por_loja = {
         "REGIONAL": ["Todos","Fabiana", "Felipe", "John", "Chrys"],
+        "GLS(ABERTURA)":["GLS(ABERTURA)"],
+        "GLS(INTERMEDIO)":["GLS(INTERMEDIO)"],
+        "GLS(FECHAMENTO)":["GLS(FECHAMENTO)"],
         "TODOS OS ITINERANTES": ["ITINERANTES"],
         "LOJA SSA |": ["Ana","Francisca","Vinicius"],
         "LOJA SSA ||": ["Vitor","Mailan"],
