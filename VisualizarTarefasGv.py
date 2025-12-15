@@ -29,7 +29,7 @@ def visualizar_tarefas_gvs():
     # ---------------------------
     gvs = [
         "GVS DE VICTOR",
-        "TODOS OS GLS",
+        "TODOS OS GLS(GERAL)",
         "TODOS OS GLS(ABERTURA)",
         "TODOS OS GLS(INTERMEDIO)",
         "TODOS OS GLS(FECHAMENTO)",
@@ -42,7 +42,7 @@ def visualizar_tarefas_gvs():
 
     lojas_por_carteira = {
         "GVS DE VICTOR": ["REGIONAL"],
-        "GLS": ["GLS(GERAL)"],
+        "TODOS OS GLS(GERAL)": ["GLS(GERAL)"],
         "TODOS OS GLS(ABERTURA)":["GLS(ABERTURA)"],
         "TODOS OS GLS(INTERMEDIO)":["GLS(INTERMEDIO)"],
         "TODOS OS GLS(FECHAMENTO)":["GLS(FECHAMENTO)"],

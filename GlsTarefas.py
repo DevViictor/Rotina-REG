@@ -1854,7 +1854,7 @@ def tarefas_itinerante():
     nomes_por_loja = {
     " ": [" "],
     
-    "ITINERANTES": ["Lázaro","Lee","Marcus","Todos Itinerantes"],
+    "ITINERANTES": ["Todos Itinerantes","Lázaro","Lee","Marcus"],
     }
 
 
