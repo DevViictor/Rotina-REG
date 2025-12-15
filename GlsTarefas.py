@@ -245,7 +245,7 @@ def tarefas_iguatemi2():
 
     nomes_por_loja = {
         " ": [" "],
-        "LOJA IGUATEMI || BA": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Iguatemi ||""Diego","Andressa"],
+        "LOJA IGUATEMI || BA": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Iguatemi ||","Diego","Andressa"],
     }
 
     # ---------------------------
