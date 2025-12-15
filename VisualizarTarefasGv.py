@@ -63,6 +63,7 @@ def visualizar_tarefas_gvs():
 
     nomes_por_loja = {
         "REGIONAL": ["Todos","Fabiana", "Felipe", "John", "Chrys"],
+        "GLS(GERAL)":["GLS(GERAL)"],
         "GLS(ABERTURA)":["GLS(ABERTURA)"],
         "GLS(INTERMEDIO)":["GLS(INTERMEDIO)"],
         "GLS(FECHAMENTO)":["GLS(FECHAMENTO)"],
