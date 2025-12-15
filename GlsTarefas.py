@@ -1039,14 +1039,14 @@ def tarefas_parela():
     " ": [" "],
 
     "GLS DA CARTEIRA DE FABIANA": [
-        "LOJA BELA VISTA"
+        "LOJA PARALELA"
     ],
    
     }
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA BELA VISTA": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Paralela","Vanessa","Danilo"]
+    "LOJA PARALELA": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Paralela","Crislaine","Neide"]
     }
 
 
@@ -1207,7 +1207,7 @@ def tarefas_parque():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA PARQUE SHOP": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Parque","Denise_Parque","Neide"],
+    "LOJA PARQUE SHOP": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Parque","Denise_Parque","Adrielle"],
     
     }
 
