@@ -4,7 +4,7 @@ from PIL import Image
 from CriarTarefas import criar_page,criar_page_fabiana,criar_page_chrys,criar_page_felipe,criar_page_john
 from VisualizarTarefas import visualizar_tarefas,visualizar_tarefas_fabiana, visualizar_tarefas_chrys ,visualizar_tarefas_felipe ,visualizar_tarefas_john
 from TarefasProntas import modelos_prontos,modelos_prontos_fabiana, modelos_prontos_chrys, modelos_prontos_felipe, modelos_prontos_john
-from GlsTarefas import tarefas_iguatemi, tarefas_barra , tarefas_bela ,tarefas_iguatemi2 ,tarefas_itinerante ,tarefas_lapa,tarefas_nort,tarefas_parela,tarefas_parque,tarefas_piedade,tarefas_ssa1,tarefas_ssa2,tarefas_boulevard
+from GlsTarefas import tarefas_iguatemi, tarefas_barra , tarefas_bela ,tarefas_iguatemi2 ,tarefas_itinerante ,tarefas_lapa,tarefas_nort,tarefas_parela,tarefas_parque,tarefas_piedade,tarefas_ssa1,tarefas_ssa2,tarefas_boulevard,tarefas_diasdavila
 from GvTarefas import tarefas_chyrs,tarefas_fabiana,tarefas_felipe,tarefas_john
 from VisualizarTarefasGv import  visualizar_tarefas_gvs
 from Intinerantes import tarefas_itinerantes
@@ -109,6 +109,8 @@ def run_navigation():
     Tarefas_bela = st.Page(tarefas_bela,title="🏬 LOJA BELA VISTA")
     Tarefas_parela = st.Page(tarefas_parela,title="🏬 LOJA PARARELA")
     Tarefas_parque = st.Page(tarefas_parque,title="🏬 LOJA PARQUE")
+    Tarefas_davila = st.Page(tarefas_diasdavila,title="🏬 LOJA DIAS DAVILA")
+
 
     #JHON
     Tarefas_barra = st.Page(tarefas_barra,title="🏬 LOJA BARRA")
@@ -259,7 +261,7 @@ def run_navigation():
         }
 
     #Lojas
-    elif role in ["Iguatemi1","Iguatemi2","Bela","Norte","Paralela","Salvador1","Salvador2","Parque","Barra","Piedade","Lapa","Boulevard","Itinerantes"]:
+    elif role in ["Iguatemi1","Iguatemi2","Bela","Norte","Paralela","Salvador1","Salvador2","Parque","Barra","Piedade","Lapa","Boulevard","Itinerantes","Davila"]:
 
         menu = {
             "Carteira Felipe e Itinerantes": [
@@ -275,7 +277,8 @@ def run_navigation():
                 Tarefas_ssa2,
                 Tarefas_bela,
                 Tarefas_parela,
-                Tarefas_parque
+                Tarefas_parque,
+                Tarefas_davila
             ]
         }
         menu3 = {

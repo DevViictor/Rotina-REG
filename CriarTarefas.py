@@ -57,7 +57,7 @@ def criar_page():
         "TODOS OS GLS(FECHAMENTO)": ["GLS(FECHAMENTO)"],
 
         "GLS DA CARTEIRA DE FABIANA": [
-            "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA PARALELA","LOJA PARQUE SHOP"
+            "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA DIAS DAVILA","LOJA PARALELA","LOJA PARQUE SHOP"
         ],
         "GLS DA CARTEIRA DE FELIPE": [
             "LOJA IGUATEMI | BA","LOJA IGUATEMI || BA","LOJA NORT SHOP"
@@ -74,28 +74,48 @@ def criar_page():
     nomes_por_loja = {
         "": [""],
         "GVS": ["Todos","Fabiana","Felipe","John","Chrys"],
+
         "TODOS OS GLS": ["GLS(GERAL)"],
+
         "GLS(ABERTURA)":["GLS(ABERTURA)"],
+
         "GLS(INTERMEDIO)":["GLS(INTERMEDIO)"],
+
         "GLS(FECHAMENTO)":["GLS(FECHAMENTO)"],
+
         "TODOS OS ITINERANTES": ["ITINERANTES"],
+
         "LOJA SSA |": ["Todos SSA |","Ana","Francisca","Vinicius"],
+
         "LOJA SSA ||": ["Todos SSA ||","Vitor","Mailan"],
+
         "LOJA BELA VISTA": ["Todos Bela","Vanessa","Danilo"],
+
+        "LOJA DIAS DAVILA": ["Todos Dias Davila","Maise"],
+
         "LOJA PARALELA": ["Todos Paralela","Crislaine","Neide"],
+
         "LOJA PARQUE SHOP": ["Todos Parque","Denise_Parque","Adrielle"],
+
         "LOJA IGUATEMI | BA": ["Todos Iguatemi |","Max","Denise"],
+
         "LOJA IGUATEMI || BA": ["Todos Iguatemi ||","Diego","Andressa"],
+
         "LOJA NORT SHOP": ["Todos Norte","Jairo","Wanderlei"],
+
         "LOJA BARRA": ["Todos Barra","Igor","Carol","Alana"],
+
         "LOJA PIEDADE": ["Todos Piedade","DiegoL","Marcusl"],
+
         "LOJA LAPA": ["Todos Lapa","Sara","Rafael"],
+
         "LOJA BOULEVARD": ["Todos Boulevard","Camyla","Bruno","Gilvania"],
+
         "ITINERANTES": ["Todos Itinerantes","Lázaro","Lee","Marcus"],
     }
 
     tipos_recorrencia = ["", "Não recorrente", "Diária", "Semanal",
-                         "Semanal Laboral(seg a sex)", "Mensal", "Anual"]
+                         "Semanal Laboral(seg a sab)", "Mensal", "Anual"]
 
     # --- FUNÇÃO NOTIFICAÇÃO ---
 
@@ -280,7 +300,7 @@ def criar_page_fabiana():
     lojas_por_carteira = {
         "": [""],
         "GLS DA CARTEIRA DE FABIANA": [
-            "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA PARALELA","LOJA PARQUE SHOP"
+            "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA DIAS DAVILA","LOJA PARALELA","LOJA PARQUE SHOP"
         ],
         "EU": [
             "Minhas Tarefas"
@@ -292,6 +312,7 @@ def criar_page_fabiana():
         "LOJA SSA |": ["Todos SSA |","Ana","Francisca","Vinicius"],
         "LOJA SSA ||": ["Todos SSA ||","Vitor","Mailan"],
         "LOJA BELA VISTA": ["Todos Bela","Vanessa","Danilo"],
+        "LOJA BELA DIAS DAVILA": ["Todos Dias Davila","Maise"],
         "LOJA PARALELA": ["Todos Paralela","Crislaine","Neide"],
         "LOJA PARQUE SHOP": ["Todos Parque","Denise_Parque","Neide"],
         "Minhas Tarefas": ["Fabiana"]

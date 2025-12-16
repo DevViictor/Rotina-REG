@@ -30,13 +30,16 @@ def visualizar_tarefas():
         lojas_por_carteira = {
         " ": [" "],
         "GVS DE VICTOR": ["REGIONAL"],
-        "GLS": ["GLS(GERAL)"],
+        "TODOS OS GLS": ["GLS(GERAL)"],
+
         "TODOS OS GLS(ABERTURA)":["GLS(ABERTURA)"],
+
         "TODOS OS GLS(INTERMEDIO)":["GLS(INTERMEDIO)"],
+        
         "TODOS OS GLS(FECHAMENTO)":["GLS(FECHAMENTO)"],
         
         "GLS DA CARTEIRA DE FABIANA": [
-                "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA PARALELA","LOJA PARQUE SHOP"
+                "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA DIAS DAVILA","LOJA PARALELA","LOJA PARQUE SHOP"
         ],
         "GLS DA CARTEIRA DE FELIPE": [
                 "LOJA IGUATEMI | BA","LOJA IGUATEMI || BA","LOJA NORT SHOP"
@@ -56,12 +59,14 @@ def visualizar_tarefas():
 
         " ": [" "],
         "REGIONAL": ["Todos","Fabiana", "Felipe", "John", "Chrys"],
+        "GLS(GERAL)":["GLS(GERAL)"],
         "GLS(ABERTURA)":["GLS(ABERTURA)"],
         "GLS(INTERMEDIO)":["GLS(INTERMEDIO)"],
         "GLS(FECHAMENTO)":["GLS(FECHAMENTO)"],
         "LOJA SSA |": ["Ana","Francisca","Vinicius"],
         "LOJA SSA ||": ["Vitor","Mailan"],
         "LOJA BELA VISTA": ["Vanessa","Danilo"],
+        "LOJA DIAS DAVILA": ["Todos Dias Davila","Maise"],
         "LOJA PARALELA": ["Crislaine","Neide"],
         "LOJA PARQUE SHOP": ["Denise_Parque","Neide"],
         "LOJA IGUATEMI | BA": ["Max","Denise"],
@@ -212,13 +217,8 @@ def visualizar_tarefas_fabiana():
         
         lojas_por_carteira = {
         " ": [" "],
-        "TODOS OS GLS": [
-                "LOJA SSA |",
-                "LOJA SSA ||", "LOJA BELA VISTA", "LOJA PARALELA",
-                "LOJA PARQUE SHOP" 
-        ],
         "GLS DA CARTEIRA DE FABIANA": [
-                 "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA ","LOJA PARALELA","LOJA PARQUE SHOP"
+                 "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA ","LOJA DIAS DAVILA","LOJA PARALELA","LOJA PARQUE SHOP"
         ]
         }
 
@@ -227,6 +227,7 @@ def visualizar_tarefas_fabiana():
         "LOJA SSA |": ["Todos SSA |","Ana","Francisca","Vinicius"],
         "LOJA SSA ||": ["Todos SSA ||","Vitor","Mailan"],
         "LOJA BELA VISTA": ["Todos Bela","Vanessa","Danilo"],
+        "LOJA DIAS DAVILA": ["Todos Dias Davila","Maise"],
         "LOJA PARALELA": ["Todos Paralela","Crislaine","Neide"],
         "LOJA PARQUE SHOP": ["Todos Parque","Denise_Parque","Neide"],
         }
