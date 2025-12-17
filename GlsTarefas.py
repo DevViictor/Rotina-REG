@@ -8,22 +8,15 @@ from PIL import Image
 from datetime import datetime, timedelta
 
 
-def tarefas_iguatemi():
+def tarefas_iguatemi_abertura():
 
-    def enviar_pushover(msg):
-        requests.post("https://api.pushover.net/1/messages.json", data={
-            "token": st.secrets["notificacao"]["api_token"],
-            "user": st.secrets["notificacao"]["user_key"],
-            "message": msg,
-            "priority": 1
-        })
 
     # Controle de estado das notificações
     if "notificados" not in st.session_state:
         st.session_state.notificados = {}
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Iguatemi1":
+    if "role" not in st.session_state or st.session_state.role not in ["Iguatemi1","Admin"]:
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -41,7 +34,7 @@ def tarefas_iguatemi():
 
     nomes_por_loja = {
         " ": [" "],
-        "LOJA IGUATEMI | BA": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Iguatemi |","Max", "Denise"],
+        "LOJA IGUATEMI | BA": ["GLS(ABERTURA)"],
     }
 
     # ---------------------------
@@ -102,6 +95,10 @@ def tarefas_iguatemi():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Max"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
@@ -124,54 +121,8 @@ def tarefas_iguatemi():
     # ---------------------------
     # 🔥 NOTIFICAÇÕES
     # ---------------------------
-    agora = datetime.now()
-
-    for _, linha in planilha_filtrada.iterrows():
-
-        titulo = linha["Título"]
-        loja_tarefa = linha["Loja"]
-        gls_nome = linha["GL"]
-
-        data_str = linha["Data"]
-        inicio_str = linha["Hora inicial"]
-        fim_str = linha["Hora final"]
-
-        # Converter para datetime
-        try:
-            inicio = datetime.combine(
-                data_str,
-                datetime.strptime(inicio_str, "%H:%M").time()
-            )
-
-            fim = datetime.combine(
-                data_str,
-                datetime.strptime(fim_str, "%H:%M").time()
-            )
-        except:
-            continue
-
-        chave_inicio = f"{titulo}_{inicio}_ANTES"
-        chave_fim = f"{titulo}_{fim}_DEPOIS"
-
-        # 🔥 1) Notificação 15 minutos ANTES
-        if inicio - timedelta(minutes=15) <= agora < inicio:
-            if chave_inicio not in st.session_state.notificados:
-                enviar_pushover(
-                    f"⏳ Em 15 minutos começa o periodo de realização da tarefa: {titulo} na loja {gls_nome}"
-                )
-                st.session_state.notificados[chave_inicio] = True
-
-        # 🔥 2) Notificação 15 minutos DEPOIS
-        # Notificação 15 minutos DEPOIS (janela de 5 minutos)
-        if fim - timedelta(minutes=15) <= agora < fim:
-            if chave_fim not in st.session_state.notificados:
-                enviar_pushover(
-                    f"⏰ Faltam 15 minutos para terminar a tarefa: {titulo} \n GL: {gls_nome}\n Loja: {loja_tarefa}"
-                )
-                st.session_state.notificados[chave_fim] = True
-    # ---------------------------
     planilha_filtrada["Concluir"] = (
-        planilha_filtrada["Situação da tarefa"].astype(str).str.lower() == "concluído"
+        planilha_filtrada["Max"].astype(str).str.lower() == "concluído"
     )
 
     df_editado = st.data_editor(
@@ -185,7 +136,7 @@ def tarefas_iguatemi():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Situação da tarefa"] = df_editado["Concluir"].apply(
+    df_editado["Max"] = df_editado["Concluir"].apply(
         lambda x: "Concluído" if x else "Pendente"
     )
 
@@ -207,8 +158,8 @@ def tarefas_iguatemi():
 
                 if linhas:
                     linha_sheet = linhas[0] + 2
-                    coluna_status = df_original.columns.get_loc("Situação da tarefa") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Situação da tarefa"])
+                    coluna_status = df_original.columns.get_loc("Max") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Max"])
 
             st.success("✔️ Alterações salvas com sucesso!")
 
@@ -219,13 +170,174 @@ def tarefas_iguatemi():
     # 🔄 Atualiza a página a cada 60s para verificar notificações
 
 
-def tarefas_iguatemi2():
+def tarefas_iguatemi_fechamento():
+
+
+
+    # Controle de estado das notificações
+    if "notificados" not in st.session_state:
+        st.session_state.notificados = {}
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role not in ["Iguatemi1","Admin"]:
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # ---------------------------
+    # LISTAS E DICIONÁRIOS
+    # ---------------------------
+    gvs = ["GLS DA CARTEIRA DE FELIPE"]
+
+    lojas_por_carteira = {
+        " ": [" "],
+        "GLS DA CARTEIRA DE FELIPE": [
+            "LOJA IGUATEMI | BA"
+        ]
+    }
+
+    nomes_por_loja = {
+        " ": [" "],
+        "LOJA IGUATEMI | BA": ["GLS(FECHAMENTO)"],
+    }
+
+    # ---------------------------
+    # INTERFACE
+    # ---------------------------
+    icon = Image.open("image/vivo.png")
+    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola, colb, colc = st.columns([4, 1, 1])
+    with colc:
+        st.image(image_logo)
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data_selecionada = st.date_input("Selecione a data:")
+
+    # ---------------------------
+    # CONFIGURAÇÃO GOOGLE SHEETS
+    # ---------------------------
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+        aba = planilha.worksheet(nome)
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Denise"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+
+    if planilha_Dados.empty:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
+
+    # Padronizar colunas para evitar erro
+    planilha_Dados.columns = planilha_Dados.columns.str.strip()
+
+    # Converter data da planilha
+    planilha_Dados["Data"] = pd.to_datetime(
+        planilha_Dados["Data"], dayfirst=True, errors="coerce"
+    ).dt.date
+
+    # Filtrar pela data escolhida
+    planilha_filtrada = planilha_Dados[planilha_Dados["Data"] == data_selecionada]
+
+    if planilha_filtrada.empty:
+        st.info("Nenhuma tarefa encontrada para esta data.")
+        return
+
+    # ---------------------------
+    # 🔥 NOTIFICAÇÕES
+    # ---------------------------
+    planilha_filtrada["Concluir"] = (
+        planilha_filtrada["Denise"].astype(str).str.lower() == "concluído"
+    )
+
+    df_editado = st.data_editor(
+        planilha_filtrada,
+        column_config={
+            "Concluir": st.column_config.CheckboxColumn(
+                "Concluir tarefa",
+                help="Marque para concluir a tarefa"
+            )
+        },
+        disabled=["Data", "ID"]
+    )
+
+    df_editado["Denise"] = df_editado["Concluir"].apply(
+        lambda x: "Concluído" if x else "Pendente"
+    )
+
+    # ---------------------------
+    # SALVAR ALTERAÇÕES
+    # ---------------------------
+    col11, col12, col13, col14, col15 = st.columns(5)
+
+    with col11:
+        if st.button("Salvar alterações"):
+            aba = planilha.worksheet(nome)
+            dados_atual = aba.get_all_records()
+            df_original = pd.DataFrame(dados_atual)
+
+            for _, row in df_editado.iterrows():
+                tarefa_id = row["ID"]
+
+                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
+
+                if linhas:
+                    linha_sheet = linhas[0] + 2
+                    coluna_status = df_original.columns.get_loc("Denise") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Denise"])
+
+            st.success("✔️ Alterações salvas com sucesso!")
+
+    with col12:
+        if st.button("Atualizar"):
+            st.rerun()
+
+
+def tarefas_iguatemi2_abertura():
     icon = Image.open("image/vivo.png")
 
     st.set_page_config(page_title="R.E.G IGUATEMI ||", page_icon=icon, layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Iguatemi2":
+    if "role" not in st.session_state or st.session_state.role not in ["Iguatemi2","Admin"]:
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -245,7 +357,7 @@ def tarefas_iguatemi2():
 
     nomes_por_loja = {
         " ": [" "],
-        "LOJA IGUATEMI || BA": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Iguatemi ||","Diego","Andressa"],
+        "LOJA IGUATEMI || BA": ["GLS(ABERTURA)"],
     }
 
     # ---------------------------
@@ -308,6 +420,9 @@ def tarefas_iguatemi2():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Andressa"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
@@ -328,7 +443,7 @@ def tarefas_iguatemi2():
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
     planilha_Dados["Concluir"] = (
-        planilha_Dados["Situação da tarefa"].astype(str).str.lower() == "concluído"
+        planilha_Dados["Andressa"].astype(str).str.lower() == "concluído"
     )
 
     df_editado = st.data_editor(
@@ -342,7 +457,7 @@ def tarefas_iguatemi2():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Situação da tarefa"] = df_editado["Concluir"].apply(
+    df_editado["Andressa"] = df_editado["Concluir"].apply(
         lambda x: "Concluído" if x else "Pendente"
     )
 
@@ -366,8 +481,168 @@ def tarefas_iguatemi2():
                 if linhas:
                     linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
 
-                    coluna_status = df_original.columns.get_loc("Situação da tarefa") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Situação da tarefa"])
+                    coluna_status = df_original.columns.get_loc("Andressa") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Andressa"])
+
+            st.success("✔️ Alterações salvas com sucesso!")
+
+    with col12:
+        if st.button("Atualizar"):
+            st.rerun()
+
+
+def tarefas_iguatemi2_fechamento():
+    icon = Image.open("image/vivo.png")
+
+    st.set_page_config(page_title="R.E.G IGUATEMI ||", page_icon=icon, layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role not in ["Iguatemi2","Admin"]:
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # ---------------------------
+    # LISTAS E DICIONÁRIOS
+    # ---------------------------
+    gvs = [
+        "GLS DA CARTEIRA DE FELIPE",
+    ]
+
+    lojas_por_carteira = {
+        " ": [" "],
+        "GLS DA CARTEIRA DE FELIPE": [
+            "LOJA IGUATEMI || BA"
+        ]
+    }
+
+    nomes_por_loja = {
+        " ": [" "],
+        "LOJA IGUATEMI || BA": ["GLS(FECHAMENTO)"],
+    }
+
+    # ---------------------------
+    # INTERFACE
+    # ---------------------------
+    icon = Image.open("image/vivo.png")
+    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola, colb, colc = st.columns([4, 1, 1])
+
+    with colc:
+        st.image(image_logo)
+
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data:")
+
+    # ---------------------------
+    # CONFIGURAÇÃO GOOGLE SHEETS
+    # ---------------------------
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+        aba = planilha.worksheet(nome)
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Diego"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+    if planilha_Dados.empty:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
+
+    planilha_Dados["Data"] = pd.to_datetime(
+        planilha_Dados["Data"],
+        dayfirst=True,
+        errors="coerce"
+    ).dt.date
+
+    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
+
+    if planilha_Dados.empty:
+        st.info("Nenhuma tarefa encontrada para esta data.")
+        return
+
+    # ---------------------------
+    # CHECKBOX PARA CONCLUIR TAREFA
+    # ---------------------------
+    planilha_Dados["Concluir"] = (
+        planilha_Dados["Diego"].astype(str).str.lower() == "concluído"
+    )
+
+    df_editado = st.data_editor(
+        planilha_Dados,
+        column_config={
+            "Concluir": st.column_config.CheckboxColumn(
+                "Concluir tarefa",
+                help="Marque para concluir a tarefa"
+            )
+        },
+        disabled=["Data", "ID"]
+    )
+
+    df_editado["Diego"] = df_editado["Concluir"].apply(
+        lambda x: "Concluído" if x else "Pendente"
+    )
+
+    # ---------------------------
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
+    # ---------------------------
+    col11, col12, col13, col14, col15 = st.columns(5)
+
+    with col11:
+        if st.button("Salvar alterações"):
+            aba = planilha.worksheet(nome)
+            dados_atual = aba.get_all_records()
+
+            df_original = pd.DataFrame(dados_atual)
+
+            for _, row in df_editado.iterrows():
+                tarefa_id = row["ID"]
+
+                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
+
+                if linhas:
+                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
+
+                    coluna_status = df_original.columns.get_loc("Diego") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Diego"])
 
             st.success("✔️ Alterações salvas com sucesso!")
 
@@ -377,13 +652,16 @@ def tarefas_iguatemi2():
 
 
 
-def tarefas_nort():
+
+
+
+def tarefas_nort_abertura():
     icon = Image.open("image/vivo.png")
 
     st.set_page_config(page_title="R.E.G IGUATEMI ||", page_icon=icon, layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Norte":
+    if "role" not in st.session_state or st.session_state.role not in ["Norte","Admin"]:
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -405,7 +683,7 @@ def tarefas_nort():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA NORT SHOP": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Norte","Jairo","Wanderlei"],
+    "LOJA NORT SHOP": ["GLS(ABERTURA)"]
     }
 
     # ---------------------------
@@ -468,6 +746,10 @@ def tarefas_nort():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Jairo"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
@@ -488,7 +770,7 @@ def tarefas_nort():
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
     planilha_Dados["Concluir"] = (
-        planilha_Dados["Situação da tarefa"].astype(str).str.lower() == "concluído"
+        planilha_Dados["Jairo"].astype(str).str.lower() == "concluído"
     )
 
     df_editado = st.data_editor(
@@ -502,7 +784,7 @@ def tarefas_nort():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Situação da tarefa"] = df_editado["Concluir"].apply(
+    df_editado["Jairo"] = df_editado["Concluir"].apply(
         lambda x: "Concluído" if x else "Pendente"
     )
 
@@ -526,8 +808,8 @@ def tarefas_nort():
                 if linhas:
                     linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
 
-                    coluna_status = df_original.columns.get_loc("Situação da tarefa") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Situação da tarefa"])
+                    coluna_status = df_original.columns.get_loc("Jairo") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Jairo"])
 
             st.success("✔️ Alterações salvas com sucesso!")
 
@@ -535,16 +817,180 @@ def tarefas_nort():
         if st.button("Atualizar"):
             st.rerun()
 
+
+def tarefas_nort_fechamento():
+    icon = Image.open("image/vivo.png")
+
+    st.set_page_config(page_title="R.E.G NORTE SHOP", page_icon=icon, layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role not in ["Norte","Admin"]:
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # ---------------------------
+    # LISTAS E DICIONÁRIOS
+    # ---------------------------
+    gvs = [ 
+            
+        "GLS DA CARTEIRA DE FELIPE",
+    ]
+           
+        
+    lojas_por_carteira = {
+    " ": [" "],
+    "GLS DA CARTEIRA DE FELIPE": [
+            "LOJA NORT SHOP"
+    ]
+    }
+
+    nomes_por_loja = {
+    " ": [" "],
+    "LOJA NORT SHOP": ["GLS(FECHAMENTO)"]
+    }
+
+    # ---------------------------
+    # INTERFACE
+    # ---------------------------
+    icon = Image.open("image/vivo.png")
+    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola, colb, colc = st.columns([4, 1, 1])
+
+    with colc:
+        st.image(image_logo)
+
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data:")
+
+    # ---------------------------
+    # CONFIGURAÇÃO GOOGLE SHEETS
+    # ---------------------------
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+        aba = planilha.worksheet(nome)
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Wanderlei"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+
+    if planilha_Dados.empty:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
+
+    planilha_Dados["Data"] = pd.to_datetime(
+        planilha_Dados["Data"],
+        dayfirst=True,
+        errors="coerce"
+    ).dt.date
+
+    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
+
+    if planilha_Dados.empty:
+        st.info("Nenhuma tarefa encontrada para esta data.")
+        return
+
+    # ---------------------------
+    # CHECKBOX PARA CONCLUIR TAREFA
+    # ---------------------------
+    planilha_Dados["Concluir"] = (
+        planilha_Dados["Wanderlei"].astype(str).str.lower() == "concluído"
+    )
+
+    df_editado = st.data_editor(
+        planilha_Dados,
+        column_config={
+            "Concluir": st.column_config.CheckboxColumn(
+                "Concluir tarefa",
+                help="Marque para concluir a tarefa"
+            )
+        },
+        disabled=["Data", "ID"]
+    )
+
+    df_editado["Wanderlei"] = df_editado["Concluir"].apply(
+        lambda x: "Concluído" if x else "Pendente"
+    )
+
+    # ---------------------------
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
+    # ---------------------------
+    col11, col12, col13, col14, col15 = st.columns(5)
+
+    with col11:
+        if st.button("Salvar alterações"):
+            aba = planilha.worksheet(nome)
+            dados_atual = aba.get_all_records()
+
+            df_original = pd.DataFrame(dados_atual)
+
+            for _, row in df_editado.iterrows():
+                tarefa_id = row["ID"]
+
+                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
+
+                if linhas:
+                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
+
+                    coluna_status = df_original.columns.get_loc("Wanderlei") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Wanderlei"])
+
+            st.success("✔️ Alterações salvas com sucesso!")
+
+    with col12:
+        if st.button("Atualizar"):
+            st.rerun()
+
+
 #Fabiana
 
 
-def tarefas_ssa1():
+def tarefas_ssa1_abertura():
     icon = Image.open("image/vivo.png")
 
-    st.set_page_config(page_title="R.E.G SALVADOR1", page_icon=icon, layout="wide")
+    st.set_page_config(page_title="R.E.G SALVADOR |", page_icon=icon, layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Salvador1":
+    if "role" not in st.session_state or st.session_state.role not in ["Salvador1","Admin"]:
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -565,7 +1011,7 @@ def tarefas_ssa1():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA SSA |": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos SSA |","Ana","Francisca","Vinicius"],   
+    "LOJA SSA |": ["GLS(ABERTURA)"],   
     
     }
 
@@ -630,6 +1076,9 @@ def tarefas_ssa1():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Ana"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
@@ -650,7 +1099,7 @@ def tarefas_ssa1():
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
     planilha_Dados["Concluir"] = (
-        planilha_Dados["Situação da tarefa"].astype(str).str.lower() == "concluído"
+        planilha_Dados["Ana"].astype(str).str.lower() == "concluído"
     )
 
     df_editado = st.data_editor(
@@ -664,7 +1113,7 @@ def tarefas_ssa1():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Situação da tarefa"] = df_editado["Concluir"].apply(
+    df_editado["Ana"] = df_editado["Concluir"].apply(
         lambda x: "Concluído" if x else "Pendente"
     )
 
@@ -688,8 +1137,8 @@ def tarefas_ssa1():
                 if linhas:
                     linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
 
-                    coluna_status = df_original.columns.get_loc("Situação da tarefa") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Situação da tarefa"])
+                    coluna_status = df_original.columns.get_loc("Ana") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Ana"])
 
             st.success("✔️ Alterações salvas com sucesso!")
 
@@ -698,13 +1147,507 @@ def tarefas_ssa1():
             st.rerun()
 
 
-def tarefas_ssa2():
+
+
+def tarefas_ssa1_intermedio():
     icon = Image.open("image/vivo.png")
 
-    st.set_page_config(page_title="R.E.G IGUATEMI ||", page_icon=icon, layout="wide")
+    st.set_page_config(page_title="R.E.G SALVADOR |", page_icon=icon, layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Salvador2":
+    if "role" not in st.session_state or st.session_state.role not in ["Salvador1","Admin"]:
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # ---------------------------
+    # LISTAS E DICIONÁRIOS
+    # ---------------------------
+    gvs = [ 
+            "GLS DA CARTEIRA DE FABIANA",
+            ]
+        
+    lojas_por_carteira = {
+    " ": [" "],  
+
+    "GLS DA CARTEIRA DE FABIANA": [
+        "LOJA SSA |"
+    ]
+    }
+
+    nomes_por_loja = {
+    " ": [" "],
+    "LOJA SSA |": ["GLS(INTERMEDIO)"],   
+    
+    }
+
+
+    # ---------------------------
+    # INTERFACE
+    # ---------------------------
+    icon = Image.open("image/vivo.png")
+    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola, colb, colc = st.columns([4, 1, 1])
+
+    with colc:
+        st.image(image_logo)
+
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data:")
+
+    # ---------------------------
+    # CONFIGURAÇÃO GOOGLE SHEETS
+    # ---------------------------
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+        aba = planilha.worksheet(nome)
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Francisca"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+    if planilha_Dados.empty:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
+
+    planilha_Dados["Data"] = pd.to_datetime(
+        planilha_Dados["Data"],
+        dayfirst=True,
+        errors="coerce"
+    ).dt.date
+
+    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
+
+    if planilha_Dados.empty:
+        st.info("Nenhuma tarefa encontrada para esta data.")
+        return
+
+    # ---------------------------
+    # CHECKBOX PARA CONCLUIR TAREFA
+    # ---------------------------
+    planilha_Dados["Concluir"] = (
+        planilha_Dados["Francisca"].astype(str).str.lower() == "concluído"
+    )
+
+    df_editado = st.data_editor(
+        planilha_Dados,
+        column_config={
+            "Concluir": st.column_config.CheckboxColumn(
+                "Concluir tarefa",
+                help="Marque para concluir a tarefa"
+            )
+        },
+        disabled=["Data", "ID"]
+    )
+
+    df_editado["Francisca"] = df_editado["Concluir"].apply(
+        lambda x: "Concluído" if x else "Pendente"
+    )
+
+    # ---------------------------
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
+    # ---------------------------
+    col11, col12, col13, col14, col15 = st.columns(5)
+
+    with col11:
+        if st.button("Salvar alterações"):
+            aba = planilha.worksheet(nome)
+            dados_atual = aba.get_all_records()
+
+            df_original = pd.DataFrame(dados_atual)
+
+            for _, row in df_editado.iterrows():
+                tarefa_id = row["ID"]
+
+                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
+
+                if linhas:
+                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
+
+                    coluna_status = df_original.columns.get_loc("Francisca") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Francisca"])
+
+            st.success("✔️ Alterações salvas com sucesso!")
+
+    with col12:
+        if st.button("Atualizar"):
+            st.rerun()
+
+
+
+
+def tarefas_ssa1_fechamento():
+    icon = Image.open("image/vivo.png")
+
+    st.set_page_config(page_title="R.E.G SALVADOR |", page_icon=icon, layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role not in ["Salvador1","Admin"]:
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # ---------------------------
+    # LISTAS E DICIONÁRIOS
+    # ---------------------------
+    gvs = [ 
+            "GLS DA CARTEIRA DE FABIANA",
+            ]
+        
+    lojas_por_carteira = {
+    " ": [" "],  
+
+    "GLS DA CARTEIRA DE FABIANA": [
+        "LOJA SSA |"
+    ]
+    }
+
+    nomes_por_loja = {
+    " ": [" "],
+    "LOJA SSA |": ["GLS(FECHAMENTO)"],   
+    
+    }
+
+
+    # ---------------------------
+    # INTERFACE
+    # ---------------------------
+    icon = Image.open("image/vivo.png")
+    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola, colb, colc = st.columns([4, 1, 1])
+
+    with colc:
+        st.image(image_logo)
+
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data:")
+
+    # ---------------------------
+    # CONFIGURAÇÃO GOOGLE SHEETS
+    # ---------------------------
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+        aba = planilha.worksheet(nome)
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Vinicius"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+    if planilha_Dados.empty:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
+
+    planilha_Dados["Data"] = pd.to_datetime(
+        planilha_Dados["Data"],
+        dayfirst=True,
+        errors="coerce"
+    ).dt.date
+
+    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
+
+    if planilha_Dados.empty:
+        st.info("Nenhuma tarefa encontrada para esta data.")
+        return
+
+    # ---------------------------
+    # CHECKBOX PARA CONCLUIR TAREFA
+    # ---------------------------
+    planilha_Dados["Concluir"] = (
+        planilha_Dados["Vinicius"].astype(str).str.lower() == "concluído"
+    )
+
+    df_editado = st.data_editor(
+        planilha_Dados,
+        column_config={
+            "Concluir": st.column_config.CheckboxColumn(
+                "Concluir tarefa",
+                help="Marque para concluir a tarefa"
+            )
+        },
+        disabled=["Data", "ID"]
+    )
+
+    df_editado["Vinicius"] = df_editado["Concluir"].apply(
+        lambda x: "Concluído" if x else "Pendente"
+    )
+
+    # ---------------------------
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
+    # ---------------------------
+    col11, col12, col13, col14, col15 = st.columns(5)
+
+    with col11:
+        if st.button("Salvar alterações"):
+            aba = planilha.worksheet(nome)
+            dados_atual = aba.get_all_records()
+
+            df_original = pd.DataFrame(dados_atual)
+
+            for _, row in df_editado.iterrows():
+                tarefa_id = row["ID"]
+
+                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
+
+                if linhas:
+                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
+
+                    coluna_status = df_original.columns.get_loc("Vinicius") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Vinicius"])
+
+            st.success("✔️ Alterações salvas com sucesso!")
+
+    with col12:
+        if st.button("Atualizar"):
+            st.rerun()
+
+
+def tarefas_ssa2_abertura():
+    icon = Image.open("image/vivo.png")
+
+    st.set_page_config(page_title="R.E.G SALVADOR ||", page_icon=icon, layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role not in ["Salvador2","Admin"]:
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # ---------------------------
+    # LISTAS E DICIONÁRIOS
+    # ---------------------------
+    gvs = [ 
+            "GLS DA CARTEIRA DE FABIANA",
+            ]
+        
+    lojas_por_carteira = {
+    " ": [" "],  
+
+    "GLS DA CARTEIRA DE FABIANA": [
+        "LOJA SSA |"
+    ]
+    }
+
+    nomes_por_loja = {
+    " ": [" "],
+    "LOJA SSA |": ["GLS(ABERTURA)"],   
+    
+    }
+
+
+    # ---------------------------
+    # INTERFACE
+    # ---------------------------
+    icon = Image.open("image/vivo.png")
+    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola, colb, colc = st.columns([4, 1, 1])
+
+    with colc:
+        st.image(image_logo)
+
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data:")
+
+    # ---------------------------
+    # CONFIGURAÇÃO GOOGLE SHEETS
+    # ---------------------------
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+        aba = planilha.worksheet(nome)
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Vitor"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+    if planilha_Dados.empty:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
+
+    planilha_Dados["Data"] = pd.to_datetime(
+        planilha_Dados["Data"],
+        dayfirst=True,
+        errors="coerce"
+    ).dt.date
+
+    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
+
+    if planilha_Dados.empty:
+        st.info("Nenhuma tarefa encontrada para esta data.")
+        return
+
+    # ---------------------------
+    # CHECKBOX PARA CONCLUIR TAREFA
+    # ---------------------------
+    planilha_Dados["Concluir"] = (
+        planilha_Dados["Vitor"].astype(str).str.lower() == "concluído"
+    )
+
+    df_editado = st.data_editor(
+        planilha_Dados,
+        column_config={
+            "Concluir": st.column_config.CheckboxColumn(
+                "Concluir tarefa",
+                help="Marque para concluir a tarefa"
+            )
+        },
+        disabled=["Data", "ID"]
+    )
+
+    df_editado["Vitor"] = df_editado["Concluir"].apply(
+        lambda x: "Concluído" if x else "Pendente"
+    )
+
+    # ---------------------------
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
+    # ---------------------------
+    col11, col12, col13, col14, col15 = st.columns(5)
+
+    with col11:
+        if st.button("Salvar alterações"):
+            aba = planilha.worksheet(nome)
+            dados_atual = aba.get_all_records()
+
+            df_original = pd.DataFrame(dados_atual)
+
+            for _, row in df_editado.iterrows():
+                tarefa_id = row["ID"]
+
+                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
+
+                if linhas:
+                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
+
+                    coluna_status = df_original.columns.get_loc("Vitor") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Vitor"])
+
+            st.success("✔️ Alterações salvas com sucesso!")
+
+    with col12:
+        if st.button("Atualizar"):
+            st.rerun()
+
+
+
+def tarefas_ssa2_fechamento():
+    icon = Image.open("image/vivo.png")
+
+    st.set_page_config(page_title="R.E.G SALVADOR ||", page_icon=icon, layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role not in ["Salvador2", "Admin"]:
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -725,7 +1668,7 @@ def tarefas_ssa2():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA SSA ||": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos SSA ||","Vitor","Mailan"],
+    "LOJA SSA ||": ["GLS(ABERTURA)"],
     
     }
 
@@ -790,6 +1733,9 @@ def tarefas_ssa2():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Wanderlei"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
@@ -810,7 +1756,7 @@ def tarefas_ssa2():
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
     planilha_Dados["Concluir"] = (
-        planilha_Dados["Situação da tarefa"].astype(str).str.lower() == "concluído"
+        planilha_Dados["Wanderlei"].astype(str).str.lower() == "concluído"
     )
 
     df_editado = st.data_editor(
@@ -824,7 +1770,7 @@ def tarefas_ssa2():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Situação da tarefa"] = df_editado["Concluir"].apply(
+    df_editado["Wanderlei"] = df_editado["Concluir"].apply(
         lambda x: "Concluído" if x else "Pendente"
     )
 
@@ -848,8 +1794,8 @@ def tarefas_ssa2():
                 if linhas:
                     linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
 
-                    coluna_status = df_original.columns.get_loc("Situação da tarefa") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Situação da tarefa"])
+                    coluna_status = df_original.columns.get_loc("Wanderlei") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Wanderlei"])
 
             st.success("✔️ Alterações salvas com sucesso!")
 
@@ -858,13 +1804,177 @@ def tarefas_ssa2():
             st.rerun()
 
 
-def tarefas_bela():
+
+def tarefas_ssa2_fechamento():
+    icon = Image.open("image/vivo.png")
+
+    st.set_page_config(page_title="R.E.G SALVADOR ||", page_icon=icon, layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role not in ["Salvador2", "Admin"]:
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # ---------------------------
+    # LISTAS E DICIONÁRIOS
+    # ---------------------------
+    gvs = [ 
+            "GLS DA CARTEIRA DE FABIANA",
+            ]
+        
+    lojas_por_carteira = {
+    " ": [" "],  
+
+    "GLS DA CARTEIRA DE FABIANA": [
+                "LOJA SSA ||"
+    ]
+    }
+
+    nomes_por_loja = {
+    " ": [" "],
+    "LOJA SSA ||": ["GLS(FECHAMENTO)"],
+    
+    }
+
+
+    # ---------------------------
+    # INTERFACE
+    # ---------------------------
+    icon = Image.open("image/vivo.png")
+    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola, colb, colc = st.columns([4, 1, 1])
+
+    with colc:
+        st.image(image_logo)
+
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data:")
+
+    # ---------------------------
+    # CONFIGURAÇÃO GOOGLE SHEETS
+    # ---------------------------
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+        aba = planilha.worksheet(nome)
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Mailan"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+    if planilha_Dados.empty:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
+
+    planilha_Dados["Data"] = pd.to_datetime(
+        planilha_Dados["Data"],
+        dayfirst=True,
+        errors="coerce"
+    ).dt.date
+
+    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
+
+    if planilha_Dados.empty:
+        st.info("Nenhuma tarefa encontrada para esta data.")
+        return
+
+    # ---------------------------
+    # CHECKBOX PARA CONCLUIR TAREFA
+    # ---------------------------
+    planilha_Dados["Concluir"] = (
+        planilha_Dados["Mailan"].astype(str).str.lower() == "concluído"
+    )
+
+    df_editado = st.data_editor(
+        planilha_Dados,
+        column_config={
+            "Concluir": st.column_config.CheckboxColumn(
+                "Concluir tarefa",
+                help="Marque para concluir a tarefa"
+            )
+        },
+        disabled=["Data", "ID"]
+    )
+
+    df_editado["Mailan"] = df_editado["Concluir"].apply(
+        lambda x: "Concluído" if x else "Pendente"
+    )
+
+    # ---------------------------
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
+    # ---------------------------
+    col11, col12, col13, col14, col15 = st.columns(5)
+
+    with col11:
+        if st.button("Salvar alterações"):
+            aba = planilha.worksheet(nome)
+            dados_atual = aba.get_all_records()
+
+            df_original = pd.DataFrame(dados_atual)
+
+            for _, row in df_editado.iterrows():
+                tarefa_id = row["ID"]
+
+                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
+
+                if linhas:
+                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
+
+                    coluna_status = df_original.columns.get_loc("Mailan") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Mailan"])
+
+            st.success("✔️ Alterações salvas com sucesso!")
+
+    with col12:
+        if st.button("Atualizar"):
+            st.rerun()
+
+
+def tarefas_bela_abertura():
     icon = Image.open("image/vivo.png")
 
     st.set_page_config(page_title="R.E.G BELA VISTA", page_icon=icon, layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Bela":
+    if "role" not in st.session_state or st.session_state.role not in ["Bela", "Admin"]:
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -886,7 +1996,7 @@ def tarefas_bela():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA BELA VISTA": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Bela","Vanessa","Danilo"]
+    "LOJA BELA VISTA": ["GLS(ABERTURA)"]
     
     }
 
@@ -951,6 +2061,9 @@ def tarefas_bela():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Danilo"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
@@ -971,7 +2084,7 @@ def tarefas_bela():
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
     planilha_Dados["Concluir"] = (
-        planilha_Dados["Situação da tarefa"].astype(str).str.lower() == "concluído"
+        planilha_Dados["Danilo"].astype(str).str.lower() == "concluído"
     )
 
     df_editado = st.data_editor(
@@ -985,7 +2098,7 @@ def tarefas_bela():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Situação da tarefa"] = df_editado["Concluir"].apply(
+    df_editado["Danilo"] = df_editado["Concluir"].apply(
         lambda x: "Concluído" if x else "Pendente"
     )
 
@@ -1009,8 +2122,8 @@ def tarefas_bela():
                 if linhas:
                     linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
 
-                    coluna_status = df_original.columns.get_loc("Situação da tarefa") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Situação da tarefa"])
+                    coluna_status = df_original.columns.get_loc("Danilo") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Danilo"])
 
             st.success("✔️ Alterações salvas com sucesso!")
 
@@ -1019,13 +2132,13 @@ def tarefas_bela():
             st.rerun()
 
 
-def tarefas_parela():
+def tarefas_bela_fechamento():
     icon = Image.open("image/vivo.png")
 
-    st.set_page_config(page_title="R.E.G PARALELA", page_icon=icon, layout="wide")
+    st.set_page_config(page_title="R.E.G BELA VISTA", page_icon=icon, layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Paralela":
+    if "role" not in st.session_state or st.session_state.role not in ["Bela","Admin"]:
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -1033,20 +2146,22 @@ def tarefas_parela():
     # LISTAS E DICIONÁRIOS
     # ---------------------------
     gvs = [ 
-        "GLS DA CARTEIRA DE FABIANA",]
-        
+                "GLS DA CARTEIRA DE FABIANA",
+                ]
+            
     lojas_por_carteira = {
     " ": [" "],
 
     "GLS DA CARTEIRA DE FABIANA": [
-        "LOJA PARALELA"
-    ],
-   
+                "LOJA BELA VISTA"
+    ]
     }
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA PARALELA": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Paralela","Crislaine","Neide"]
+    
+    "LOJA BELA VISTA": ["GLS(FECHAMENTO)"]
+    
     }
 
 
@@ -1110,6 +2225,9 @@ def tarefas_parela():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Vanessa"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
@@ -1130,7 +2248,7 @@ def tarefas_parela():
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
     planilha_Dados["Concluir"] = (
-        planilha_Dados["Situação da tarefa"].astype(str).str.lower() == "concluído"
+        planilha_Dados["Vanessa"].astype(str).str.lower() == "concluído"
     )
 
     df_editado = st.data_editor(
@@ -1144,7 +2262,7 @@ def tarefas_parela():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Situação da tarefa"] = df_editado["Concluir"].apply(
+    df_editado["Vanessa"] = df_editado["Concluir"].apply(
         lambda x: "Concluído" if x else "Pendente"
     )
 
@@ -1168,8 +2286,8 @@ def tarefas_parela():
                 if linhas:
                     linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
 
-                    coluna_status = df_original.columns.get_loc("Situação da tarefa") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Situação da tarefa"])
+                    coluna_status = df_original.columns.get_loc("Vanessa") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Vanessa"])
 
             st.success("✔️ Alterações salvas com sucesso!")
 
@@ -1178,13 +2296,342 @@ def tarefas_parela():
             st.rerun()
 
 
-def tarefas_parque():
+
+def tarefas_parela_abertura():
+    icon = Image.open("image/vivo.png")
+
+    st.set_page_config(page_title="R.E.G PARALELA", page_icon=icon, layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role not in ["Paralela", "Admin"]:
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+   
+    # ---------------------------
+    # LISTAS E DICIONÁRIOS
+    # ---------------------------
+    gvs = [ 
+        "GLS DA CARTEIRA DE FABIANA",]
+        
+    lojas_por_carteira = {
+    " ": [" "],
+
+    "GLS DA CARTEIRA DE FABIANA": [
+        "LOJA PARALELA"
+    ],
+   
+    }
+
+    nomes_por_loja = {
+    " ": [" "],
+    "LOJA PARALELA": ["GLS(ABERTURA)"]
+    }
+
+
+    # ---------------------------
+    # INTERFACE
+    # ---------------------------
+    icon = Image.open("image/vivo.png")
+    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola, colb, colc = st.columns([4, 1, 1])
+
+    with colc:
+        st.image(image_logo)
+
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data:")
+
+    # ---------------------------
+    # CONFIGURAÇÃO GOOGLE SHEETS
+    # ---------------------------
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+        aba = planilha.worksheet(nome)
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Crislaine"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+    if planilha_Dados.empty:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
+
+    planilha_Dados["Data"] = pd.to_datetime(
+        planilha_Dados["Data"],
+        dayfirst=True,
+        errors="coerce"
+    ).dt.date
+
+    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
+
+    if planilha_Dados.empty:
+        st.info("Nenhuma tarefa encontrada para esta data.")
+        return
+
+    # ---------------------------
+    # CHECKBOX PARA CONCLUIR TAREFA
+    # ---------------------------
+    planilha_Dados["Concluir"] = (
+        planilha_Dados["Crislaine"].astype(str).str.lower() == "concluído"
+    )
+
+    df_editado = st.data_editor(
+        planilha_Dados,
+        column_config={
+            "Concluir": st.column_config.CheckboxColumn(
+                "Concluir tarefa",
+                help="Marque para concluir a tarefa"
+            )
+        },
+        disabled=["Data", "ID"]
+    )
+
+    df_editado["Crislaine"] = df_editado["Concluir"].apply(
+        lambda x: "Concluído" if x else "Pendente"
+    )
+
+    # ---------------------------
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
+    # ---------------------------
+    col11, col12, col13, col14, col15 = st.columns(5)
+
+    with col11:
+        if st.button("Salvar alterações"):
+            aba = planilha.worksheet(nome)
+            dados_atual = aba.get_all_records()
+
+            df_original = pd.DataFrame(dados_atual)
+
+            for _, row in df_editado.iterrows():
+                tarefa_id = row["ID"]
+
+                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
+
+                if linhas:
+                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
+
+                    coluna_status = df_original.columns.get_loc("Crislaine") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Crislaine"])
+
+            st.success("✔️ Alterações salvas com sucesso!")
+
+    with col12:
+        if st.button("Atualizar"):
+            st.rerun()
+
+
+
+def tarefas_parela_fechamento():
+    icon = Image.open("image/vivo.png")
+
+    st.set_page_config(page_title="R.E.G PARALELA", page_icon=icon, layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role not in ["Paralela", "Admin"]:
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # ---------------------------
+    # LISTAS E DICIONÁRIOS
+    # ---------------------------
+    gvs = [ 
+        "GLS DA CARTEIRA DE FABIANA",]
+        
+    lojas_por_carteira = {
+    " ": [" "],
+
+    "GLS DA CARTEIRA DE FABIANA": [
+        "LOJA PARALELA"
+    ],
+   
+    }
+
+    nomes_por_loja = {
+    " ": [" "],
+    "LOJA PARALELA": ["GLS(FECHAMENTO)"]
+    }
+
+
+    # ---------------------------
+    # INTERFACE
+    # ---------------------------
+    icon = Image.open("image/vivo.png")
+    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola, colb, colc = st.columns([4, 1, 1])
+
+    with colc:
+        st.image(image_logo)
+
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data:")
+
+    # ---------------------------
+    # CONFIGURAÇÃO GOOGLE SHEETS
+    # ---------------------------
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+        aba = planilha.worksheet(nome)
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+    
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Neide"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+    if planilha_Dados.empty:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
+
+    planilha_Dados["Data"] = pd.to_datetime(
+        planilha_Dados["Data"],
+        dayfirst=True,
+        errors="coerce"
+    ).dt.date
+
+    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
+
+    if planilha_Dados.empty:
+        st.info("Nenhuma tarefa encontrada para esta data.")
+        return
+
+    # ---------------------------
+    # CHECKBOX PARA CONCLUIR TAREFA
+    # ---------------------------
+    planilha_Dados["Concluir"] = (
+        planilha_Dados["Neide"].astype(str).str.lower() == "concluído"
+    )
+
+    df_editado = st.data_editor(
+        planilha_Dados,
+        column_config={
+            "Concluir": st.column_config.CheckboxColumn(
+                "Concluir tarefa",
+                help="Marque para concluir a tarefa"
+            )
+        },
+        disabled=["Data", "ID"]
+    )
+
+    df_editado["Neide"] = df_editado["Concluir"].apply(
+        lambda x: "Concluído" if x else "Pendente"
+    )
+
+    # ---------------------------
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
+    # ---------------------------
+    col11, col12, col13, col14, col15 = st.columns(5)
+
+    with col11:
+        if st.button("Salvar alterações"):
+            aba = planilha.worksheet(nome)
+            dados_atual = aba.get_all_records()
+
+            df_original = pd.DataFrame(dados_atual)
+
+            for _, row in df_editado.iterrows():
+                tarefa_id = row["ID"]
+
+                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
+
+                if linhas:
+                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
+
+                    coluna_status = df_original.columns.get_loc("Neide") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Neide"])
+
+            st.success("✔️ Alterações salvas com sucesso!")
+
+    with col12:
+        if st.button("Atualizar"):
+            st.rerun()
+
+
+
+    
+def tarefas_parque_abertura():
     icon = Image.open("image/vivo.png")
 
     st.set_page_config(page_title="R.E.G PARQUE", page_icon=icon, layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Parque":
+    if "role" not in st.session_state or st.session_state.role not in ["Parque", "Admin"]:
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -1207,7 +2654,7 @@ def tarefas_parque():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA PARQUE SHOP": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Parque","Denise_Parque","Adrielle"],
+    "LOJA PARQUE SHOP": ["GLS(ABERTURA)"],
     
     }
 
@@ -1272,6 +2719,10 @@ def tarefas_parque():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Denise_Parque"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
@@ -1292,7 +2743,7 @@ def tarefas_parque():
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
     planilha_Dados["Concluir"] = (
-        planilha_Dados["Situação da tarefa"].astype(str).str.lower() == "concluído"
+        planilha_Dados["Denise_Parque"].astype(str).str.lower() == "concluído"
     )
 
     df_editado = st.data_editor(
@@ -1306,7 +2757,7 @@ def tarefas_parque():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Situação da tarefa"] = df_editado["Concluir"].apply(
+    df_editado["Denise_Parque"] = df_editado["Concluir"].apply(
         lambda x: "Concluído" if x else "Pendente"
     )
 
@@ -1330,8 +2781,8 @@ def tarefas_parque():
                 if linhas:
                     linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
 
-                    coluna_status = df_original.columns.get_loc("Situação da tarefa") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Situação da tarefa"])
+                    coluna_status = df_original.columns.get_loc("Denise_Parque") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Denise_Parque"])
 
             st.success("✔️ Alterações salvas com sucesso!")
 
@@ -1340,15 +2791,186 @@ def tarefas_parque():
             st.rerun()
 
 
+
+def tarefas_parque_fechamento():
+    icon = Image.open("image/vivo.png")
+
+    st.set_page_config(page_title="R.E.G PARQUE", page_icon=icon, layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role not in ["Parque", "Admin"]:
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # ---------------------------
+    # LISTAS E DICIONÁRIOS
+    # ---------------------------
+    gvs = [ 
+            "GLS DA CARTEIRA DE FABIANA",
+           ]
+        
+    lojas_por_carteira = {
+    " ": [" "],
+
+    "GLS DA CARTEIRA DE FABIANA": [
+                "LOJA PARQUE SHOP"
+    ],
+   
+    }
+
+    nomes_por_loja = {
+    " ": [" "],
+    
+    "LOJA PARQUE SHOP": ["GLS(FECHAMENTO)"],
+    
+    }
+
+
+    # ---------------------------
+    # INTERFACE
+    # ---------------------------
+    icon = Image.open("image/vivo.png")
+    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola, colb, colc = st.columns([4, 1, 1])
+
+    with colc:
+        st.image(image_logo)
+
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data:")
+
+    # ---------------------------
+    # CONFIGURAÇÃO GOOGLE SHEETS
+    # ---------------------------
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+        aba = planilha.worksheet(nome)
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Adrielle"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+
+    if planilha_Dados.empty:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
+
+    planilha_Dados["Data"] = pd.to_datetime(
+        planilha_Dados["Data"],
+        dayfirst=True,
+        errors="coerce"
+    ).dt.date
+
+    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
+
+    if planilha_Dados.empty:
+        st.info("Nenhuma tarefa encontrada para esta data.")
+        return
+
+    # ---------------------------
+    # CHECKBOX PARA CONCLUIR TAREFA
+    # ---------------------------
+    planilha_Dados["Concluir"] = (
+        planilha_Dados["Adrielle"].astype(str).str.lower() == "concluído"
+    )
+
+    df_editado = st.data_editor(
+        planilha_Dados,
+        column_config={
+            "Concluir": st.column_config.CheckboxColumn(
+                "Concluir tarefa",
+                help="Marque para concluir a tarefa"
+            )
+        },
+        disabled=["Data", "ID"]
+    )
+
+    df_editado["Adrielle"] = df_editado["Concluir"].apply(
+        lambda x: "Concluído" if x else "Pendente"
+    )
+
+    # ---------------------------
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
+    # ---------------------------
+    col11, col12, col13, col14, col15 = st.columns(5)
+
+    with col11:
+        if st.button("Salvar alterações"):
+            aba = planilha.worksheet(nome)
+            dados_atual = aba.get_all_records()
+
+            df_original = pd.DataFrame(dados_atual)
+
+            for _, row in df_editado.iterrows():
+                tarefa_id = row["ID"]
+
+                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
+
+                if linhas:
+                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
+
+                    coluna_status = df_original.columns.get_loc("Adrielle") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Adrielle"])
+
+            st.success("✔️ Alterações salvas com sucesso!")
+
+    with col12:
+        if st.button("Atualizar"):
+            st.rerun()
+
+
+
+
+
+
 #LOJAS JOHN
 
-def tarefas_barra():
+def tarefas_barra_abertura():
     icon = Image.open("image/vivo.png")
 
     st.set_page_config(page_title="R.E.G BARRA", page_icon=icon, layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Barra":
+    if "role" not in st.session_state or st.session_state.role not in ["Barra", "Admin"]:
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -1370,7 +2992,7 @@ def tarefas_barra():
     nomes_por_loja = {
     " ": [" "],
 
-    "LOJA BARRA": ["GLS(GERAL)","GLS(ABERTURA)","GLS(FECHAMENTO)","Todos Barra","Igor","Carol","Alana"],
+    "LOJA BARRA": ["GLS(ABERTURA)"],
     
     }
 
@@ -1434,6 +3056,10 @@ def tarefas_barra():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Carol"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
@@ -1454,7 +3080,7 @@ def tarefas_barra():
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
     planilha_Dados["Concluir"] = (
-        planilha_Dados["Situação da tarefa"].astype(str).str.lower() == "concluído"
+        planilha_Dados["Carol"].astype(str).str.lower() == "concluído"
     )
 
     df_editado = st.data_editor(
@@ -1468,7 +3094,7 @@ def tarefas_barra():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Situação da tarefa"] = df_editado["Concluir"].apply(
+    df_editado["Carol"] = df_editado["Concluir"].apply(
         lambda x: "Concluído" if x else "Pendente"
     )
 
@@ -1492,8 +3118,8 @@ def tarefas_barra():
                 if linhas:
                     linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
 
-                    coluna_status = df_original.columns.get_loc("Situação da tarefa") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Situação da tarefa"])
+                    coluna_status = df_original.columns.get_loc("Carol") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Carol"])
 
             st.success("✔️ Alterações salvas com sucesso!")
 
@@ -1503,13 +3129,350 @@ def tarefas_barra():
 
 
 
-def tarefas_piedade():
+def tarefas_barra_intermedio():
+    icon = Image.open("image/vivo.png")
+
+    st.set_page_config(page_title="R.E.G BARRA", page_icon=icon, layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role not in ["Barra", "Admin"]:
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # ---------------------------
+    # LISTAS E DICIONÁRIOS
+    # ---------------------------
+    gvs = [ 
+            "GLS DA CARTEIRA DE JOHN",
+           ]
+    
+    lojas_por_carteira = {
+    " ": [" "],
+    "GLS DA CARTEIRA DE JOHN": [
+            "LOJA BARRA"
+    ],
+    
+    }
+
+    nomes_por_loja = {
+    " ": [" "],
+
+    "LOJA BARRA": ["GLS(INTERMEDIO)"],
+    
+    }
+
+    # ---------------------------
+    # INTERFACE
+    # ---------------------------
+    icon = Image.open("image/vivo.png")
+    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola, colb, colc = st.columns([4, 1, 1])
+
+    with colc:
+        st.image(image_logo)
+
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data:")
+
+    # ---------------------------
+    # CONFIGURAÇÃO GOOGLE SHEETS
+    # ---------------------------
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+        aba = planilha.worksheet(nome)
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Alana"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+
+    if planilha_Dados.empty:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
+
+    planilha_Dados["Data"] = pd.to_datetime(
+        planilha_Dados["Data"],
+        dayfirst=True,
+        errors="coerce"
+    ).dt.date
+
+    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
+
+    if planilha_Dados.empty:
+        st.info("Nenhuma tarefa encontrada para esta data.")
+        return
+
+    # ---------------------------
+    # CHECKBOX PARA CONCLUIR TAREFA
+    # ---------------------------
+    planilha_Dados["Concluir"] = (
+        planilha_Dados["Alana"].astype(str).str.lower() == "concluído"
+    )
+
+    df_editado = st.data_editor(
+        planilha_Dados,
+        column_config={
+            "Concluir": st.column_config.CheckboxColumn(
+                "Concluir tarefa",
+                help="Marque para concluir a tarefa"
+            )
+        },
+        disabled=["Data", "ID"]
+    )
+
+    df_editado["Alana"] = df_editado["Concluir"].apply(
+        lambda x: "Concluído" if x else "Pendente"
+    )
+
+    # ---------------------------
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
+    # ---------------------------
+    col11, col12, col13, col14, col15 = st.columns(5)
+
+    with col11:
+        if st.button("Salvar alterações"):
+            aba = planilha.worksheet(nome)
+            dados_atual = aba.get_all_records()
+
+            df_original = pd.DataFrame(dados_atual)
+
+            for _, row in df_editado.iterrows():
+                tarefa_id = row["ID"]
+
+                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
+
+                if linhas:
+                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
+
+                    coluna_status = df_original.columns.get_loc("Alana") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Alana"])
+
+            st.success("✔️ Alterações salvas com sucesso!")
+
+    with col12:
+        if st.button("Atualizar"):
+            st.rerun()
+
+
+
+
+
+def tarefas_barra_fechamento():
+    icon = Image.open("image/vivo.png")
+
+    st.set_page_config(page_title="R.E.G BARRA", page_icon=icon, layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role not in ["Barra", "Admin"]:
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # ---------------------------
+    # LISTAS E DICIONÁRIOS
+    # ---------------------------
+    gvs = [ 
+            "GLS DA CARTEIRA DE JOHN",
+           ]
+    
+    lojas_por_carteira = {
+    " ": [" "],
+    "GLS DA CARTEIRA DE JOHN": [
+            "LOJA BARRA"
+    ],
+    
+    }
+
+    nomes_por_loja = {
+    " ": [" "],
+
+    "LOJA BARRA": ["GLS(FECHAMENTO)"],
+    
+    }
+
+    # ---------------------------
+    # INTERFACE
+    # ---------------------------
+    icon = Image.open("image/vivo.png")
+    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola, colb, colc = st.columns([4, 1, 1])
+
+    with colc:
+        st.image(image_logo)
+
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data:")
+
+    # ---------------------------
+    # CONFIGURAÇÃO GOOGLE SHEETS
+    # ---------------------------
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+        aba = planilha.worksheet(nome)
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Igor"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+
+    if planilha_Dados.empty:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
+
+    planilha_Dados["Data"] = pd.to_datetime(
+        planilha_Dados["Data"],
+        dayfirst=True,
+        errors="coerce"
+    ).dt.date
+
+    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
+
+    if planilha_Dados.empty:
+        st.info("Nenhuma tarefa encontrada para esta data.")
+        return
+
+    # ---------------------------
+    # CHECKBOX PARA CONCLUIR TAREFA
+    # ---------------------------
+    planilha_Dados["Concluir"] = (
+        planilha_Dados["Igor"].astype(str).str.lower() == "concluído"
+    )
+
+    df_editado = st.data_editor(
+        planilha_Dados,
+        column_config={
+            "Concluir": st.column_config.CheckboxColumn(
+                "Concluir tarefa",
+                help="Marque para concluir a tarefa"
+            )
+        },
+        disabled=["Data", "ID"]
+    )
+
+    df_editado["Igor"] = df_editado["Concluir"].apply(
+        lambda x: "Concluído" if x else "Pendente"
+    )
+
+    # ---------------------------
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
+    # ---------------------------
+    col11, col12, col13, col14, col15 = st.columns(5)
+
+    with col11:
+        if st.button("Salvar alterações"):
+            aba = planilha.worksheet(nome)
+            dados_atual = aba.get_all_records()
+
+            df_original = pd.DataFrame(dados_atual)
+
+            for _, row in df_editado.iterrows():
+                tarefa_id = row["ID"]
+
+                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
+
+                if linhas:
+                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
+
+                    coluna_status = df_original.columns.get_loc("Igor") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Igor"])
+
+            st.success("✔️ Alterações salvas com sucesso!")
+
+    with col12:
+        if st.button("Atualizar"):
+            st.rerun()
+
+
+
+
+
+
+
+
+def tarefas_piedade_abertura():
     icon = Image.open("image/vivo.png")
 
     st.set_page_config(page_title="R.E.G PIEDADE", page_icon=icon, layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Piedade":
+    if "role" not in st.session_state or st.session_state.role not in  ["Piedade","Admin"]:
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -1535,7 +3498,7 @@ def tarefas_piedade():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA PIEDADE": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Piedade","DiegoL","Marcusl"],
+    "LOJA PIEDADE": ["GLS(ABERTURA)"],
     
     }
     # ---------------------------
@@ -1598,6 +3561,10 @@ def tarefas_piedade():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","DiegoP"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
@@ -1618,7 +3585,7 @@ def tarefas_piedade():
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
     planilha_Dados["Concluir"] = (
-        planilha_Dados["Situação da tarefa"].astype(str).str.lower() == "concluído"
+        planilha_Dados["DiegoP"].astype(str).str.lower() == "concluído"
     )
 
     df_editado = st.data_editor(
@@ -1632,7 +3599,7 @@ def tarefas_piedade():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Situação da tarefa"] = df_editado["Concluir"].apply(
+    df_editado["DiegoP"] = df_editado["Concluir"].apply(
         lambda x: "Concluído" if x else "Pendente"
     )
 
@@ -1656,8 +3623,8 @@ def tarefas_piedade():
                 if linhas:
                     linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
 
-                    coluna_status = df_original.columns.get_loc("Situação da tarefa") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Situação da tarefa"])
+                    coluna_status = df_original.columns.get_loc("DiegoP") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["DiegoP"])
 
             st.success("✔️ Alterações salvas com sucesso!")
 
@@ -1666,13 +3633,182 @@ def tarefas_piedade():
             st.rerun()
 
 
-def tarefas_lapa():
+
+
+def tarefas_piedade_fechamento():
+    icon = Image.open("image/vivo.png")
+
+    st.set_page_config(page_title="R.E.G PIEDADE", page_icon=icon, layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role not in  ["Piedade","Admin"]:
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # ---------------------------
+    # LISTAS E DICIONÁRIOS
+    # ---------------------------
+    gvs = [ 
+        
+            "GLS DA CARTEIRA DE JOHN",
+            ]
+        
+    lojas_por_carteira = {
+    " ": [" "],
+    "TODOS OS GLS": [
+                "LOJA PIEDADE",
+            
+    ],
+  
+    "GLS DA CARTEIRA DE JOHN": [
+            "LOJA PIEDADE"
+    ]     
+    }
+
+    nomes_por_loja = {
+    " ": [" "],
+    "LOJA PIEDADE": ["GLS(FECHAMENTO)"],
+    
+    }
+    # ---------------------------
+    # INTERFACE
+    # ---------------------------
+    icon = Image.open("image/vivo.png")
+    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola, colb, colc = st.columns([4, 1, 1])
+
+    with colc:
+        st.image(image_logo)
+
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data:")
+
+    # ---------------------------
+    # CONFIGURAÇÃO GOOGLE SHEETS
+    # ---------------------------
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+        aba = planilha.worksheet(nome)
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Marcosl"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+
+    if planilha_Dados.empty:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
+
+    planilha_Dados["Data"] = pd.to_datetime(
+        planilha_Dados["Data"],
+        dayfirst=True,
+        errors="coerce"
+    ).dt.date
+
+    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
+
+    if planilha_Dados.empty:
+        st.info("Nenhuma tarefa encontrada para esta data.")
+        return
+
+    # ---------------------------
+    # CHECKBOX PARA CONCLUIR TAREFA
+    # ---------------------------
+    planilha_Dados["Concluir"] = (
+        planilha_Dados["Marcosl"].astype(str).str.lower() == "concluído"
+    )
+
+    df_editado = st.data_editor(
+        planilha_Dados,
+        column_config={
+            "Concluir": st.column_config.CheckboxColumn(
+                "Concluir tarefa",
+                help="Marque para concluir a tarefa"
+            )
+        },
+        disabled=["Data", "ID"]
+    )
+
+    df_editado["Marcosl"] = df_editado["Concluir"].apply(
+        lambda x: "Concluído" if x else "Pendente"
+    )
+
+    # ---------------------------
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
+    # ---------------------------
+    col11, col12, col13, col14, col15 = st.columns(5)
+
+    with col11:
+        if st.button("Salvar alterações"):
+            aba = planilha.worksheet(nome)
+            dados_atual = aba.get_all_records()
+
+            df_original = pd.DataFrame(dados_atual)
+
+            for _, row in df_editado.iterrows():
+                tarefa_id = row["ID"]
+
+                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
+
+                if linhas:
+                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
+
+                    coluna_status = df_original.columns.get_loc("Marcosl") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Marcosl"])
+
+            st.success("✔️ Alterações salvas com sucesso!")
+
+    with col12:
+        if st.button("Atualizar"):
+            st.rerun()
+
+
+def tarefas_lapa_abertura():
     icon = Image.open("image/vivo.png")
 
     st.set_page_config(page_title="R.E.G LAPA", page_icon=icon, layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Lapa":
+    if "role" not in st.session_state or st.session_state.role not in ["Lapa", "Admin"]:
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -1695,7 +3831,7 @@ def tarefas_lapa():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA LAPA": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Lapa","Sara","Rafael"],
+    "LOJA LAPA": ["GLS(ABERTURA)"],
    
     }
     # ---------------------------
@@ -1757,6 +3893,9 @@ def tarefas_lapa():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Rafael"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
@@ -1778,7 +3917,7 @@ def tarefas_lapa():
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
     planilha_Dados["Concluir"] = (
-        planilha_Dados["Situação da tarefa"].astype(str).str.lower() == "concluído"
+        planilha_Dados["Rafael"].astype(str).str.lower() == "concluído"
     )
 
     df_editado = st.data_editor(
@@ -1792,7 +3931,7 @@ def tarefas_lapa():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Situação da tarefa"] = df_editado["Concluir"].apply(
+    df_editado["Rafael"] = df_editado["Concluir"].apply(
         lambda x: "Concluído" if x else "Pendente"
     )
 
@@ -1816,8 +3955,8 @@ def tarefas_lapa():
                 if linhas:
                     linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
 
-                    coluna_status = df_original.columns.get_loc("Situação da tarefa") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Situação da tarefa"])
+                    coluna_status = df_original.columns.get_loc("Rafael") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Rafael"])
 
             st.success("✔️ Alterações salvas com sucesso!")
 
@@ -1827,13 +3966,180 @@ def tarefas_lapa():
 
 
 
+
+def tarefas_lapa_fechamento():
+    icon = Image.open("image/vivo.png")
+
+    st.set_page_config(page_title="R.E.G LAPA", page_icon=icon, layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role not in ["Lapa", "Admin"]:
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # ---------------------------
+    # LISTAS E DICIONÁRIOS
+    # ---------------------------
+    gvs = [ 
+            "GLS DA CARTEIRA DE JOHN",
+                ]
+            
+    lojas_por_carteira = {
+    " ": [" "],
+    
+    "GLS DA CARTEIRA DE JOHN": [
+            "LOJA LAPA"
+    
+    ]        
+    }
+
+    nomes_por_loja = {
+    " ": [" "],
+    
+    "LOJA LAPA": ["GLS(FECHAMENTO)"],
+   
+    }
+    # ---------------------------
+    # INTERFACE
+    # ---------------------------
+    icon = Image.open("image/vivo.png")
+    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola, colb, colc = st.columns([4, 1, 1])
+
+    with colc:
+        st.image(image_logo)
+
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data:")
+
+    # ---------------------------
+    # CONFIGURAÇÃO GOOGLE SHEETS
+    # ---------------------------
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+        aba = planilha.worksheet(nome)
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Sara"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+
+    if planilha_Dados.empty:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
+
+    planilha_Dados["Data"] = pd.to_datetime(
+        planilha_Dados["Data"],
+        dayfirst=True,
+        errors="coerce"
+    ).dt.date
+
+    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
+
+    if planilha_Dados.empty:
+        st.info("Nenhuma tarefa encontrada para esta data.")
+        return
+
+    # ---------------------------
+    # CHECKBOX PARA CONCLUIR TAREFA
+    # ---------------------------
+    planilha_Dados["Concluir"] = (
+        planilha_Dados["Sara"].astype(str).str.lower() == "concluído"
+    )
+
+    df_editado = st.data_editor(
+        planilha_Dados,
+        column_config={
+            "Concluir": st.column_config.CheckboxColumn(
+                "Concluir tarefa",
+                help="Marque para concluir a tarefa"
+            )
+        },
+        disabled=["Data", "ID"]
+    )
+
+    df_editado["Sara"] = df_editado["Concluir"].apply(
+        lambda x: "Concluído" if x else "Pendente"
+    )
+
+    # ---------------------------
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
+    # ---------------------------
+    col11, col12, col13, col14, col15 = st.columns(5)
+
+    with col11:
+        if st.button("Salvar alterações"):
+            aba = planilha.worksheet(nome)
+            dados_atual = aba.get_all_records()
+
+            df_original = pd.DataFrame(dados_atual)
+
+            for _, row in df_editado.iterrows():
+                tarefa_id = row["ID"]
+
+                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
+
+                if linhas:
+                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
+
+                    coluna_status = df_original.columns.get_loc("Sara") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Sara"])
+
+            st.success("✔️ Alterações salvas com sucesso!")
+
+    with col12:
+        if st.button("Atualizar"):
+            st.rerun()
+
+
+
+
+
 def tarefas_itinerante():
     icon = Image.open("image/vivo.png")
 
     st.set_page_config(page_title="R.E.G ITINERANTE", page_icon=icon, layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Itinerante":
+    if "role" not in st.session_state or st.session_state.role not in ["Itinerante", "Admin"]:
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -1992,7 +4298,7 @@ def tarefas_diasdavila():
     st.set_page_config(page_title="R.E.G DIAS DAVILA", page_icon=icon, layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Davila":
+    if "role" not in st.session_state or st.session_state.role not in ["Davila", "Admin"]:
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -2013,7 +4319,7 @@ def tarefas_diasdavila():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA DIAS DAVILA": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Dias Davila","Maise"],
+    "LOJA DIAS DAVILA": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)"],
     }
 
 
@@ -2077,6 +4383,9 @@ def tarefas_diasdavila():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Maise"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
@@ -2097,7 +4406,7 @@ def tarefas_diasdavila():
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
     planilha_Dados["Concluir"] = (
-        planilha_Dados["Situação da tarefa"].astype(str).str.lower() == "concluído"
+        planilha_Dados["Maise"].astype(str).str.lower() == "concluído"
     )
 
     df_editado = st.data_editor(
@@ -2111,7 +4420,7 @@ def tarefas_diasdavila():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Situação da tarefa"] = df_editado["Concluir"].apply(
+    df_editado["Maise"] = df_editado["Concluir"].apply(
         lambda x: "Concluído" if x else "Pendente"
     )
 
@@ -2135,8 +4444,8 @@ def tarefas_diasdavila():
                 if linhas:
                     linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
 
-                    coluna_status = df_original.columns.get_loc("Situação da tarefa") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Situação da tarefa"])
+                    coluna_status = df_original.columns.get_loc("Maise") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Maise"])
 
             st.success("✔️ Alterações salvas com sucesso!")
 
@@ -2146,13 +4455,13 @@ def tarefas_diasdavila():
 
 
 
-def tarefas_boulevard():
+def tarefas_boulevard_abertura():
     icon = Image.open("image/vivo.png")
 
     st.set_page_config(page_title="R.E.G BOULEVARD", page_icon=icon, layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role != "Boulevard":
+    if "role" not in st.session_state or st.session_state.role not in ["Boulevard","Admin"]:
         st.error("⚠️ Acesso negado!")
         st.stop()
 
@@ -2173,7 +4482,7 @@ def tarefas_boulevard():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA BOULEVARD": ["GLS(GERAL)","GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)","Todos Boulevard","Camyla","Bruno","Gilvania"],
+    "LOJA BOULEVARD": ["GLS(ABERTURA)"],
     }
 
 
@@ -2237,6 +4546,9 @@ def tarefas_boulevard():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Bruno"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
@@ -2257,7 +4569,7 @@ def tarefas_boulevard():
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
     planilha_Dados["Concluir"] = (
-        planilha_Dados["Situação da tarefa"].astype(str).str.lower() == "concluído"
+        planilha_Dados["Bruno"].astype(str).str.lower() == "concluído"
     )
 
     df_editado = st.data_editor(
@@ -2271,7 +4583,7 @@ def tarefas_boulevard():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Situação da tarefa"] = df_editado["Concluir"].apply(
+    df_editado["Bruno"] = df_editado["Concluir"].apply(
         lambda x: "Concluído" if x else "Pendente"
     )
 
@@ -2295,14 +4607,347 @@ def tarefas_boulevard():
                 if linhas:
                     linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
 
-                    coluna_status = df_original.columns.get_loc("Situação da tarefa") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Situação da tarefa"])
+                    coluna_status = df_original.columns.get_loc("Bruno") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Bruno"])
 
             st.success("✔️ Alterações salvas com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
+
+def tarefas_boulevard_fechamento():
+    icon = Image.open("image/vivo.png")
+
+    st.set_page_config(page_title="R.E.G BOULEVARD", page_icon=icon, layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role not in ["Boulevard","Admin"]:
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # ---------------------------
+    # LISTAS E DICIONÁRIOS
+    # ---------------------------
+    gvs = [ 
+            "GLS DA CARTEIRA DE CHRYS"]
+        
+    lojas_por_carteira = {
+    " ": [" "],
+
+    "GLS DA CARTEIRA DE CHRYS": [
+         "LOJA BOULEVARD"
+    ],      
+    }
+
+    nomes_por_loja = {
+    " ": [" "],
+    
+    "LOJA BOULEVARD": ["GLS(FECHAMENTO)"],
+    }
+
+
+    # ---------------------------
+    # INTERFACE
+    # ---------------------------
+    icon = Image.open("image/vivo.png")
+    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola, colb, colc = st.columns([4, 1, 1])
+
+    with colc:
+        st.image(image_logo)
+
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data:")
+
+    # ---------------------------
+    # CONFIGURAÇÃO GOOGLE SHEETS
+    # ---------------------------
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+        aba = planilha.worksheet(nome)
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Gilvania"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+    if planilha_Dados.empty:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
+
+    planilha_Dados["Data"] = pd.to_datetime(
+        planilha_Dados["Data"],
+        dayfirst=True,
+        errors="coerce"
+    ).dt.date
+
+    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
+
+    if planilha_Dados.empty:
+        st.info("Nenhuma tarefa encontrada para esta data.")
+        return
+
+    # ---------------------------
+    # CHECKBOX PARA CONCLUIR TAREFA
+    # ---------------------------
+    planilha_Dados["Concluir"] = (
+        planilha_Dados["Gilvania"].astype(str).str.lower() == "concluído"
+    )
+
+    df_editado = st.data_editor(
+        planilha_Dados,
+        column_config={
+            "Concluir": st.column_config.CheckboxColumn(
+                "Concluir tarefa",
+                help="Marque para concluir a tarefa"
+            )
+        },
+        disabled=["Data", "ID"]
+    )
+
+    df_editado["Gilvania"] = df_editado["Concluir"].apply(
+        lambda x: "Concluído" if x else "Pendente"
+    )
+
+    # ---------------------------
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
+    # ---------------------------
+    col11, col12, col13, col14, col15 = st.columns(5)
+
+    with col11:
+        if st.button("Salvar alterações"):
+            aba = planilha.worksheet(nome)
+            dados_atual = aba.get_all_records()
+
+            df_original = pd.DataFrame(dados_atual)
+
+            for _, row in df_editado.iterrows():
+                tarefa_id = row["ID"]
+
+                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
+
+                if linhas:
+                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
+
+                    coluna_status = df_original.columns.get_loc("Gilvania") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Gilvania"])
+
+            st.success("✔️ Alterações salvas com sucesso!")
+
+    with col12:
+        if st.button("Atualizar"):
+            st.rerun()
+
+
+
+
+def tarefas_boulevard_intermedio():
+    icon = Image.open("image/vivo.png")
+
+    st.set_page_config(page_title="R.E.G BOULEVARD", page_icon=icon, layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role not in ["Boulevard","Admin"]:
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # ---------------------------
+    # LISTAS E DICIONÁRIOS
+    # ---------------------------
+    gvs = [ 
+            "GLS DA CARTEIRA DE CHRYS"]
+        
+    lojas_por_carteira = {
+    " ": [" "],
+
+    "GLS DA CARTEIRA DE CHRYS": [
+         "LOJA BOULEVARD"
+    ],      
+    }
+
+    nomes_por_loja = {
+    " ": [" "],
+    
+    "LOJA BOULEVARD": ["GLS(FECHAMENTO)"],
+    }
+
+
+    # ---------------------------
+    # INTERFACE
+    # ---------------------------
+    icon = Image.open("image/vivo.png")
+    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+
+    image_logo = Image.open("image/Image (2).png")
+
+    cola, colb, colc = st.columns([4, 1, 1])
+
+    with colc:
+        st.image(image_logo)
+
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data:")
+
+    # ---------------------------
+    # CONFIGURAÇÃO GOOGLE SHEETS
+    # ---------------------------
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+        aba = planilha.worksheet(nome)
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Bruno"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+
+    if planilha_Dados.empty:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
+
+    planilha_Dados["Data"] = pd.to_datetime(
+        planilha_Dados["Data"],
+        dayfirst=True,
+        errors="coerce"
+    ).dt.date
+
+    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
+
+    if planilha_Dados.empty:
+        st.info("Nenhuma tarefa encontrada para esta data.")
+        return
+
+    # ---------------------------
+    # CHECKBOX PARA CONCLUIR TAREFA
+    # ---------------------------
+    planilha_Dados["Concluir"] = (
+        planilha_Dados["Bruno"].astype(str).str.lower() == "concluído"
+    )
+
+    df_editado = st.data_editor(
+        planilha_Dados,
+        column_config={
+            "Concluir": st.column_config.CheckboxColumn(
+                "Concluir tarefa",
+                help="Marque para concluir a tarefa"
+            )
+        },
+        disabled=["Data", "ID"]
+    )
+
+    df_editado["Bruno"] = df_editado["Concluir"].apply(
+        lambda x: "Concluído" if x else "Pendente"
+    )
+
+    # ---------------------------
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
+    # ---------------------------
+    col11, col12, col13, col14, col15 = st.columns(5)
+
+    with col11:
+        if st.button("Salvar alterações"):
+            aba = planilha.worksheet(nome)
+            dados_atual = aba.get_all_records()
+
+            df_original = pd.DataFrame(dados_atual)
+
+            for _, row in df_editado.iterrows():
+                tarefa_id = row["ID"]
+
+                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
+
+                if linhas:
+                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
+
+                    coluna_status = df_original.columns.get_loc("Bruno") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Bruno"])
+
+            st.success("✔️ Alterações salvas com sucesso!")
+
+    with col12:
+        if st.button("Atualizar"):
+            st.rerun()
+
+
+
+
+
+
 
 
 

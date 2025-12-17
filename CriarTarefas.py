@@ -32,22 +32,16 @@ def criar_page():
 
     # --- LISTAS ---
     gvs = ["",
-        "TODOS OS GVS",
         "TODOS OS GLS",
         "TODOS OS GLS(ABERTURA)",
         "TODOS OS GLS(INTERMEDIO)",
         "TODOS OS GLS(FECHAMENTO)",
-        "GLS DA CARTEIRA DE FABIANA",
-        "GLS DA CARTEIRA DE FELIPE",
-        "GLS DA CARTEIRA DE CHRYS",
-        "GLS DA CARTEIRA DE JOHN",
         "TODOS OS ITINERANTES"
     ]
         
     lojas_por_carteira = {
         "": [""],
-        "TODOS OS GVS": ["GVS"],
-
+     
         "TODOS OS GLS": ["TODOS OS GLS"],
 
         "TODOS OS GLS(INTERMEDIO)": ["GLS(INTERMEDIO)"],
@@ -56,25 +50,12 @@ def criar_page():
 
         "TODOS OS GLS(FECHAMENTO)": ["GLS(FECHAMENTO)"],
 
-        "GLS DA CARTEIRA DE FABIANA": [
-            "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA DIAS DAVILA","LOJA PARALELA","LOJA PARQUE SHOP"
-        ],
-        "GLS DA CARTEIRA DE FELIPE": [
-            "LOJA IGUATEMI | BA","LOJA IGUATEMI || BA","LOJA NORT SHOP"
-        ],
-        "GLS DA CARTEIRA DE JOHN": [
-            "LOJA BARRA","LOJA PIEDADE","LOJA LAPA"
-        ],
-        "GLS DA CARTEIRA DE CHRYS": [
-            "LOJA BOULEVARD"
-        ],
         "TODOS OS ITINERANTES": ["ITINERANTES"]
     }
 
     nomes_por_loja = {
         "": [""],
-        "GVS": ["Todos","Fabiana","Felipe","John","Chrys"],
-
+    
         "TODOS OS GLS": ["GLS(GERAL)"],
 
         "GLS(ABERTURA)":["GLS(ABERTURA)"],
@@ -84,32 +65,6 @@ def criar_page():
         "GLS(FECHAMENTO)":["GLS(FECHAMENTO)"],
 
         "TODOS OS ITINERANTES": ["ITINERANTES"],
-
-        "LOJA SSA |": ["Todos SSA |","Ana","Francisca","Vinicius"],
-
-        "LOJA SSA ||": ["Todos SSA ||","Vitor","Mailan"],
-
-        "LOJA BELA VISTA": ["Todos Bela","Vanessa","Danilo"],
-
-        "LOJA DIAS DAVILA": ["Todos Dias Davila","Maise"],
-
-        "LOJA PARALELA": ["Todos Paralela","Crislaine","Neide"],
-
-        "LOJA PARQUE SHOP": ["Todos Parque","Denise_Parque","Adrielle"],
-
-        "LOJA IGUATEMI | BA": ["Todos Iguatemi |","Max","Denise"],
-
-        "LOJA IGUATEMI || BA": ["Todos Iguatemi ||","Diego","Andressa"],
-
-        "LOJA NORT SHOP": ["Todos Norte","Jairo","Wanderlei"],
-
-        "LOJA BARRA": ["Todos Barra","Igor","Carol","Alana"],
-
-        "LOJA PIEDADE": ["Todos Piedade","DiegoL","Marcusl"],
-
-        "LOJA LAPA": ["Todos Lapa","Sara","Rafael"],
-
-        "LOJA BOULEVARD": ["Todos Boulevard","Camyla","Bruno","Gilvania"],
 
         "ITINERANTES": ["Todos Itinerantes","Lázaro","Lee","Marcus"],
     }
@@ -240,6 +195,19 @@ def criar_page():
             hora_final.strftime("%H:%M"),
             data.strftime("%d/%m/%Y"),
             recorrencia,
+            "Pendente",
+            "Pendente",
+            "Pendente",
+            "Pendente",
+            "Pendente",
+            "Pendente",
+            "Pendente",
+            "Pendente",
+            "Pendente",
+            "Pendente",
+            "Pendente",
+            "Pendente",
+            "Pendente",
             "Pendente",
         ])
 
@@ -441,7 +409,9 @@ def criar_page_fabiana():
             hora_final.strftime("%H:%M"),
             data.strftime("%d/%m/%Y"),
             recorrencia,
-            "Pendente",
+            
+            
+
         ])
 
         st.success("Tarefa enviada com sucesso!")

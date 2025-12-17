@@ -5,89 +5,24 @@ from google.oauth2.service_account import Credentials
 from PIL import Image
 from datetime import datetime
 
+
+# =========================================================
+# ===================== GLS ABERTURA ======================
+# =========================================================
 def visualizar_tarefas_gvs():
 
-    # ---------------------------
-    # CONFIGURAÇÃO DA PÁGINA
-    # ---------------------------
     icon = Image.open("image/vivo.png")
-    st.set_page_config(
-        page_title="R.E.G - GVS",
-        page_icon=icon,
-        layout="wide"
-    )
+    st.set_page_config(page_title="R.E.G", page_icon=icon, layout="wide")
 
-    # ---------------------------
-    # CONTROLE DE ACESSO
-    # ---------------------------
     if "role" not in st.session_state or st.session_state.role != "Victor":
         st.error("⚠️ Acesso negado!")
         st.stop()
 
-    # ---------------------------
-    # LISTAS E DICIONÁRIOS
-    # ---------------------------
-    gvs = [
-        "GVS DE VICTOR",
-        "TODOS OS GLS(GERAL)",
-        "TODOS OS GLS(ABERTURA)",
-        "TODOS OS GLS(INTERMEDIO)",
-        "TODOS OS GLS(FECHAMENTO)",
-        "GLS DA CARTEIRA DE FABIANA",
-        "GLS DA CARTEIRA DE FELIPE",
-        "GLS DA CARTEIRA DE CHRYS",
-        "GLS DA CARTEIRA DE JOHN",
-        "TODOS OS ITINERANTES"
-        ]
+    gvs = ["TODOS OS GLS(ABERTURA)"]
+    lojas_por_carteira = {"TODOS OS GLS(ABERTURA)": ["GLS(ABERTURA)"]}
+    nomes_por_loja = {"GLS(ABERTURA)": ["GLS(ABERTURA)"]}
 
-    lojas_por_carteira = {
-        "GVS DE VICTOR": ["REGIONAL"],
-        "TODOS OS GLS(GERAL)": ["GLS(GERAL)"],
-        "TODOS OS GLS(ABERTURA)":["GLS(ABERTURA)"],
-        "TODOS OS GLS(INTERMEDIO)":["GLS(INTERMEDIO)"],
-        "TODOS OS GLS(FECHAMENTO)":["GLS(FECHAMENTO)"],
-        "GLS DA CARTEIRA DE FABIANA": [
-            "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA PARALELA","LOJA PARQUE SHOP"
-        ],
-        "GLS DA CARTEIRA DE FELIPE": [
-            "LOJA IGUATEMI | BA","LOJA IGUATEMI || BA","LOJA NORT SHOP"
-        ],
-        "GLS DA CARTEIRA DE JOHN": [
-            "LOJA BARRA","LOJA PIEDADE","LOJA LAPA"
-        ],
-        "GLS DA CARTEIRA DE CHRYS": [
-            "LOJA BOULEVARD"
-        ],
-        "TODOS OS ITINERANTES": ["ITINERANTES"]                 
-    }
-
-    nomes_por_loja = {
-        "REGIONAL": ["Todos","Fabiana", "Felipe", "John", "Chrys"],
-        "GLS(GERAL)":["GLS(GERAL)"],
-        "GLS(ABERTURA)":["GLS(ABERTURA)"],
-        "GLS(INTERMEDIO)":["GLS(INTERMEDIO)"],
-        "GLS(FECHAMENTO)":["GLS(FECHAMENTO)"],
-        "TODOS OS ITINERANTES": ["ITINERANTES"],
-        "LOJA SSA |": ["Ana","Francisca","Vinicius"],
-        "LOJA SSA ||": ["Vitor","Mailan"],
-        "LOJA BELA VISTA": ["Vanessa","Danilo"],
-        "LOJA PARALELA": ["Crislaine","Neide"],
-        "LOJA PARQUE SHOP": ["Denise_Parque","Adrielle"],
-        "LOJA IGUATEMI | BA": ["Max","Denise"],
-        "LOJA IGUATEMI || BA": ["Diego","Andressa"],
-        "LOJA NORT SHOP": ["Jairo","Wanderlei"],
-        "LOJA BARRA": ["Igor","Carol","Alana"],
-        "LOJA PIEDADE": ["DiegoL","Marcusl"],
-        "LOJA LAPA": ["Sara","Rafael"],
-        "LOJA BOULEVARD": ["Camyla","Bruno","Gilvania"],
-        "ITINERANTES": ["Lázaro","Lee","Marcus"],
-    }
-
-    # ---------------------------
-    # INTERFACE
-    # ---------------------------
     image_logo = Image.open("image/Image (2).png")
-
     cola, colb, colc = st.columns([4, 1, 1])
     with colc:
         st.image(image_logo)
@@ -95,31 +30,17 @@ def visualizar_tarefas_gvs():
         st.title("📝 R.E.G - TAREFAS")
 
     col1, col2, col3, col4 = st.columns(4)
-
     with col1:
         carteira = st.selectbox("Selecione a carteira:", gvs)
-
     with col2:
-        loja = st.selectbox(
-            "Selecione a loja:",
-            lojas_por_carteira.get(carteira, [])
-        )
-
+        loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
     with col3:
-        nome = st.selectbox(
-            "Nome:",
-            nomes_por_loja.get(loja, [])
-        )
-
+        nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
     with col4:
         data_selecionada = st.date_input(
-            "Selecione o período:",
-            value=(datetime.today(), datetime.today())
+            "Selecione o período:", value=(datetime.today(), datetime.today())
         )
 
-    # ---------------------------
-    # GOOGLE SHEETS
-    # ---------------------------
     gcp_info = st.secrets["tafgl"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
@@ -127,13 +48,12 @@ def visualizar_tarefas_gvs():
         dict(gcp_info),
         scopes=[
             "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
+            "https://www.googleapis.com/auth/drive",
+        ],
     )
 
     cliente = gspread.authorize(creds)
     planilha = cliente.open_by_key(planilha_chave)
-
     aba = planilha.worksheet(nome)
     planilha_Dados = pd.DataFrame(aba.get_all_records())
 
@@ -141,67 +61,283 @@ def visualizar_tarefas_gvs():
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    # ---------------------------
-    # TRATAMENTO DOS DADOS
-    # ---------------------------
     planilha_Dados.columns = planilha_Dados.columns.str.strip()
 
     planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
+        planilha_Dados["Data"], dayfirst=True, errors="coerce"
     ).dt.date
 
     if not isinstance(data_selecionada, tuple) or len(data_selecionada) != 2:
         st.warning("⚠️ Selecione um período com data inicial e final.")
         return
-    # ---------------------------
-    # FILTRO POR DATA
-    # ---------------------------
+
     data_inicio, data_fim = data_selecionada
 
     planilha_filtrada = planilha_Dados[
-        (planilha_Dados["Data"] >= data_inicio) &
-        (planilha_Dados["Data"] <= data_fim)
+        (planilha_Dados["Data"] >= data_inicio)
+        & (planilha_Dados["Data"] <= data_fim)
     ]
 
     if planilha_filtrada.empty:
         st.info("Nenhuma tarefa encontrada para esta data.")
         return
 
-    # ---------------------------
-    # CONTAGENS (COM FILTRO)
-    # ---------------------------
-    contagemT = planilha_filtrada["Situação da tarefa"].count()
+    colunas_principais = [
+        "ID",
+        "Criada",
+        "Título",
+        "Descrição da tarefa",
+        "Data",
+        "Hora inicial",
+        "Hora final",
+    ]
 
-    contagemC = (
-        planilha_filtrada["Situação da tarefa"]
-        .astype(str)
-        .str.contains("Concluído", case=False, na=False)
-        .sum()
+    planilha_principal = planilha_filtrada[
+        [c for c in colunas_principais if c in planilha_filtrada.columns]
+    ]
+
+    st.dataframe(planilha_principal, use_container_width=True)
+
+    colunas_extras = ["Max","Ana","Andressa","Vitor",	"Rafael",	"Carol",	"Danilo",	"Jairo",	"Maise",	"Camyla",	"Denise_Parque"	,"Crislaine"	,"DiegoP"	,"Bruno"]
+    colunas_extras = [c for c in colunas_extras if c in planilha_filtrada.columns]
+
+    if colunas_extras:
+        st.divider()
+        st.subheader("📌 GLS ABERTURA")
+        st.dataframe(
+            planilha_filtrada[["ID"] + colunas_extras],
+            use_container_width=True,
+        )
+
+    if st.button("Atualizar"):
+        st.rerun()
+
+
+# =========================================================
+# ==================== GLS INTERMEDIO =====================
+# =========================================================
+def visualizar_tarefas_intermedio():
+
+    icon = Image.open("image/vivo.png")
+    st.set_page_config(page_title="R.E.G - GVS", page_icon=icon, layout="wide")
+
+    if "role" not in st.session_state or st.session_state.role != "Victor":
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    gvs = ["TODOS OS GLS(INTERMEDIO)"]
+    lojas_por_carteira = {"TODOS OS GLS(INTERMEDIO)": ["GLS(INTERMEDIO)"]}
+    nomes_por_loja = {"GLS(INTERMEDIO)": ["GLS(INTERMEDIO)"]}
+
+    image_logo = Image.open("image/Image (2).png")
+    cola, colb, colc = st.columns([4, 1, 1])
+    with colc:
+        st.image(image_logo)
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
+    with col3:
+        nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
+    with col4:
+        data_selecionada = st.date_input(
+            "Selecione o período:", value=(datetime.today(), datetime.today())
+        )
+
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive",
+        ],
     )
 
-    contagemP = (
-        planilha_filtrada["Situação da tarefa"]
-        .astype(str)
-        .str.contains("Pendente", case=False, na=False)
-        .sum()
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+    aba = planilha.worksheet(nome)
+    planilha_Dados = pd.DataFrame(aba.get_all_records())
+
+    if planilha_Dados.empty:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
+
+    planilha_Dados.columns = planilha_Dados.columns.str.strip()
+
+    planilha_Dados["Data"] = pd.to_datetime(
+        planilha_Dados["Data"], dayfirst=True, errors="coerce"
+    ).dt.date
+
+    if not isinstance(data_selecionada, tuple) or len(data_selecionada) != 2:
+        st.warning("⚠️ Selecione um período com data inicial e final.")
+        return
+
+    data_inicio, data_fim = data_selecionada
+
+    planilha_filtrada = planilha_Dados[
+        (planilha_Dados["Data"] >= data_inicio)
+        & (planilha_Dados["Data"] <= data_fim)
+    ]
+
+    if planilha_filtrada.empty:
+        st.info("Nenhuma tarefa encontrada para esta data.")
+        return
+
+    colunas_principais = [
+        "ID",
+        "Criada",
+        "Título",
+        "Descrição da tarefa",
+        "Data",
+        "Hora inicial",
+        "Hora final",
+    ]
+
+    planilha_principal = planilha_filtrada[
+        [c for c in colunas_principais if c in planilha_filtrada.columns]
+    ]
+
+    st.dataframe(planilha_principal, use_container_width=True)
+
+    colunas_extras = ["Maise", "Francisca", "Alana"]
+    colunas_extras = [c for c in colunas_extras if c in planilha_filtrada.columns]
+
+    if colunas_extras:
+        st.divider()
+        st.subheader("📌 GLS INTERMEDIO")
+        st.dataframe(
+            planilha_filtrada[["ID"] + colunas_extras],
+            use_container_width=True,
+        )
+
+    if st.button("Atualizar"):
+        st.rerun()
+
+
+# =========================================================
+# ==================== GLS FECHAMENTO =====================
+# =========================================================
+def visualizar_tarefas_fechamento():
+
+    icon = Image.open("image/vivo.png")
+    st.set_page_config(page_title="R.E.G - GVS", page_icon=icon, layout="wide")
+
+    if "role" not in st.session_state or st.session_state.role != "Victor":
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    gvs = ["TODOS OS GLS(FECHAMENTO)"]
+    lojas_por_carteira = {"TODOS OS GLS(FECHAMENTO)": ["GLS(FECHAMENTO)"]}
+    nomes_por_loja = {"GLS(FECHAMENTO)": ["GLS(FECHAMENTO)"]}
+
+    image_logo = Image.open("image/Image (2).png")
+    cola, colb, colc = st.columns([4, 1, 1])
+    with colc:
+        st.image(image_logo)
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
+    with col3:
+        nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
+    with col4:
+        data_selecionada = st.date_input(
+            "Selecione o período:", value=(datetime.today(), datetime.today())
+        )
+
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive",
+        ],
     )
 
-    col11, col12, col13 = st.columns(3)
-    with col11:
-        st.text(f"📝 Total de Tarefas: {contagemT}")
-    with col12:
-        st.text(f"🟢 Concluídas: {contagemC}")
-    with col13:
-        st.text(f"🟡 Pendentes: {contagemP}")
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+    aba = planilha.worksheet(nome)
+    planilha_Dados = pd.DataFrame(aba.get_all_records())
 
-    
+    if planilha_Dados.empty:
+        st.warning("Nenhuma tarefa encontrada.")
+        return
 
-    # ---------------------------
-    # TABELA FINAL
-    # ---------------------------
-    st.dataframe(planilha_filtrada, use_container_width=True)
+    planilha_Dados.columns = planilha_Dados.columns.str.strip()
+
+    planilha_Dados["Data"] = pd.to_datetime(
+        planilha_Dados["Data"], dayfirst=True, errors="coerce"
+    ).dt.date
+
+    if not isinstance(data_selecionada, tuple) or len(data_selecionada) != 2:
+        st.warning("⚠️ Selecione um período com data inicial e final.")
+        return
+
+
+    data_inicio, data_fim = data_selecionada
+
+    planilha_filtrada = planilha_Dados[
+        (planilha_Dados["Data"] >= data_inicio)
+        & (planilha_Dados["Data"] <= data_fim)
+    ]
+
+    if planilha_filtrada.empty:
+        st.info("Nenhuma tarefa encontrada para esta data.")
+        return
+
+    colunas_principais = [
+        "ID",
+        "Criada",
+        "Título",
+        "Descrição da tarefa",
+        "Data",
+        "Hora inicial",
+        "Hora final",
+    ]
+
+    planilha_principal = planilha_filtrada[
+        [c for c in colunas_principais if c in planilha_filtrada.columns]
+    ]
+
+    st.dataframe(planilha_principal, use_container_width=True)
+
+    colunas_extras = [
+        "Mailan",
+        "Vinicius",
+        "Denise",
+        "Diego",
+        "Marcosl",
+        "Sara",
+        "Igor",
+        "Vanessa",
+        "Neide",
+        "Wanderlei",
+        "Adrielle",
+        "Gilvania",
+        "Maise",
+    ]
+
+    colunas_extras = [c for c in colunas_extras if c in planilha_filtrada.columns]
+
+    if colunas_extras:
+        st.divider()
+        st.subheader("📌 GLS FECHAMENTO")
+        st.dataframe(
+            planilha_filtrada[["ID"] + colunas_extras],
+            use_container_width=True,
+        )
 
     if st.button("Atualizar"):
         st.rerun()

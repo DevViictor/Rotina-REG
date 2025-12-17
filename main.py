@@ -4,9 +4,9 @@ from PIL import Image
 from CriarTarefas import criar_page,criar_page_fabiana,criar_page_chrys,criar_page_felipe,criar_page_john
 from VisualizarTarefas import visualizar_tarefas,visualizar_tarefas_fabiana, visualizar_tarefas_chrys ,visualizar_tarefas_felipe ,visualizar_tarefas_john
 from TarefasProntas import modelos_prontos,modelos_prontos_fabiana, modelos_prontos_chrys, modelos_prontos_felipe, modelos_prontos_john
-from GlsTarefas import tarefas_iguatemi, tarefas_barra , tarefas_bela ,tarefas_iguatemi2  ,tarefas_lapa,tarefas_nort,tarefas_parela,tarefas_parque,tarefas_piedade,tarefas_ssa1,tarefas_ssa2,tarefas_boulevard,tarefas_diasdavila
+from GlsTarefas import tarefas_diasdavila , tarefas_barra_abertura , tarefas_barra_fechamento , tarefas_barra_intermedio ,tarefas_bela_abertura,tarefas_bela_fechamento,tarefas_boulevard_abertura,tarefas_boulevard_fechamento,tarefas_boulevard_intermedio,tarefas_iguatemi2_abertura,tarefas_iguatemi2_fechamento,tarefas_iguatemi_abertura,tarefas_iguatemi_fechamento,tarefas_itinerante,tarefas_lapa_abertura,tarefas_lapa_fechamento,tarefas_nort_abertura,tarefas_nort_fechamento,tarefas_parela_abertura,tarefas_parela_fechamento,tarefas_parque_abertura,tarefas_parque_fechamento,tarefas_piedade_abertura,tarefas_ssa1_abertura,tarefas_ssa1_fechamento,tarefas_ssa1_intermedio,tarefas_ssa2_abertura,tarefas_ssa2_fechamento,tarefas_piedade_fechamento
 from GvTarefas import tarefas_chyrs,tarefas_fabiana,tarefas_felipe,tarefas_john
-from VisualizarTarefasGv import  visualizar_tarefas_gvs
+from VisualizarTarefasGv import  visualizar_tarefas_gvs, visualizar_tarefas_fechamento , visualizar_tarefas_intermedio
 from Intinerantes import tarefas_itinerantes
 
 st.sidebar.image("image/Image (2).png")
@@ -53,7 +53,9 @@ def run_navigation():
     #Victor
      
     #geral
-    Visualizar_tarefas_gvs = (st.Page( visualizar_tarefas_gvs, title="R.E.G(GERAL)"))
+    Visualizar_tarefas_gvs = (st.Page( visualizar_tarefas_gvs, title="R.E.G(ABERTURA)"))
+    Visualizar_tarefas_intermedio = (st.Page( visualizar_tarefas_intermedio, title="R.E.G(INTERMEDIO)"))
+    Visualizar_tarefas_fechamento = (st.Page( visualizar_tarefas_fechamento, title="R.E.G(FECHAMENTO)"))
    
 
     #CriarTarefas
@@ -82,7 +84,6 @@ def run_navigation():
     Tarefas_carteria_chrys = st.Page(tarefas_carteira_chrys, title="LOJAS")
    
 
-
     #Tarefas
     Visualizar_tarefas_victor = st.Page(visualizar_tarefas,title="📝 Tarefas criadas")
     Visualizar_tarefas_fabiana = st.Page(visualizar_tarefas_fabiana,title="📝 Tarefas criadas ")
@@ -99,29 +100,54 @@ def run_navigation():
 
     #tarefas_loja
     #FELIPE
-    Tarefas_iguatemi = st.Page(tarefas_iguatemi,title="🏬 LOJA IGUATEMI |")
-    Tarefas_iguatemi2  = st.Page(tarefas_iguatemi2,title="🏬 LOJA IGUATEMI ||")
-    Tarefas_norte  = st.Page(tarefas_nort,title="🏬 LOJA NORT SHOP")
+    Tarefas_iguatemi_abertura = st.Page(tarefas_iguatemi_abertura,title="🏬 LOJA IGUATEMI | (ABERTURA)")
+    Tarefas_iguatemi_fechamento  = st.Page(tarefas_iguatemi_fechamento,title="🏬 LOJA IGUATEMI | (FECHAMENTO)")
+
+    Tarefas_iguatemi2_abertura  = st.Page(tarefas_iguatemi2_abertura,title="🏬 LOJA IGUATEMI || (ABERTURA)")
+    Tarefas_iguatemi2_fechamento  = st.Page(tarefas_iguatemi2_fechamento,title="🏬 LOJA IGUATEMI || (FECHAMENTO)")
+
+    Tarefas_norte_abertura  = st.Page(tarefas_nort_abertura,title="🏬 LOJA NORT SHOP (ABERTURA)")
+    Tarefas_norte_fechamento  = st.Page(tarefas_nort_fechamento,title="🏬 LOJA NORT SHOP (FECHAMENTO)")
+    
     
     #FABIANA
-    Tarefas_ssa1 = st.Page(tarefas_ssa1,title="🏬 LOJA SSA1")
-    Tarefas_ssa2 = st.Page(tarefas_ssa2,title="🏬 LOJA SSA2")
-    Tarefas_bela = st.Page(tarefas_bela,title="🏬 LOJA BELA VISTA")
-    Tarefas_parela = st.Page(tarefas_parela,title="🏬 LOJA PARARELA")
-    Tarefas_parque = st.Page(tarefas_parque,title="🏬 LOJA PARQUE")
+    Tarefas_ssa1_abertura = st.Page(tarefas_ssa1_abertura,title="🏬 LOJA SSA1 (ABERTURA)")
+    Tarefas_ssa1_intermedio = st.Page(tarefas_ssa1_intermedio,title="🏬 LOJA SSA1 (INTERMEDIO)")
+    Tarefas_ssa1_fechamento = st.Page(tarefas_ssa1_fechamento,title="🏬 LOJA SSA1 (FECHAMENTO)" )
+
+    Tarefas_ssa2_abertura = st.Page(tarefas_ssa2_abertura,title="🏬 LOJA SSA2 (ABERTURA)" )
+    Tarefas_ssa2_fechamento= st.Page(tarefas_ssa2_fechamento,title="🏬 LOJA SSA2 (FECHAMENTO)" ) 
+
+    Tarefas_bela_abertura = st.Page(tarefas_bela_abertura,title="🏬 LOJA BELA VISTA (ABERTURA)")
+    Tarefas_bela_fechamento = st.Page(tarefas_bela_fechamento,title="🏬 LOJA BELA VISTA (FECHAMENTO)")
+
+    Tarefas_parela_abertura = st.Page(tarefas_parela_abertura,title="🏬 LOJA PARARELA (ABERTURA)")
+    Tarefas_parela_fechamento = st.Page(tarefas_parela_fechamento,title="🏬 LOJA PARARELA (FECHAMENTO)")
+
+    Tarefas_parque_abertura = st.Page(tarefas_parque_abertura,title="🏬 LOJA PARQUE (ABERTURA)")
+    Tarefas_parque_fechamento = st.Page(tarefas_parque_fechamento,title="🏬 LOJA PARQUE (FECHAMENTO)")
+    
     Tarefas_davila = st.Page(tarefas_diasdavila,title="🏬 LOJA DIAS DAVILA")
 
 
     #JHON
-    Tarefas_barra = st.Page(tarefas_barra,title="🏬 LOJA BARRA")
-    Tarefas_piedade = st.Page(tarefas_piedade,title="🏬 LOJA PIEDADE")
-    Tarefas_lapa = st.Page(tarefas_lapa,title="🏬 LOJA LAPA")
+    Tarefas_barra_abertura = st.Page(tarefas_barra_abertura,title="🏬 LOJA BARRA (ABERTURA)")
+    Tarefas_barra_intermedio = st.Page(tarefas_barra_intermedio,title="🏬 LOJA BARRA (INTERMEDIO)")
+    Tarefas_barra_fechamento = st.Page(tarefas_barra_fechamento,title="🏬 LOJA BARRA (FECHAMENTO)")
+
+    Tarefas_piedade_abertura = st.Page(tarefas_piedade_abertura,title="🏬 LOJA PIEDADE (ABERTURA)")
+    Tarefas_piedade_fechamento = st.Page(tarefas_piedade_fechamento,title="🏬 LOJA PIEDADE (FECHAMENTO)")
+
+    Tarefas_lapa_abertura = st.Page(tarefas_lapa_abertura,title="🏬 LOJA LAPA (ABERTURA)")
+    Tarefas_lapa_fechamento = st.Page(tarefas_lapa_fechamento,title="🏬 LOJA LAPA (FECHAMENTO)")
     
+
     #CHRYS
-    Tarefas_boulevard = st.Page(tarefas_boulevard,title="🏬 LOJA BOULEVARD")
+    Tarefas_boulevard_abertura = st.Page(tarefas_boulevard_abertura,title="🏬 LOJA BOULEVARD (ABERTURA)")
+    Tarefas_boulevard_fechamentio = st.Page(tarefas_boulevard_fechamento,title="🏬 LOJA BOULEVARD (FECHAMENTO)")
     
     #Itinerantes
-    Tarefas_itinerantes = st.Page(tarefas_itinerantes,title="🏬 ITINERANTES")
+    Tarefas_itinerantes = st.Page(tarefas_itinerante,title="🏬 ITINERANTES")
     
     #modelos
     Visualizar_modelos = st.Page(modelos_prontos,title="📝 Modelos de tarefas")
@@ -139,7 +165,10 @@ def run_navigation():
         menu = {
     
             "🏬 R.E.G ": [
-                Visualizar_tarefas_gvs
+                Visualizar_tarefas_gvs,
+                Visualizar_tarefas_intermedio,
+                Visualizar_tarefas_fechamento,
+                
             ],
         }
         menu2 = {
@@ -261,33 +290,49 @@ def run_navigation():
         }
 
     #Lojas
-    elif role in ["Iguatemi1","Iguatemi2","Bela","Norte","Paralela","Salvador1","Salvador2","Parque","Barra","Piedade","Lapa","Boulevard","Itinerantes","Davila"]:
+    elif role in ["Iguatemi1","Iguatemi2","Bela","Norte","Paralela","Salvador1","Salvador2","Parque","Barra","Piedade","Lapa","Boulevard","Itinerantes","Davila","Admin"]:
 
         menu = {
-            "Carteira Felipe e Itinerantes": [
-                Tarefas_iguatemi,
-                Tarefas_iguatemi2,
-                Tarefas_norte,
+            "GLS ABERTURA": [
+                Tarefas_ssa1_abertura,
+                Tarefas_ssa2_abertura,
+                Tarefas_bela_abertura,
+                Tarefas_parela_abertura,
+                Tarefas_parque_abertura,
+                Tarefas_iguatemi_abertura,
+                Tarefas_iguatemi2_abertura,
+                Tarefas_norte_abertura,
+                Tarefas_barra_abertura,
+                Tarefas_piedade_abertura,
+                Tarefas_lapa_abertura,
+                Tarefas_boulevard_abertura,
+
                 Tarefas_itinerantes
             ],
         }
         menu2 = {
-            " Carteira Fabiana": [
-                Tarefas_ssa1,
-                Tarefas_ssa2,
-                Tarefas_bela,
-                Tarefas_parela,
-                Tarefas_parque,
+            " GLS INTERMEDIO": [
+                Tarefas_ssa1_intermedio,
+                Tarefas_barra_intermedio,
                 Tarefas_davila
             ]
         }
         menu3 = {
     
-            "Carteira John e Chrys": [
-                Tarefas_barra,
-                Tarefas_piedade,
-                Tarefas_lapa,
-                Tarefas_boulevard
+            "GLS FECHAMENTO": [
+               Tarefas_ssa1_fechamento,
+                Tarefas_ssa2_fechamento,
+                Tarefas_bela_fechamento,
+                Tarefas_parela_fechamento,
+                Tarefas_parque_fechamento,
+                Tarefas_iguatemi_fechamento,
+                Tarefas_iguatemi2_fechamento,
+                Tarefas_norte_fechamento,
+                Tarefas_barra_fechamento,
+                Tarefas_piedade_fechamento,
+                Tarefas_lapa_fechamento,
+                Tarefas_boulevard_fechamentio,
+                #falta piedade
             ],
         }
 

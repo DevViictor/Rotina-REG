@@ -15,21 +15,14 @@ def visualizar_tarefas():
         # LISTAS E DICIONÁRIOS
         # ---------------------------
         gvs = [
-                "GVS DE VICTOR",
-                "TODOS OS GLS",
                 "TODOS OS GLS(ABERTURA)",
                 "TODOS OS GLS(INTERMEDIO)",
                 "TODOS OS GLS(FECHAMENTO)",
-                "GLS DA CARTEIRA DE FABIANA",
-                "GLS DA CARTEIRA DE FELIPE",
-                "GLS DA CARTEIRA DE CHRYS",
-                "GLS DA CARTEIRA DE JOHN",
                 "TODOS OS ITINERANTES"
                 ]
                 
         lojas_por_carteira = {
         " ": [" "],
-        "GVS DE VICTOR": ["REGIONAL"],
         "TODOS OS GLS": ["GLS(GERAL)"],
 
         "TODOS OS GLS(ABERTURA)":["GLS(ABERTURA)"],
@@ -38,18 +31,6 @@ def visualizar_tarefas():
         
         "TODOS OS GLS(FECHAMENTO)":["GLS(FECHAMENTO)"],
         
-        "GLS DA CARTEIRA DE FABIANA": [
-                "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA DIAS DAVILA","LOJA PARALELA","LOJA PARQUE SHOP"
-        ],
-        "GLS DA CARTEIRA DE FELIPE": [
-                "LOJA IGUATEMI | BA","LOJA IGUATEMI || BA","LOJA NORT SHOP"
-        ],
-        "GLS DA CARTEIRA DE JOHN": [
-                "LOJA BARRA","LOJA PIEDADE","LOJA LAPA"
-        ],
-        "GLS DA CARTEIRA DE CHRYS": [
-                "LOJA BOULEVARD"
-        ],
         "TODOS OS ITINERANTES": [
                 "ITINERANTES"
         ]        
@@ -58,24 +39,10 @@ def visualizar_tarefas():
         nomes_por_loja = {
 
         " ": [" "],
-        "REGIONAL": ["Todos","Fabiana", "Felipe", "John", "Chrys"],
         "GLS(GERAL)":["GLS(GERAL)"],
         "GLS(ABERTURA)":["GLS(ABERTURA)"],
         "GLS(INTERMEDIO)":["GLS(INTERMEDIO)"],
         "GLS(FECHAMENTO)":["GLS(FECHAMENTO)"],
-        "LOJA SSA |": ["Ana","Francisca","Vinicius"],
-        "LOJA SSA ||": ["Vitor","Mailan"],
-        "LOJA BELA VISTA": ["Vanessa","Danilo"],
-        "LOJA DIAS DAVILA": ["Todos Dias Davila","Maise"],
-        "LOJA PARALELA": ["Crislaine","Neide"],
-        "LOJA PARQUE SHOP": ["Denise_Parque","Neide"],
-        "LOJA IGUATEMI | BA": ["Max","Denise"],
-        "LOJA IGUATEMI || BA": ["Diego","Andressa"],
-        "LOJA NORT SHOP": ["Jairo","Wanderlei"],
-        "LOJA BARRA": ["Igor","Carol","Alana"],
-        "LOJA PIEDADE": ["DiegoL","Marcus"],
-        "LOJA LAPA": ["Sara","Rafel"],
-        "LOJA BOULEVARD": ["Camyla","Bruno","Gilvania"],
         "ITINERANTES": ["Lázaro","Lee","Marcus"],
         }
 
