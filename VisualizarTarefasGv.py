@@ -98,16 +98,45 @@ def visualizar_tarefas_gvs():
 
     st.dataframe(planilha_principal, use_container_width=True)
 
-    colunas_extras = ["Max","Ana","Andressa","Vitor",	"Rafael",	"Carol",	"Danilo",	"Jairo",	"Maise",	"Camyla",	"Denise_Parque"	,"Crislaine"	,"DiegoP"	,"Bruno"]
+    colunas_extras = ["Max","Ana","Andressa","Vitor","Rafael",	"Carol",	"Danilo",	"Jairo",	"Maise",	"Camyla",	"Denise_Parque"	,"Crislaine"	,"DiegoP"	,"Bruno"]
     colunas_extras = [c for c in colunas_extras if c in planilha_filtrada.columns]
+
+   
 
     if colunas_extras:
         st.divider()
-        st.subheader("📌 GLS ABERTURA")
+        st.subheader("📌 COMPARATIVO DIÁRIO")
         st.dataframe(
             planilha_filtrada[["ID"] + colunas_extras],
             use_container_width=True,
         )
+
+    st.divider()
+    st.subheader("📌 COMPARATIVO DE TAREFAS")
+
+    #MAX
+    nome_gl = st.selectbox("Selecione o GL",colunas_extras)
+
+    contagemT = planilha_filtrada[nome_gl].count()
+    contagemC = planilha_Dados[nome_gl].astype(str).str.contains("Concluído",case=False,na=False).sum()
+    contagemP = planilha_Dados[nome_gl].astype(str).str.contains("Pendente",case=False,na=False).sum()
+    
+    
+    st.subheader(f"Comparativo de {nome_gl}")
+
+    colf1,colf2,colf3 = st.columns(3)
+
+    with colf1:
+        st.text(f"📝 Total de Tarefas  : {contagemT}")
+    
+    with colf2:
+        st.text(f" 🟢 Tarefas Concluídas  : {contagemC}")
+    
+    with colf3:
+        st.text(f" 🟡 Tarefas Pendentes : {contagemP}")
+
+
+
 
     if st.button("Atualizar"):
         st.rerun()
@@ -208,13 +237,40 @@ def visualizar_tarefas_intermedio():
     colunas_extras = ["Maise", "Francisca", "Alana"]
     colunas_extras = [c for c in colunas_extras if c in planilha_filtrada.columns]
 
+    
     if colunas_extras:
         st.divider()
-        st.subheader("📌 GLS INTERMEDIO")
+        st.subheader("📌 COMPARATIVO DIÁRIO")
         st.dataframe(
             planilha_filtrada[["ID"] + colunas_extras],
             use_container_width=True,
         )
+
+    st.divider()
+    st.subheader("📌 COMPARATIVO DE TAREFAS")
+
+    #MAX
+    nome_gl = st.selectbox("Selecione o GL",colunas_extras)
+
+    contagemT = planilha_filtrada[nome_gl].count()
+    contagemC = planilha_Dados[nome_gl].astype(str).str.contains("Concluído",case=False,na=False).sum()
+    contagemP = planilha_Dados[nome_gl].astype(str).str.contains("Pendente",case=False,na=False).sum()
+    
+    
+    st.subheader(f"Comparativo de {nome_gl}")
+
+    colf1,colf2,colf3 = st.columns(3)
+
+    with colf1:
+        st.text(f"📝 Total de Tarefas  : {contagemT}")
+    
+    with colf2:
+        st.text(f" 🟢 Tarefas Concluídas  : {contagemC}")
+    
+    with colf3:
+        st.text(f" 🟡 Tarefas Pendentes : {contagemP}")
+
+
 
     if st.button("Atualizar"):
         st.rerun()
@@ -331,13 +387,40 @@ def visualizar_tarefas_fechamento():
 
     colunas_extras = [c for c in colunas_extras if c in planilha_filtrada.columns]
 
+    
     if colunas_extras:
         st.divider()
-        st.subheader("📌 GLS FECHAMENTO")
+        st.subheader("📌 COMPARATIVO DIÁRIO")
         st.dataframe(
             planilha_filtrada[["ID"] + colunas_extras],
             use_container_width=True,
         )
+
+    st.divider()
+    st.subheader("📌 COMPARATIVO DE TAREFAS")
+
+    #MAX
+    nome_gl = st.selectbox("Selecione o GL",colunas_extras)
+
+    contagemT = planilha_filtrada[nome_gl].count()
+    contagemC = planilha_Dados[nome_gl].astype(str).str.contains("Concluído",case=False,na=False).sum()
+    contagemP = planilha_Dados[nome_gl].astype(str).str.contains("Pendente",case=False,na=False).sum()
+    
+    
+    st.subheader(f"Comparativo de {nome_gl}")
+
+    colf1,colf2,colf3 = st.columns(3)
+
+    with colf1:
+        st.text(f"📝 Total de Tarefas  : {contagemT}")
+    
+    with colf2:
+        st.text(f" 🟢 Tarefas Concluídas  : {contagemC}")
+    
+    with colf3:
+        st.text(f" 🟡 Tarefas Pendentes : {contagemP}")
+
+
 
     if st.button("Atualizar"):
         st.rerun()

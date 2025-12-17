@@ -32,7 +32,6 @@ def criar_page():
 
     # --- LISTAS ---
     gvs = ["",
-        "TODOS OS GLS",
         "TODOS OS GLS(ABERTURA)",
         "TODOS OS GLS(INTERMEDIO)",
         "TODOS OS GLS(FECHAMENTO)",
@@ -41,8 +40,6 @@ def criar_page():
         
     lojas_por_carteira = {
         "": [""],
-     
-        "TODOS OS GLS": ["TODOS OS GLS"],
 
         "TODOS OS GLS(INTERMEDIO)": ["GLS(INTERMEDIO)"],
 
@@ -55,9 +52,7 @@ def criar_page():
 
     nomes_por_loja = {
         "": [""],
-    
-        "TODOS OS GLS": ["GLS(GERAL)"],
-
+  
         "GLS(ABERTURA)":["GLS(ABERTURA)"],
 
         "GLS(INTERMEDIO)":["GLS(INTERMEDIO)"],
