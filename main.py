@@ -4,9 +4,9 @@ from PIL import Image
 from CriarTarefas import criar_page,criar_page_fabiana,criar_page_chrys,criar_page_felipe,criar_page_john
 from VisualizarTarefas import visualizar_tarefas,visualizar_tarefas_fabiana, visualizar_tarefas_chrys ,visualizar_tarefas_felipe ,visualizar_tarefas_john
 from TarefasProntas import modelos_prontos,modelos_prontos_fabiana, modelos_prontos_chrys, modelos_prontos_felipe, modelos_prontos_john
-from GlsTarefas import tarefas_diasdavila , tarefas_barra_abertura , tarefas_barra_fechamento , tarefas_barra_intermedio ,tarefas_bela_abertura,tarefas_bela_fechamento,tarefas_boulevard_abertura,tarefas_boulevard_fechamento,tarefas_boulevard_intermedio,tarefas_iguatemi2_abertura,tarefas_iguatemi2_fechamento,tarefas_iguatemi_abertura,tarefas_iguatemi_fechamento,tarefas_itinerante,tarefas_lapa_abertura,tarefas_lapa_fechamento,tarefas_nort_abertura,tarefas_nort_fechamento,tarefas_parela_abertura,tarefas_parela_fechamento,tarefas_parque_abertura,tarefas_parque_fechamento,tarefas_piedade_abertura,tarefas_ssa1_abertura,tarefas_ssa1_fechamento,tarefas_ssa1_intermedio,tarefas_ssa2_abertura,tarefas_ssa2_fechamento,tarefas_piedade_fechamento
+from GlsTarefas import tarefas_diasdavila , tarefas_barra_abertura , tarefas_barra_fechamento , tarefas_barra_intermedio ,tarefas_bela_abertura,tarefas_bela_fechamento,tarefas_boulevard_abertura,tarefas_boulevard_fechamento,tarefas_boulevard_intermedio,tarefas_iguatemi2_abertura,tarefas_iguatemi2_fechamento,tarefas_iguatemi_abertura,tarefas_iguatemi_fechamento,tarefas_itinerante,tarefas_lapa_abertura,tarefas_lapa_fechamento,tarefas_nort_abertura,tarefas_nort_fechamento,tarefas_parela_abertura,tarefas_parela_fechamento,tarefas_parque_abertura,tarefas_parque_fechamento,tarefas_piedade_abertura,tarefas_ssa1_abertura,tarefas_ssa1_fechamento,tarefas_ssa1_intermedio,tarefas_ssa2_abertura,tarefas_ssa2_fechamento,tarefas_piedade_fechamento,tarefas_itinerante_lazaro,tarefas_itinerante_lee,tarefas_itinerante_marcus
 from GvTarefas import tarefas_chyrs,tarefas_fabiana,tarefas_felipe,tarefas_john
-from VisualizarTarefasGv import  visualizar_tarefas_gvs, visualizar_tarefas_fechamento , visualizar_tarefas_intermedio
+from VisualizarTarefasGv import  visualizar_tarefas_gvs, visualizar_tarefas_fechamento , visualizar_tarefas_intermedio,visualizar_tarefas_itinerantes
 from Intinerantes import tarefas_itinerantes
 
 st.sidebar.image("image/Image (2).png")
@@ -146,8 +146,14 @@ def run_navigation():
     Tarefas_boulevard_abertura = st.Page(tarefas_boulevard_abertura,title="🏬 LOJA BOULEVARD (ABERTURA)")
     Tarefas_boulevard_fechamentio = st.Page(tarefas_boulevard_fechamento,title="🏬 LOJA BOULEVARD (FECHAMENTO)")
     
-    #Itinerantes
-    Tarefas_itinerantes = st.Page(tarefas_itinerante,title="🏬 ITINERANTES")
+    #Itinerantes victor
+    Visualizar_tarefas_itinerantes = st.Page(visualizar_tarefas_itinerantes,title="🏬 ITINERANTES")
+
+    # PESSAOS
+    Visualizar_tarefas_itinerantesL = st.Page(tarefas_itinerante_lee,title="🏬 LEE")
+    Visualizar_tarefas_itinerantesM = st.Page(tarefas_itinerante_marcus,title="🏬 MARCUS")
+    Visualizar_tarefas_itinerantesL2 = st.Page(tarefas_itinerante_lazaro,title="🏬 LAZARO")     
+
     
     #modelos
     Visualizar_modelos = st.Page(modelos_prontos,title="📝 Modelos de tarefas")
@@ -168,6 +174,7 @@ def run_navigation():
                 Visualizar_tarefas_gvs,
                 Visualizar_tarefas_intermedio,
                 Visualizar_tarefas_fechamento,
+                Visualizar_tarefas_itinerantes
                 
             ],
         }
@@ -205,8 +212,6 @@ def run_navigation():
                 Tarefas_piedade_abertura,
                 Tarefas_lapa_abertura,
                 Tarefas_boulevard_abertura,
-
-                Tarefas_itinerantes
             ],
         }
         menu2 = {
@@ -235,7 +240,28 @@ def run_navigation():
             ],
         }
 
+    if role == "Itinerantes":
 
+        menu = {
+    
+            "🏬 R.E.G (LEE) ": [
+              Visualizar_tarefas_itinerantesL
+            ],
+        }
+        menu2 = {
+         "🏬 R.E.G (MARCUS)": [
+                Visualizar_tarefas_itinerantesM
+                ]
+        }
+        
+        menu3 = {
+    
+            "🏬 R.E.G (Lázaro)": [
+                Visualizar_tarefas_itinerantesL2
+            ],
+        }
+    
+   
     
 
     # Criar navegação
