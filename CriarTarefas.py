@@ -61,7 +61,7 @@ def criar_page():
 
         "TODOS OS ITINERANTES": ["ITINERANTES"],
 
-        "ITINERANTES": ["Todos Itinerantes","Lázaro","Lee","Marcus"],
+        "ITINERANTES": ["ITINERANTES"],
     }
 
     tipos_recorrencia = ["", "Não recorrente", "Diária", "Semanal",
