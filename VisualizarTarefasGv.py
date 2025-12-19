@@ -88,6 +88,7 @@ def visualizar_tarefas_gvs():
         "Título",
         "Descrição da tarefa",
         "Data",
+        "Tipo de recorrência",
         "Hora inicial",
         "Hora final",
     ]
@@ -98,7 +99,7 @@ def visualizar_tarefas_gvs():
 
     st.dataframe(planilha_principal, use_container_width=True)
 
-    colunas_extras = ["Max","Ana","Andressa","Vitor","Rafael",	"Carol",	"Danilo",	"Jairo",	"Maise",	"Camyla",	"Denise_Parque"	,"Crislaine"	,"DiegoP"	,"Bruno"]
+    colunas_extras = ["Max","Ana","Andressa","Vitor","Rafael",	"Carol",	"Danilo",	"Jairo",	"Maise","Denise_Parque"	,"Crislaine"	,"DiegoP"	,"Bruno"]
     colunas_extras = [c for c in colunas_extras if c in planilha_filtrada.columns]
 
    
@@ -224,6 +225,7 @@ def visualizar_tarefas_intermedio():
         "Título",
         "Descrição da tarefa",
         "Data",
+        "Tipo de recorrência",
         "Hora inicial",
         "Hora final",
     ]
@@ -234,7 +236,7 @@ def visualizar_tarefas_intermedio():
 
     st.dataframe(planilha_principal, use_container_width=True)
 
-    colunas_extras = ["Maise", "Francisca", "Alana"]
+    colunas_extras = ["Maise", "Francisca", "Alana","Camyla"]
     colunas_extras = [c for c in colunas_extras if c in planilha_filtrada.columns]
 
     
@@ -359,6 +361,7 @@ def visualizar_tarefas_fechamento():
         "Título",
         "Descrição da tarefa",
         "Data",
+        "Tipo de recorrência",
         "Hora inicial",
         "Hora final",
     ]
@@ -507,6 +510,7 @@ def visualizar_tarefas_itinerantes():
         "Título",
         "Descrição da tarefa",
         "Data",
+        "Tipo de recorrência",
         "Hora inicial",
         "Hora final",
     ]

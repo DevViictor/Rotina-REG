@@ -114,6 +114,7 @@ def run_navigation():
     Tarefas_ssa1_abertura = st.Page(tarefas_ssa1_abertura,title="🏬 LOJA SSA1 (ABERTURA)")
     Tarefas_ssa1_intermedio = st.Page(tarefas_ssa1_intermedio,title="🏬 LOJA SSA1 (INTERMEDIO)")
     Tarefas_ssa1_fechamento = st.Page(tarefas_ssa1_fechamento,title="🏬 LOJA SSA1 (FECHAMENTO)" )
+    
 
     Tarefas_ssa2_abertura = st.Page(tarefas_ssa2_abertura,title="🏬 LOJA SSA2 (ABERTURA)" )
     Tarefas_ssa2_fechamento= st.Page(tarefas_ssa2_fechamento,title="🏬 LOJA SSA2 (FECHAMENTO)" ) 
@@ -144,6 +145,7 @@ def run_navigation():
 
     #CHRYS
     Tarefas_boulevard_abertura = st.Page(tarefas_boulevard_abertura,title="🏬 LOJA BOULEVARD (ABERTURA)")
+    Tarefas_boulevard_intermedio = st.Page(tarefas_boulevard_intermedio,title="🏬 LOJA BOULEVARD (INTERMEDIO)")
     Tarefas_boulevard_fechamentio = st.Page(tarefas_boulevard_fechamento,title="🏬 LOJA BOULEVARD (FECHAMENTO)")
     
     #Itinerantes victor
@@ -218,6 +220,7 @@ def run_navigation():
             " GLS INTERMEDIO": [
                 Tarefas_ssa1_intermedio,
                 Tarefas_barra_intermedio,
+                Tarefas_boulevard_intermedio,
                 Tarefas_davila
             ]
         }

@@ -11,32 +11,37 @@ from datetime import datetime, timedelta
 def tarefas_iguatemi_abertura():
 
 
-    # Controle de estado das notificações
-    if "notificados" not in st.session_state:
-        st.session_state.notificados = {}
+    icon = Image.open("image/vivo.png")
+
+    st.set_page_config(page_title="R.E.G LAPA", page_icon=icon, layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role not in ["Iguatemi1","Admin"]:
+    if "role" not in st.session_state or st.session_state.role not in ["Lapa", "Admin"]:
         st.error("⚠️ Acesso negado!")
         st.stop()
 
     # ---------------------------
     # LISTAS E DICIONÁRIOS
     # ---------------------------
-    gvs = ["GLS DA CARTEIRA DE FELIPE"]
-
+    gvs = [ 
+            "GLS DA CARTEIRA DE FELIPE",
+                ]
+            
     lojas_por_carteira = {
-        " ": [" "],
-        "GLS DA CARTEIRA DE FELIPE": [
+    " ": [" "],
+    
+    "GLS DA CARTEIRA DE FELIPE": [
             "LOJA IGUATEMI | BA"
-        ]
+    
+    ]        
     }
 
     nomes_por_loja = {
-        " ": [" "],
-        "LOJA IGUATEMI | BA": ["GLS(ABERTURA)"],
+    " ": [" "],
+    
+    "LOJA IGUATEMI | BA": ["GLS(ABERTURA)"],
+   
     }
-
     # ---------------------------
     # INTERFACE
     # ---------------------------
@@ -46,8 +51,10 @@ def tarefas_iguatemi_abertura():
     image_logo = Image.open("image/Image (2).png")
 
     cola, colb, colc = st.columns([4, 1, 1])
+
     with colc:
         st.image(image_logo)
+
     with cola:
         st.title("📝 R.E.G - TAREFAS")
 
@@ -66,7 +73,7 @@ def tarefas_iguatemi_abertura():
         nome = st.selectbox("Nome:", nomes_filtrados)
 
     with col4:
-        data_selecionada = st.date_input("Selecione a data:")
+        data = st.date_input("Selecione a data:")
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -94,8 +101,7 @@ def tarefas_iguatemi_abertura():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
-
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Max"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Max"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -103,30 +109,27 @@ def tarefas_iguatemi_abertura():
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    # Padronizar colunas para evitar erro
-    planilha_Dados.columns = planilha_Dados.columns.str.strip()
-
-    # Converter data da planilha
     planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"], dayfirst=True, errors="coerce"
+        planilha_Dados["Data"],
+        dayfirst=True,
+        errors="coerce"
     ).dt.date
 
-    # Filtrar pela data escolhida
-    planilha_filtrada = planilha_Dados[planilha_Dados["Data"] == data_selecionada]
+    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
 
-    if planilha_filtrada.empty:
+    if planilha_Dados.empty:
         st.info("Nenhuma tarefa encontrada para esta data.")
         return
 
     # ---------------------------
-    # 🔥 NOTIFICAÇÕES
+    # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_filtrada["Concluir"] = (
-        planilha_filtrada["Max"].astype(str).str.lower() == "concluído"
+    planilha_Dados["Concluir"] = (
+        planilha_Dados["Max"].astype(str).str.lower() == "concluído"
     )
 
     df_editado = st.data_editor(
-        planilha_filtrada,
+        planilha_Dados,
         column_config={
             "Concluir": st.column_config.CheckboxColumn(
                 "Concluir tarefa",
@@ -141,7 +144,7 @@ def tarefas_iguatemi_abertura():
     )
 
     # ---------------------------
-    # SALVAR ALTERAÇÕES
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
     # ---------------------------
     col11, col12, col13, col14, col15 = st.columns(5)
 
@@ -149,6 +152,7 @@ def tarefas_iguatemi_abertura():
         if st.button("Salvar alterações"):
             aba = planilha.worksheet(nome)
             dados_atual = aba.get_all_records()
+
             df_original = pd.DataFrame(dados_atual)
 
             for _, row in df_editado.iterrows():
@@ -157,7 +161,8 @@ def tarefas_iguatemi_abertura():
                 linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
 
                 if linhas:
-                    linha_sheet = linhas[0] + 2
+                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
+
                     coluna_status = df_original.columns.get_loc("Max") + 1
                     aba.update_cell(linha_sheet, coluna_status, row["Max"])
 
@@ -166,6 +171,8 @@ def tarefas_iguatemi_abertura():
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
 
     # 🔄 Atualiza a página a cada 60s para verificar notificações
 
@@ -258,7 +265,7 @@ def tarefas_iguatemi_fechamento():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Denise"]
+    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Denise"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -420,7 +427,7 @@ def tarefas_iguatemi2_abertura():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Andressa"]
+    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Andressa"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
@@ -580,7 +587,7 @@ def tarefas_iguatemi2_fechamento():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Diego"]
+    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Diego"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
@@ -658,7 +665,7 @@ def tarefas_iguatemi2_fechamento():
 def tarefas_nort_abertura():
     icon = Image.open("image/vivo.png")
 
-    st.set_page_config(page_title="R.E.G IGUATEMI ||", page_icon=icon, layout="wide")
+    st.set_page_config(page_title="R.E.G NORT", page_icon=icon, layout="wide")
 
     # --- Controle de acesso ---
     if "role" not in st.session_state or st.session_state.role not in ["Norte","Admin"]:
@@ -746,7 +753,7 @@ def tarefas_nort_abertura():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Jairo"]
+    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Jairo"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -909,7 +916,7 @@ def tarefas_nort_fechamento():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Wanderlei"]
+    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Wanderlei"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -1076,7 +1083,7 @@ def tarefas_ssa1_abertura():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Ana"]
+    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Ana"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
@@ -1241,7 +1248,7 @@ def tarefas_ssa1_intermedio():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Francisca"]
+    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Francisca"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
@@ -1406,7 +1413,7 @@ def tarefas_ssa1_fechamento():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Vinicius"]
+    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Vinicius"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
@@ -1569,7 +1576,7 @@ def tarefas_ssa2_abertura():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Vitor"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Vitor"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
@@ -1733,7 +1740,7 @@ def tarefas_ssa2_fechamento():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título" ,"Descrição da tarefa","Hora inicial","Hora final", "Data","Wanderlei"]
+    colunas_desejadas = ["ID", "Criada", "Título" ,"Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Wanderlei"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
@@ -1897,7 +1904,7 @@ def tarefas_ssa2_fechamento():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Mailan"]
+    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Mailan"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
@@ -2061,7 +2068,7 @@ def tarefas_bela_abertura():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Hora inicial","Hora final","Data","Danilo"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Hora inicial","Hora final","Data","Tipo de recorrência","Danilo"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
@@ -2225,7 +2232,7 @@ def tarefas_bela_fechamento():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Vanessa"]
+    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Vanessa"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
@@ -2389,7 +2396,7 @@ def tarefas_parela_abertura():
     planilha_Dados = carregar_pedidos()
 
     
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Crislaine"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Crislaine"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
@@ -2552,7 +2559,7 @@ def tarefas_parela_fechamento():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
     
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Neide"]
+    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Neide"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
@@ -2719,7 +2726,7 @@ def tarefas_parque_abertura():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Denise_Parque"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Denise_Parque"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -2886,7 +2893,7 @@ def tarefas_parque_fechamento():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Adrielle"]
+    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Adrielle"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -3221,7 +3228,7 @@ def tarefas_barra_intermedio():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Alana"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Alana"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -3388,7 +3395,7 @@ def tarefas_barra_fechamento():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Igor"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Igor"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -3561,7 +3568,7 @@ def tarefas_piedade_abertura():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","DiegoP"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","DiegoP"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -3730,7 +3737,7 @@ def tarefas_piedade_fechamento():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Marcosl"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Marcosl"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -3893,7 +3900,7 @@ def tarefas_lapa_abertura():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Rafael"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Rafael"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -4058,7 +4065,7 @@ def tarefas_lapa_fechamento():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Sara"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Sara"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -4383,7 +4390,7 @@ def tarefas_diasdavila():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Maise"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Maise"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
@@ -4546,7 +4553,7 @@ def tarefas_boulevard_abertura():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa", "Hora inicial","Hora final", "Data","Bruno"]
+    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa", "Hora inicial","Hora final", "Data","Tipo de recorrência","Bruno"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
@@ -4709,7 +4716,7 @@ def tarefas_boulevard_fechamento():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Gilvania"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Gilvania"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
@@ -4809,7 +4816,7 @@ def tarefas_boulevard_intermedio():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA BOULEVARD": ["GLS(FECHAMENTO)"],
+    "LOJA BOULEVARD": ["GLS(INTERMEDIO)"],
     }
 
 
@@ -4873,7 +4880,7 @@ def tarefas_boulevard_intermedio():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Bruno"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Camyla"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
@@ -4896,7 +4903,7 @@ def tarefas_boulevard_intermedio():
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
     planilha_Dados["Concluir"] = (
-        planilha_Dados["Bruno"].astype(str).str.lower() == "concluído"
+        planilha_Dados["Camyla"].astype(str).str.lower() == "concluído"
     )
 
     df_editado = st.data_editor(
@@ -4910,7 +4917,7 @@ def tarefas_boulevard_intermedio():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Bruno"] = df_editado["Concluir"].apply(
+    df_editado["Camyla"] = df_editado["Concluir"].apply(
         lambda x: "Concluído" if x else "Pendente"
     )
 
@@ -4934,8 +4941,8 @@ def tarefas_boulevard_intermedio():
                 if linhas:
                     linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
 
-                    coluna_status = df_original.columns.get_loc("Bruno") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Bruno"])
+                    coluna_status = df_original.columns.get_loc("Camyla") + 1
+                    aba.update_cell(linha_sheet, coluna_status, row["Camyla"])
 
             st.success("✔️ Alterações salvas com sucesso!")
 
@@ -5038,7 +5045,7 @@ def tarefas_itinerante_lee():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Lee"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Lee"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
@@ -5203,7 +5210,7 @@ def tarefas_itinerante_marcus():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Marcus"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Marcus"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
@@ -5368,7 +5375,7 @@ def tarefas_itinerante_lazaro():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Lázaro"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Lázaro"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:

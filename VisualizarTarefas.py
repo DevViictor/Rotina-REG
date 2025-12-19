@@ -23,7 +23,6 @@ def visualizar_tarefas():
                 
         lojas_por_carteira = {
         " ": [" "],
-        "TODOS OS GLS": ["GLS(GERAL)"],
 
         "TODOS OS GLS(ABERTURA)":["GLS(ABERTURA)"],
 
@@ -39,11 +38,10 @@ def visualizar_tarefas():
         nomes_por_loja = {
 
         " ": [" "],
-        "GLS(GERAL)":["GLS(GERAL)"],
         "GLS(ABERTURA)":["GLS(ABERTURA)"],
         "GLS(INTERMEDIO)":["GLS(INTERMEDIO)"],
         "GLS(FECHAMENTO)":["GLS(FECHAMENTO)"],
-        "ITINERANTES": ["Lázaro","Lee","Marcus"],
+        "ITINERANTES": ["ITINERANTES"],
         }
 
         # ---------------------------
@@ -110,7 +108,7 @@ def visualizar_tarefas():
                 st.warning("Nenhum modelo encontrado.")
         else:
 
-                colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data"]
+                colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Tipo de recorrência"]
                 planilha_Dados = planilha_Dados[colunas_desejadas]
 
                 planilha_Dados["Data"] = pd.to_datetime(
