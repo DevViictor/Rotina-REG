@@ -13,10 +13,10 @@ def tarefas_iguatemi_abertura():
 
     icon = Image.open("image/vivo.png")
 
-    st.set_page_config(page_title="R.E.G LAPA", page_icon=icon, layout="wide")
+    st.set_page_config(page_title="R.E.G Iguatemi |", page_icon=icon, layout="wide")
 
     # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role not in ["Lapa", "Admin"]:
+    if "role" not in st.session_state or st.session_state.role not in ["Iguatemi1", "Admin"]:
         st.error("⚠️ Acesso negado!")
         st.stop()
 
