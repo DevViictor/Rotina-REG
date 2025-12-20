@@ -72,8 +72,7 @@ def tarefas_iguatemi_abertura():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
+    
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -101,7 +100,22 @@ def tarefas_iguatemi_abertura():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Max"]
+
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+        agora = datetime.now()
+
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Max",
+            "Iguatemi |",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -109,24 +123,11 @@ def tarefas_iguatemi_abertura():
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Max"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -139,9 +140,7 @@ def tarefas_iguatemi_abertura():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Max"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -149,24 +148,15 @@ def tarefas_iguatemi_abertura():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Max") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Max"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
@@ -235,8 +225,6 @@ def tarefas_iguatemi_fechamento():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data_selecionada = st.date_input("Selecione a data:")
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -264,8 +252,22 @@ def tarefas_iguatemi_fechamento():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        agora = datetime.now()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Denise"]
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Denise",
+            "Iguatemi |",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -273,30 +275,14 @@ def tarefas_iguatemi_fechamento():
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    # Padronizar colunas para evitar erro
-    planilha_Dados.columns = planilha_Dados.columns.str.strip()
-
-    # Converter data da planilha
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"], dayfirst=True, errors="coerce"
-    ).dt.date
-
-    # Filtrar pela data escolhida
-    planilha_filtrada = planilha_Dados[planilha_Dados["Data"] == data_selecionada]
-
-    if planilha_filtrada.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
-    # 🔥 NOTIFICAÇÕES
+    # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_filtrada["Concluir"] = (
-        planilha_filtrada["Denise"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
-        planilha_filtrada,
+        planilha_Dados,
         column_config={
             "Concluir": st.column_config.CheckboxColumn(
                 "Concluir tarefa",
@@ -306,36 +292,28 @@ def tarefas_iguatemi_fechamento():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Denise"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
-    # SALVAR ALTERAÇÕES
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
     # ---------------------------
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
-            df_original = pd.DataFrame(dados_atual)
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2
-                    coluna_status = df_original.columns.get_loc("Denise") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Denise"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
 
 
 def tarefas_iguatemi2_abertura():
@@ -397,9 +375,7 @@ def tarefas_iguatemi2_abertura():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
-
+   
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
@@ -427,31 +403,33 @@ def tarefas_iguatemi2_abertura():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Andressa"]
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+        agora = datetime.now()
+
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Andressa",
+            "Iguatemi ||",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
+
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Andressa"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -464,9 +442,7 @@ def tarefas_iguatemi2_abertura():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Andressa"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -474,28 +450,20 @@ def tarefas_iguatemi2_abertura():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Andressa") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Andressa"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
 
 
 def tarefas_iguatemi2_fechamento():
@@ -557,9 +525,7 @@ def tarefas_iguatemi2_fechamento():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
-
+   
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
@@ -586,32 +552,33 @@ def tarefas_iguatemi2_fechamento():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    def registrar_execucao(planilha, row):
+            aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+            agora = datetime.now()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Diego"]
+            aba_exec.append_row([
+                row["ID"],
+                row["Título"],
+                row["Descrição da tarefa"],
+                "Diego",
+                "Iguatemi ||",
+                agora.strftime("%d/%m/%Y"),
+                agora.strftime("%H:%M:%S")
+            ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
+
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Diego"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -624,9 +591,7 @@ def tarefas_iguatemi2_fechamento():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Diego"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -634,28 +599,20 @@ def tarefas_iguatemi2_fechamento():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Diego") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Diego"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
 
 
 
@@ -723,8 +680,7 @@ def tarefas_nort_abertura():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
+  
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -753,7 +709,21 @@ def tarefas_nort_abertura():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Jairo"]
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+        agora = datetime.now()
+
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Jairo",
+            "NORT SHOP",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -761,24 +731,11 @@ def tarefas_nort_abertura():
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Jairo"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -791,9 +748,7 @@ def tarefas_nort_abertura():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Jairo"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -801,28 +756,21 @@ def tarefas_nort_abertura():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Jairo") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Jairo"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
 
 
 def tarefas_nort_fechamento():
@@ -886,8 +834,6 @@ def tarefas_nort_fechamento():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -915,8 +861,21 @@ def tarefas_nort_fechamento():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        agora = datetime.now()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Wanderlei"]
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Wanderlei",
+            "NORT SHOP",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -924,24 +883,11 @@ def tarefas_nort_fechamento():
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Wanderlei"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -954,9 +900,7 @@ def tarefas_nort_fechamento():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Wanderlei"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -964,28 +908,20 @@ def tarefas_nort_fechamento():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Wanderlei") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Wanderlei"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
 
 
 #Fabiana
@@ -1053,8 +989,7 @@ def tarefas_ssa1_abertura():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
+    
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -1082,32 +1017,33 @@ def tarefas_ssa1_abertura():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+        agora = datetime.now()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Ana"]
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Mércia",
+            "SSA |",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
+
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Ana"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -1120,9 +1056,7 @@ def tarefas_ssa1_abertura():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Ana"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -1130,28 +1064,21 @@ def tarefas_ssa1_abertura():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Ana") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Ana"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
 
 
 
@@ -1218,8 +1145,7 @@ def tarefas_ssa1_intermedio():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
+ 
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -1247,32 +1173,33 @@ def tarefas_ssa1_intermedio():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(INTERMEDIO)")
+        agora = datetime.now()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Francisca"]
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Francisca",
+            "SSA |",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
+
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Francisca"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -1285,9 +1212,7 @@ def tarefas_ssa1_intermedio():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Francisca"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -1295,30 +1220,25 @@ def tarefas_ssa1_intermedio():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Francisca") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Francisca"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
 
 
+
+
+
+    
 
 
 def tarefas_ssa1_fechamento():
@@ -1383,8 +1303,7 @@ def tarefas_ssa1_fechamento():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
+   
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -1413,31 +1332,33 @@ def tarefas_ssa1_fechamento():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Vinicius"]
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        agora = datetime.now()
+
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Vinicicus",
+            "SSA |",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
+
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Vinicius"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -1450,9 +1371,7 @@ def tarefas_ssa1_fechamento():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Vinicius"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -1460,28 +1379,21 @@ def tarefas_ssa1_fechamento():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Vinicius") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Vinicius"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
 
 
 def tarefas_ssa2_abertura():
@@ -1546,9 +1458,7 @@ def tarefas_ssa2_abertura():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
-
+  
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
@@ -1575,32 +1485,33 @@ def tarefas_ssa2_abertura():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+        agora = datetime.now()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Vitor"]
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Vitor",
+            "SSA ||",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
+
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Vitor"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -1613,9 +1524,7 @@ def tarefas_ssa2_abertura():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Vitor"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -1623,28 +1532,20 @@ def tarefas_ssa2_abertura():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Vitor") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Vitor"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
 
 
 
@@ -1675,7 +1576,7 @@ def tarefas_ssa2_fechamento():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA SSA ||": ["GLS(ABERTURA)"],
+    "LOJA SSA ||": ["GLS(FECHAMENTO)"],
     
     }
 
@@ -1710,9 +1611,7 @@ def tarefas_ssa2_fechamento():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
-
+   
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
@@ -1739,32 +1638,33 @@ def tarefas_ssa2_fechamento():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        agora = datetime.now()
 
-    colunas_desejadas = ["ID", "Criada", "Título" ,"Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Wanderlei"]
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Mailan",
+            "SSA ||",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
+
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Wanderlei"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -1777,9 +1677,7 @@ def tarefas_ssa2_fechamento():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Wanderlei"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -1787,28 +1685,24 @@ def tarefas_ssa2_fechamento():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Wanderlei") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Wanderlei"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
+
+
+
 
 
 
@@ -1904,23 +1798,11 @@ def tarefas_ssa2_fechamento():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Mailan"]
+    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Tipo de recorrência","Mailan"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
-        return
-
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
         return
 
     # ---------------------------
@@ -2038,8 +1920,7 @@ def tarefas_bela_abertura():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
+  
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -2067,32 +1948,33 @@ def tarefas_bela_abertura():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+        agora = datetime.now()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Hora inicial","Hora final","Data","Tipo de recorrência","Danilo"]
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Danilo",
+            "BELA",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
+
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Danilo"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -2105,9 +1987,7 @@ def tarefas_bela_abertura():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Danilo"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -2115,28 +1995,24 @@ def tarefas_bela_abertura():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Danilo") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Danilo"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
+
+
+
 
 
 def tarefas_bela_fechamento():
@@ -2202,8 +2078,6 @@ def tarefas_bela_fechamento():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -2231,32 +2105,33 @@ def tarefas_bela_fechamento():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+        agora = datetime.now()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Vanessa"]
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Vanessa",
+            "BELA",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
+
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Vanessa"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -2269,9 +2144,7 @@ def tarefas_bela_fechamento():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Vanessa"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -2279,28 +2152,23 @@ def tarefas_bela_fechamento():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Vanessa") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Vanessa"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
+
+
 
 
 
@@ -2365,8 +2233,7 @@ def tarefas_parela_abertura():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
+  
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -2395,32 +2262,33 @@ def tarefas_parela_abertura():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Crislaine"]
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+        agora = datetime.now()
+
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Crislaine",
+            "PARALELA",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
+
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Crislaine"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -2433,9 +2301,7 @@ def tarefas_parela_abertura():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Crislaine"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -2443,28 +2309,24 @@ def tarefas_parela_abertura():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Crislaine") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Crislaine"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
+
+
+
 
 
 
@@ -2529,8 +2391,6 @@ def tarefas_parela_fechamento():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -2558,32 +2418,33 @@ def tarefas_parela_fechamento():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
-    
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Neide"]
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        agora = datetime.now()
+
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Neide",
+            "PARALELA",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
+
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Neide"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -2596,9 +2457,7 @@ def tarefas_parela_fechamento():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Neide"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -2606,28 +2465,22 @@ def tarefas_parela_fechamento():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Neide") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Neide"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
+
 
 
 
@@ -2696,8 +2549,7 @@ def tarefas_parque_abertura():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
+    
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -2725,8 +2577,21 @@ def tarefas_parque_abertura():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+        agora = datetime.now()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Denise_Parque"]
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "DENISE_PARQUE",
+            "PARQUE",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -2734,24 +2599,11 @@ def tarefas_parque_abertura():
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Denise_Parque"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -2764,9 +2616,7 @@ def tarefas_parque_abertura():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Denise_Parque"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -2774,28 +2624,24 @@ def tarefas_parque_abertura():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Denise_Parque") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Denise_Parque"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
+
+
+
 
 
 
@@ -2863,8 +2709,7 @@ def tarefas_parque_fechamento():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
+    
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -2892,8 +2737,21 @@ def tarefas_parque_fechamento():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        agora = datetime.now()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Adrielle"]
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "ADRIELLE",
+            "PARQUE",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -2901,24 +2759,11 @@ def tarefas_parque_fechamento():
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Adrielle"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -2931,9 +2776,7 @@ def tarefas_parque_fechamento():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Adrielle"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -2941,28 +2784,23 @@ def tarefas_parque_fechamento():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Adrielle") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Adrielle"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
+
+
 
 
 
@@ -3033,8 +2871,6 @@ def tarefas_barra_abertura():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -3062,8 +2898,21 @@ def tarefas_barra_abertura():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+        agora = datetime.now()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Data","Carol"]
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Carol",
+            "BARRA",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -3071,24 +2920,11 @@ def tarefas_barra_abertura():
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Carol"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -3101,9 +2937,7 @@ def tarefas_barra_abertura():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Carol"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -3111,28 +2945,22 @@ def tarefas_barra_abertura():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Carol") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Carol"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
+
 
 
 
@@ -3198,8 +3026,7 @@ def tarefas_barra_intermedio():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
+    
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -3227,8 +3054,21 @@ def tarefas_barra_intermedio():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(INTERMEDIO)")
+        agora = datetime.now()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Alana"]
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Alana",
+            "BARRA",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -3236,24 +3076,11 @@ def tarefas_barra_intermedio():
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Alana"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -3266,9 +3093,7 @@ def tarefas_barra_intermedio():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Alana"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -3276,24 +3101,15 @@ def tarefas_barra_intermedio():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Alana") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Alana"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
@@ -3365,8 +3181,6 @@ def tarefas_barra_fechamento():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -3394,8 +3208,21 @@ def tarefas_barra_fechamento():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        agora = datetime.now()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Igor"]
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Igor",
+            "BARRA",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -3403,24 +3230,11 @@ def tarefas_barra_fechamento():
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Igor"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -3433,9 +3247,7 @@ def tarefas_barra_fechamento():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Igor"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -3443,33 +3255,19 @@ def tarefas_barra_fechamento():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Igor") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Igor"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
-
-
-
-
-
 
 
 
@@ -3538,8 +3336,6 @@ def tarefas_piedade_abertura():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -3567,8 +3363,21 @@ def tarefas_piedade_abertura():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+        agora = datetime.now()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","DiegoP"]
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Marcus",
+            "PIEDADE",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -3576,24 +3385,11 @@ def tarefas_piedade_abertura():
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["DiegoP"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -3606,9 +3402,7 @@ def tarefas_piedade_abertura():
         disabled=["Data", "ID"]
     )
 
-    df_editado["DiegoP"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -3616,28 +3410,21 @@ def tarefas_piedade_abertura():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("DiegoP") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["DiegoP"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
 
 
 
@@ -3707,9 +3494,6 @@ def tarefas_piedade_fechamento():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
-
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
@@ -3736,8 +3520,21 @@ def tarefas_piedade_fechamento():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        agora = datetime.now()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Marcosl"]
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Diego",
+            "PIEDADE",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -3745,24 +3542,11 @@ def tarefas_piedade_fechamento():
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Marcosl"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -3775,9 +3559,7 @@ def tarefas_piedade_fechamento():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Marcosl"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -3785,28 +3567,23 @@ def tarefas_piedade_fechamento():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Marcosl") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Marcosl"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
+
+
 
 
 def tarefas_lapa_abertura():
@@ -3871,8 +3648,6 @@ def tarefas_lapa_abertura():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -3900,7 +3675,21 @@ def tarefas_lapa_abertura():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Rafael"]
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+        agora = datetime.now()
+
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "RAFAEL",
+            "LAPA",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -3908,24 +3697,11 @@ def tarefas_lapa_abertura():
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Rafael"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -3938,9 +3714,7 @@ def tarefas_lapa_abertura():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Rafael"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -3948,28 +3722,22 @@ def tarefas_lapa_abertura():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Rafael") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Rafael"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
+
 
 
 
@@ -4036,9 +3804,7 @@ def tarefas_lapa_fechamento():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
-
+    
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
@@ -4065,7 +3831,21 @@ def tarefas_lapa_fechamento():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Sara"]
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        agora = datetime.now()
+
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Sara",
+            "LAPA",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
 
@@ -4073,24 +3853,11 @@ def tarefas_lapa_fechamento():
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Sara"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -4103,9 +3870,7 @@ def tarefas_lapa_fechamento():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Sara"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -4113,24 +3878,15 @@ def tarefas_lapa_fechamento():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Sara") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Sara"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
@@ -4140,163 +3896,6 @@ def tarefas_lapa_fechamento():
 
 
 
-def tarefas_itinerante():
-    icon = Image.open("image/vivo.png")
-
-    st.set_page_config(page_title="R.E.G ITINERANTE", page_icon=icon, layout="wide")
-
-    # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role not in ["Itinerante", "Admin"]:
-        st.error("⚠️ Acesso negado!")
-        st.stop()
-
-    # ---------------------------
-    # LISTAS E DICIONÁRIOS
-    # ---------------------------
-    gvs = [ 
-            "TODOS OS ITINERANTES"]
-        
-    lojas_por_carteira = {
-    " ": [" "],
-    
-    "TODOS OS ITINERANTES": [
-            "ITINERANTES"
-    ]        
-    }
-
-    nomes_por_loja = {
-    " ": [" "],
-    
-    "ITINERANTES": ["Todos Itinerantes","Lázaro","Lee","Marcus"],
-    }
-
-
-    # ---------------------------
-    # INTERFACE
-    # ---------------------------
-    icon = Image.open("image/vivo.png")
-    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
-
-    image_logo = Image.open("image/Image (2).png")
-
-    cola, colb, colc = st.columns([4, 1, 1])
-
-    with colc:
-        st.image(image_logo)
-
-    with cola:
-        st.title("📝 R.E.G - TAREFAS")
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        carteira = st.selectbox("Selecione a carteira:", gvs)
-
-    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
-
-    with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
-
-    with col3:
-        nomes_filtrados = nomes_por_loja.get(loja, [" "])
-        nome = st.selectbox("Nome:", nomes_filtrados)
-
-    with col4:
-        data = st.date_input("Selecione a data:")
-
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["tafgl"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-    def carregar_pedidos():
-        aba = planilha.worksheet(nome)
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
-
-    # ---------------------------
-    # CARREGAR E FILTRAR DADOS
-    # ---------------------------
-    planilha_Dados = carregar_pedidos()
-
-    if planilha_Dados.empty:
-        st.warning("Nenhuma tarefa encontrada.")
-        return
-
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
-    # ---------------------------
-    # CHECKBOX PARA CONCLUIR TAREFA
-    # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Situação da tarefa"].astype(str).str.lower() == "concluído"
-    )
-
-    df_editado = st.data_editor(
-        planilha_Dados,
-        column_config={
-            "Concluir": st.column_config.CheckboxColumn(
-                "Concluir tarefa",
-                help="Marque para concluir a tarefa"
-            )
-        },
-        disabled=["Data", "ID"]
-    )
-
-    df_editado["Situação da tarefa"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
-
-    # ---------------------------
-    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
-    # ---------------------------
-    col11, col12, col13, col14, col15 = st.columns(5)
-
-    with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
-
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Situação da tarefa") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Situação da tarefa"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
-
-    with col12:
-        if st.button("Atualizar"):
-            st.rerun()
         
 
 def tarefas_diasdavila():
@@ -4389,32 +3988,61 @@ def tarefas_diasdavila():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+        agora = datetime.now()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Maise"]
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Maise",
+            "DIAS DAVILA",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+    
+    def registrar_execucao2(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(INTERMEDIO)")
+        agora = datetime.now()
+
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Maise",
+            "DIAS DAVILA",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+    
+    def registrar_execucao3(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        agora = datetime.now()
+
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Maise",
+            "DIAS DAVILA",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
+
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Maise"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -4427,9 +4055,7 @@ def tarefas_diasdavila():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Maise"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -4437,28 +4063,32 @@ def tarefas_diasdavila():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
+                        registrar_execucao2(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
+                        registrar_execucao3(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Maise") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Maise"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
+
+
+
 
 
 
@@ -4523,8 +4153,7 @@ def tarefas_boulevard_abertura():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
+    
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -4553,31 +4182,33 @@ def tarefas_boulevard_abertura():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa", "Hora inicial","Hora final", "Data","Tipo de recorrência","Bruno"]
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+        agora = datetime.now()
+
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Bruno",
+            "BOULEVARD",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
+
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Bruno"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -4590,9 +4221,7 @@ def tarefas_boulevard_abertura():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Bruno"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -4600,28 +4229,23 @@ def tarefas_boulevard_abertura():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Bruno") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Bruno"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
+
+
 
 
 
@@ -4686,8 +4310,7 @@ def tarefas_boulevard_fechamento():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
+    
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -4716,31 +4339,33 @@ def tarefas_boulevard_fechamento():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Gilvania"]
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        agora = datetime.now()
+
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Gilvania",
+            "BOULEVARD",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
+
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Gilvania"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -4753,9 +4378,7 @@ def tarefas_boulevard_fechamento():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Gilvania"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -4763,28 +4386,22 @@ def tarefas_boulevard_fechamento():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Gilvania") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Gilvania"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
+
 
 
 
@@ -4850,8 +4467,6 @@ def tarefas_boulevard_intermedio():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -4879,32 +4494,33 @@ def tarefas_boulevard_intermedio():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        agora = datetime.now()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Camyla"]
+        aba_exec.append_row([
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Camyla",
+            "BOULEVARD",
+            agora.strftime("%d/%m/%Y"),
+            agora.strftime("%H:%M:%S")
+        ])
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
+
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+  
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Camyla"].astype(str).str.lower() == "concluído"
-    )
+    planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
@@ -4917,9 +4533,7 @@ def tarefas_boulevard_intermedio():
         disabled=["Data", "ID"]
     )
 
-    df_editado["Camyla"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
+  
 
     # ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
@@ -4927,28 +4541,21 @@ def tarefas_boulevard_intermedio():
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
+           if st.button("Salvar alterações"):
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
 
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Camyla") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Camyla"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
+                st.success("✔️ Execução registrada com sucesso!")
 
     with col12:
         if st.button("Atualizar"):
             st.rerun()
+
+
 
 
 
@@ -5015,8 +4622,7 @@ def tarefas_itinerante_lee():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
+   
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -5045,26 +4651,13 @@ def tarefas_itinerante_lee():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Lee"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência","Lee"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
-    # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
     planilha_Dados["Concluir"] = (
@@ -5180,8 +4773,6 @@ def tarefas_itinerante_marcus():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -5210,25 +4801,14 @@ def tarefas_itinerante_marcus():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Marcus"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Tipo de recorrência","Marcus"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
-
+   
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
@@ -5345,8 +4925,7 @@ def tarefas_itinerante_lazaro():
         nomes_filtrados = nomes_por_loja.get(loja, [" "])
         nome = st.selectbox("Nome:", nomes_filtrados)
 
-    with col4:
-        data = st.date_input("Selecione a data:")
+    
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -5375,23 +4954,11 @@ def tarefas_itinerante_lazaro():
     # ---------------------------
     planilha_Dados = carregar_pedidos()
 
-    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Data","Tipo de recorrência","Lázaro"]
+    colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final", "Tipo de recorrência","Lázaro"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
 
     if planilha_Dados.empty:
         st.warning("Nenhuma tarefa encontrada.")
-        return
-
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
-
-    planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
-
-    if planilha_Dados.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
         return
 
     # ---------------------------
