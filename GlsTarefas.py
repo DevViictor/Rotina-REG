@@ -135,8 +135,14 @@ def tarefas_iguatemi_abertura():
             "Concluir": st.column_config.CheckboxColumn(
                 "Concluir tarefa",
                 help="Marque para concluir a tarefa"
-            )
+            ),
+            "Observacao": st.column_config.TextColumn(
+            "Observação",
+            help="Digite uma observação sobre a tarefa",
+            max_chars=200
+        )
         },
+        
         disabled=["Data", "ID"]
     )
 
@@ -3683,8 +3689,8 @@ def tarefas_lapa_abertura():
             row["ID"],
             row["Título"],
             row["Descrição da tarefa"],
-            "RAFAEL",
-            "LAPA",
+            "Rafael",
+            "Lapa",
             agora.strftime("%d/%m/%Y"),
             agora.strftime("%H:%M:%S")
         ])

@@ -18,9 +18,43 @@ def visualizar_tarefas_gvs():
         st.error("⚠️ Acesso negado!")
         st.stop()
 
-    gvs = ["TODOS OS GLS(ABERTURA)"]
-    lojas_por_carteira = {"TODOS OS GLS(ABERTURA)": ["GLS(ABERTURA)"]}
-    nomes_por_loja = {"GLS(ABERTURA)": ["GLS(ABERTURA)"]}
+    gvs = ["GLS DA CARTEIRA DE FABIANA",
+           "GLS DA CARTEIRA DE FELIPE",
+            "GLS DA CARTEIRA DE JOHN",
+            "GLS DA CARTEIRA DE CHRYS"
+            ]
+    lojas_por_carteira = {
+            "": [""],
+            "GLS DA CARTEIRA DE FABIANA": [
+                "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA DIAS DAVILA","LOJA PARALELA","LOJA PARQUE SHOP"
+            ],
+            "GLS DA CARTEIRA DE FELIPE": [
+                "LOJA IGUATEMI | BA","LOJA IGUATEMI || BA","LOJA NORT SHOP"
+            ],
+            "GLS DA CARTEIRA DE JOHN": [
+            "LOJA BARRA","LOJA PIEDADE","LOJA LAPA"
+            ],
+            "GLS DA CARTEIRA DE CHRYS": [
+            "LOJA BOULEVARD"
+            ],
+          
+        }
+    nomes_por_loja = {
+            "": [""],
+            "LOJA SSA |": ["Ana"],
+            "LOJA SSA ||": ["Vitor"],
+            "LOJA BELA VISTA": ["Danilo"],
+            "LOJA DIAS DAVILA": ["Maise"],
+            "LOJA PARALELA": ["Crislaine"],
+            "LOJA PARQUE SHOP": ["Denise_Parque"],
+            "LOJA IGUATEMI | BA": ["Max"],
+            "LOJA IGUATEMI || BA": ["Andressa"],
+            "LOJA NORT SHOP": ["Jairo"],
+            "LOJA BARRA": ["Carol"],
+            "LOJA PIEDADE": ["Diego"],
+            "LOJA LAPA": ["Rafael"],
+            "LOJA BOULEVARD": ["Bruno"],
+        }
 
     image_logo = Image.open("image/Image (2).png")
     cola, colb, colc = st.columns([4, 1, 1])
@@ -29,17 +63,7 @@ def visualizar_tarefas_gvs():
     with cola:
         st.title("📝 R.E.G - TAREFAS")
 
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        carteira = st.selectbox("Selecione a carteira:", gvs)
-    with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
-    with col3:
-        nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
-    with col4:
-        data_selecionada = st.date_input(
-            "Selecione o período:", value=(datetime.today(), datetime.today())
-        )
+   
 
     gcp_info = st.secrets["tafgl"]
     planilha_chave = st.secrets["planilha"]["chave"]
@@ -54,17 +78,42 @@ def visualizar_tarefas_gvs():
 
     cliente = gspread.authorize(creds)
     planilha = cliente.open_by_key(planilha_chave)
-    aba = planilha.worksheet(nome)
+    aba = planilha.worksheet("GLS(ABERTURA)")
     planilha_Dados = pd.DataFrame(aba.get_all_records())
 
-    if planilha_Dados.empty:
+
+    st.dataframe(planilha_Dados, use_container_width=True)
+
+    st.divider()
+
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
+    with col3:
+        nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
+    with col4:
+        data_selecionada = st.date_input(
+            "Selecione o período:", value=(datetime.today(), datetime.today())
+        )
+  
+    aba2 = planilha.worksheet("EXECUCOES(ABERTURA)")
+    planilha_Dados2 = pd.DataFrame(aba2.get_all_records())
+      
+    if nome:
+        planilha_Dados2 = planilha_Dados2[planilha_Dados2["GL"].str.contains(nome,case =False)]
+
+
+    if planilha_Dados2.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
+    
+    contagemT = planilha_Dados2["Titulo"].count()
 
-    planilha_Dados.columns = planilha_Dados.columns.str.strip()
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"], dayfirst=True, errors="coerce"
+    planilha_Dados2["Data"] = pd.to_datetime(
+        planilha_Dados2["Data"], dayfirst=True, errors="coerce"
     ).dt.date
 
     if not isinstance(data_selecionada, tuple) or len(data_selecionada) != 2:
@@ -73,72 +122,23 @@ def visualizar_tarefas_gvs():
 
     data_inicio, data_fim = data_selecionada
 
-    planilha_filtrada = planilha_Dados[
-        (planilha_Dados["Data"] >= data_inicio)
-        & (planilha_Dados["Data"] <= data_fim)
+    planilha_filtrada = planilha_Dados2[
+        (planilha_Dados2["Data"] >= data_inicio)
+        & (planilha_Dados2["Data"] <= data_fim)
     ]
 
     if planilha_filtrada.empty:
         st.info("Nenhuma tarefa encontrada para esta data.")
         return
 
-    colunas_principais = [
-        "ID",
-        "Criada",
-        "Título",
-        "Descrição da tarefa",
-        "Data",
-        "Tipo de recorrência",
-        "Hora inicial",
-        "Hora final",
-    ]
-
-    planilha_principal = planilha_filtrada[
-        [c for c in colunas_principais if c in planilha_filtrada.columns]
-    ]
-
-    st.dataframe(planilha_principal, use_container_width=True)
-
-    colunas_extras = ["Max","Ana","Andressa","Vitor","Rafael",	"Carol",	"Danilo",	"Jairo",	"Maise","Denise_Parque"	,"Crislaine"	,"DiegoP"	,"Bruno"]
-    colunas_extras = [c for c in colunas_extras if c in planilha_filtrada.columns]
-
+    st.subheader("📌 COMPARATIVO DE TAREFAS")
+    st.dataframe(planilha_Dados2)
+    st.write(f"Total de tarefas realizadas: {contagemT}")
+    st.divider()
    
 
-    if colunas_extras:
-        st.divider()
-        st.subheader("📌 COMPARATIVO DIÁRIO")
-        st.dataframe(
-            planilha_filtrada[["ID"] + colunas_extras],
-            use_container_width=True,
-        )
-
-    st.divider()
-    st.subheader("📌 COMPARATIVO DE TAREFAS")
-
     #MAX
-    nome_gl = st.selectbox("Selecione o GL",colunas_extras)
-
-    contagemT = planilha_filtrada[nome_gl].count()
-    contagemC = planilha_Dados[nome_gl].astype(str).str.contains("Concluído",case=False,na=False).sum()
-    contagemP = planilha_Dados[nome_gl].astype(str).str.contains("Pendente",case=False,na=False).sum()
     
-    
-    st.subheader(f"Comparativo de {nome_gl}")
-
-    colf1,colf2,colf3 = st.columns(3)
-
-    with colf1:
-        st.text(f"📝 Total de Tarefas  : {contagemT}")
-    
-    with colf2:
-        st.text(f" 🟢 Tarefas Concluídas  : {contagemC}")
-    
-    with colf3:
-        st.text(f" 🟡 Tarefas Pendentes : {contagemP}")
-
-
-
-
     if st.button("Atualizar"):
         st.rerun()
 
@@ -155,10 +155,31 @@ def visualizar_tarefas_intermedio():
         st.error("⚠️ Acesso negado!")
         st.stop()
 
-    gvs = ["TODOS OS GLS(INTERMEDIO)"]
-    lojas_por_carteira = {"TODOS OS GLS(INTERMEDIO)": ["GLS(INTERMEDIO)"]}
-    nomes_por_loja = {"GLS(INTERMEDIO)": ["GLS(INTERMEDIO)"]}
-
+    gvs = ["GLS DA CARTEIRA DE FABIANA",
+            "GLS DA CARTEIRA DE JOHN",
+            "GLS DA CARTEIRA DE CHRYS"
+            ]
+    lojas_por_carteira = {
+            "": [""],
+            "GLS DA CARTEIRA DE FABIANA": [
+                "LOJA SSA |","LOJA DIAS DAVILA"
+            ],
+            "GLS DA CARTEIRA DE JOHN": [
+            "LOJA BARRA",
+            ],
+            "GLS DA CARTEIRA DE CHRYS": [
+            "LOJA BOULEVARD"
+            ],
+          
+        }
+    nomes_por_loja = {
+            "": [""],
+            "LOJA SSA |": ["Francisca"],
+            "LOJA DIAS DAVILA": ["Maise"],
+            "LOJA BARRA": ["Alana"],
+            "LOJA BOULEVARD": ["Camyla"],
+        }
+    
     image_logo = Image.open("image/Image (2).png")
     cola, colb, colc = st.columns([4, 1, 1])
     with colc:
@@ -166,17 +187,7 @@ def visualizar_tarefas_intermedio():
     with cola:
         st.title("📝 R.E.G - TAREFAS")
 
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        carteira = st.selectbox("Selecione a carteira:", gvs)
-    with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
-    with col3:
-        nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
-    with col4:
-        data_selecionada = st.date_input(
-            "Selecione o período:", value=(datetime.today(), datetime.today())
-        )
+   
 
     gcp_info = st.secrets["tafgl"]
     planilha_chave = st.secrets["planilha"]["chave"]
@@ -191,17 +202,42 @@ def visualizar_tarefas_intermedio():
 
     cliente = gspread.authorize(creds)
     planilha = cliente.open_by_key(planilha_chave)
-    aba = planilha.worksheet(nome)
+    aba = planilha.worksheet("GLS(INTERMEDIO)")
     planilha_Dados = pd.DataFrame(aba.get_all_records())
 
-    if planilha_Dados.empty:
+
+    st.dataframe(planilha_Dados, use_container_width=True)
+
+    st.divider()
+
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
+    with col3:
+        nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
+    with col4:
+        data_selecionada = st.date_input(
+            "Selecione o período:", value=(datetime.today(), datetime.today())
+        )
+  
+    aba2 = planilha.worksheet("EXECUCOES(INTERMEDIO)")
+    planilha_Dados2 = pd.DataFrame(aba2.get_all_records())
+      
+    if nome:
+        planilha_Dados2 = planilha_Dados2[planilha_Dados2["GL"].str.contains(nome,case =False)]
+    
+    contagemT = planilha_Dados2["Titulo"].count()
+
+
+    if planilha_Dados2.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados.columns = planilha_Dados.columns.str.strip()
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"], dayfirst=True, errors="coerce"
+    planilha_Dados2["Data"] = pd.to_datetime(
+        planilha_Dados2["Data"], dayfirst=True, errors="coerce"
     ).dt.date
 
     if not isinstance(data_selecionada, tuple) or len(data_selecionada) != 2:
@@ -210,73 +246,25 @@ def visualizar_tarefas_intermedio():
 
     data_inicio, data_fim = data_selecionada
 
-    planilha_filtrada = planilha_Dados[
-        (planilha_Dados["Data"] >= data_inicio)
-        & (planilha_Dados["Data"] <= data_fim)
+    planilha_filtrada = planilha_Dados2[
+        (planilha_Dados2["Data"] >= data_inicio)
+        & (planilha_Dados2["Data"] <= data_fim)
     ]
 
     if planilha_filtrada.empty:
         st.info("Nenhuma tarefa encontrada para esta data.")
         return
 
-    colunas_principais = [
-        "ID",
-        "Criada",
-        "Título",
-        "Descrição da tarefa",
-        "Data",
-        "Tipo de recorrência",
-        "Hora inicial",
-        "Hora final",
-    ]
-
-    planilha_principal = planilha_filtrada[
-        [c for c in colunas_principais if c in planilha_filtrada.columns]
-    ]
-
-    st.dataframe(planilha_principal, use_container_width=True)
-
-    colunas_extras = ["Maise", "Francisca", "Alana","Camyla"]
-    colunas_extras = [c for c in colunas_extras if c in planilha_filtrada.columns]
-
-    
-    if colunas_extras:
-        st.divider()
-        st.subheader("📌 COMPARATIVO DIÁRIO")
-        st.dataframe(
-            planilha_filtrada[["ID"] + colunas_extras],
-            use_container_width=True,
-        )
+    st.subheader("📌 COMPARATIVO DE TAREFAS")
+    st.dataframe(planilha_Dados2)
+    st.write(f"Total de tarefas realizadas: {contagemT}")
+    st.divider()
 
     st.divider()
-    st.subheader("📌 COMPARATIVO DE TAREFAS")
-
-    #MAX
-    nome_gl = st.selectbox("Selecione o GL",colunas_extras)
-
-    contagemT = planilha_filtrada[nome_gl].count()
-    contagemC = planilha_Dados[nome_gl].astype(str).str.contains("Concluído",case=False,na=False).sum()
-    contagemP = planilha_Dados[nome_gl].astype(str).str.contains("Pendente",case=False,na=False).sum()
+   
     
-    
-    st.subheader(f"Comparativo de {nome_gl}")
-
-    colf1,colf2,colf3 = st.columns(3)
-
-    with colf1:
-        st.text(f"📝 Total de Tarefas  : {contagemT}")
-    
-    with colf2:
-        st.text(f" 🟢 Tarefas Concluídas  : {contagemC}")
-    
-    with colf3:
-        st.text(f" 🟡 Tarefas Pendentes : {contagemP}")
-
-
-
     if st.button("Atualizar"):
         st.rerun()
-
 
 # =========================================================
 # ==================== GLS FECHAMENTO =====================
@@ -290,10 +278,46 @@ def visualizar_tarefas_fechamento():
         st.error("⚠️ Acesso negado!")
         st.stop()
 
-    gvs = ["TODOS OS GLS(FECHAMENTO)"]
-    lojas_por_carteira = {"TODOS OS GLS(FECHAMENTO)": ["GLS(FECHAMENTO)"]}
-    nomes_por_loja = {"GLS(FECHAMENTO)": ["GLS(FECHAMENTO)"]}
-
+    
+    gvs = ["GLS DA CARTEIRA DE FABIANA",
+           "GLS DA CARTEIRA DE FELIPE",
+            "GLS DA CARTEIRA DE JOHN",
+            "GLS DA CARTEIRA DE CHRYS"
+            ]
+    
+    lojas_por_carteira = {
+            "": [""],
+            "GLS DA CARTEIRA DE FABIANA": [
+                "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA DIAS DAVILA","LOJA PARALELA","LOJA PARQUE SHOP"
+            ],
+            "GLS DA CARTEIRA DE FELIPE": [
+                "LOJA IGUATEMI | BA","LOJA IGUATEMI || BA","LOJA NORT SHOP"
+            ],
+            "GLS DA CARTEIRA DE JOHN": [
+            "LOJA BARRA","LOJA PIEDADE","LOJA LAPA"
+            ],
+            "GLS DA CARTEIRA DE CHRYS": [
+            "LOJA BOULEVARD"
+            ],
+          
+        }
+    nomes_por_loja = {
+            "": [""],
+            "LOJA SSA |": ["Vinicius"],
+            "LOJA SSA ||": ["Mailan"],
+            "LOJA BELA VISTA": ["Vanessa"],
+            "LOJA DIAS DAVILA": ["Maise"],
+            "LOJA PARALELA": ["Neide"],
+            "LOJA PARQUE SHOP": ["Denise_Parque"],
+            "LOJA IGUATEMI | BA": ["Denise"],
+            "LOJA IGUATEMI || BA": ["Diego"],
+            "LOJA NORT SHOP": ["Wanderlei"],
+            "LOJA BARRA": ["Igor"],
+            "LOJA PIEDADE": ["Marcusl"],
+            "LOJA LAPA": ["Sara"],
+            "LOJA BOULEVARD": ["Gilvania"],
+        }
+    
     image_logo = Image.open("image/Image (2).png")
     cola, colb, colc = st.columns([4, 1, 1])
     with colc:
@@ -301,17 +325,7 @@ def visualizar_tarefas_fechamento():
     with cola:
         st.title("📝 R.E.G - TAREFAS")
 
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        carteira = st.selectbox("Selecione a carteira:", gvs)
-    with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
-    with col3:
-        nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
-    with col4:
-        data_selecionada = st.date_input(
-            "Selecione o período:", value=(datetime.today(), datetime.today())
-        )
+   
 
     gcp_info = st.secrets["tafgl"]
     planilha_chave = st.secrets["planilha"]["chave"]
@@ -326,107 +340,72 @@ def visualizar_tarefas_fechamento():
 
     cliente = gspread.authorize(creds)
     planilha = cliente.open_by_key(planilha_chave)
-    aba = planilha.worksheet(nome)
+    aba = planilha.worksheet("GLS(INTERMEDIO)")
     planilha_Dados = pd.DataFrame(aba.get_all_records())
 
-    if planilha_Dados.empty:
+
+    st.dataframe(planilha_Dados, use_container_width=True)
+
+    st.divider()
+
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
+    with col3:
+        nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
+    with col4:
+        data_selecionada = st.date_input(
+            "Selecione o período:", value=(datetime.today(), datetime.today())
+        )
+  
+    aba2 = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+    planilha_Dados2 = pd.DataFrame(aba2.get_all_records())
+      
+    if nome:
+        planilha_Dados2 = planilha_Dados2[planilha_Dados2["GL"].str.contains(nome,case =False)]
+
+    contagemT = planilha_Dados2["Titulo"].count()
+
+    if planilha_Dados2.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados.columns = planilha_Dados.columns.str.strip()
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"], dayfirst=True, errors="coerce"
+    planilha_Dados2["Data"] = pd.to_datetime(
+        planilha_Dados2["Data"], dayfirst=True, errors="coerce"
     ).dt.date
 
     if not isinstance(data_selecionada, tuple) or len(data_selecionada) != 2:
         st.warning("⚠️ Selecione um período com data inicial e final.")
         return
 
-
     data_inicio, data_fim = data_selecionada
 
-    planilha_filtrada = planilha_Dados[
-        (planilha_Dados["Data"] >= data_inicio)
-        & (planilha_Dados["Data"] <= data_fim)
+    planilha_filtrada = planilha_Dados2[
+        (planilha_Dados2["Data"] >= data_inicio)
+        & (planilha_Dados2["Data"] <= data_fim)
     ]
 
     if planilha_filtrada.empty:
         st.info("Nenhuma tarefa encontrada para esta data.")
         return
 
-    colunas_principais = [
-        "ID",
-        "Criada",
-        "Título",
-        "Descrição da tarefa",
-        "Data",
-        "Tipo de recorrência",
-        "Hora inicial",
-        "Hora final",
-    ]
-
-    planilha_principal = planilha_filtrada[
-        [c for c in colunas_principais if c in planilha_filtrada.columns]
-    ]
-
-    st.dataframe(planilha_principal, use_container_width=True)
-
-    colunas_extras = [
-        "Mailan",
-        "Vinicius",
-        "Denise",
-        "Diego",
-        "Marcosl",
-        "Sara",
-        "Igor",
-        "Vanessa",
-        "Neide",
-        "Wanderlei",
-        "Adrielle",
-        "Gilvania",
-        "Maise",
-    ]
-
-    colunas_extras = [c for c in colunas_extras if c in planilha_filtrada.columns]
-
+    st.subheader("📌 COMPARATIVO DE TAREFAS")
+    st.dataframe(planilha_Dados2)
+    st.write(f"Total de tarefas realizadas: {contagemT}")
+    st.divider()
     
-    if colunas_extras:
-        st.divider()
-        st.subheader("📌 COMPARATIVO DIÁRIO")
-        st.dataframe(
-            planilha_filtrada[["ID"] + colunas_extras],
-            use_container_width=True,
-        )
 
     st.divider()
-    st.subheader("📌 COMPARATIVO DE TAREFAS")
+   
 
     #MAX
-    nome_gl = st.selectbox("Selecione o GL",colunas_extras)
-
-    contagemT = planilha_filtrada[nome_gl].count()
-    contagemC = planilha_Dados[nome_gl].astype(str).str.contains("Concluído",case=False,na=False).sum()
-    contagemP = planilha_Dados[nome_gl].astype(str).str.contains("Pendente",case=False,na=False).sum()
     
-    
-    st.subheader(f"Comparativo de {nome_gl}")
-
-    colf1,colf2,colf3 = st.columns(3)
-
-    with colf1:
-        st.text(f"📝 Total de Tarefas  : {contagemT}")
-    
-    with colf2:
-        st.text(f" 🟢 Tarefas Concluídas  : {contagemC}")
-    
-    with colf3:
-        st.text(f" 🟡 Tarefas Pendentes : {contagemP}")
-
-
-
     if st.button("Atualizar"):
         st.rerun()
+   
 
 
 
@@ -451,17 +430,7 @@ def visualizar_tarefas_itinerantes():
     with cola:
         st.title("📝 R.E.G - TAREFAS")
 
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        carteira = st.selectbox("Selecione a carteira:", gvs)
-    with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
-    with col3:
-        nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
-    with col4:
-        data_selecionada = st.date_input(
-            "Selecione o período:", value=(datetime.today(), datetime.today())
-        )
+   
 
     gcp_info = st.secrets["tafgl"]
     planilha_chave = st.secrets["planilha"]["chave"]
@@ -476,17 +445,40 @@ def visualizar_tarefas_itinerantes():
 
     cliente = gspread.authorize(creds)
     planilha = cliente.open_by_key(planilha_chave)
-    aba = planilha.worksheet(nome)
+    aba = planilha.worksheet("ITINERANTES")
     planilha_Dados = pd.DataFrame(aba.get_all_records())
 
-    if planilha_Dados.empty:
+
+    st.dataframe(planilha_Dados, use_container_width=True)
+
+    st.divider()
+
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
+    with col3:
+        nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
+    with col4:
+        data_selecionada = st.date_input(
+            "Selecione o período:", value=(datetime.today(), datetime.today())
+        )
+  
+    aba2 = planilha.worksheet("ITINERANTES")
+    planilha_Dados2 = pd.DataFrame(aba2.get_all_records())
+      
+    if nome:
+        planilha_Dados2 = planilha_Dados2[planilha_Dados2["GL"].str.contains(nome,case =False)]
+
+
+    if planilha_Dados2.empty:
         st.warning("Nenhuma tarefa encontrada.")
         return
 
-    planilha_Dados.columns = planilha_Dados.columns.str.strip()
 
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"], dayfirst=True, errors="coerce"
+    planilha_Dados2["Data"] = pd.to_datetime(
+        planilha_Dados2["Data"], dayfirst=True, errors="coerce"
     ).dt.date
 
     if not isinstance(data_selecionada, tuple) or len(data_selecionada) != 2:
@@ -495,69 +487,23 @@ def visualizar_tarefas_itinerantes():
 
     data_inicio, data_fim = data_selecionada
 
-    planilha_filtrada = planilha_Dados[
-        (planilha_Dados["Data"] >= data_inicio)
-        & (planilha_Dados["Data"] <= data_fim)
+    planilha_filtrada = planilha_Dados2[
+        (planilha_Dados2["Data"] >= data_inicio)
+        & (planilha_Dados2["Data"] <= data_fim)
     ]
 
     if planilha_filtrada.empty:
         st.info("Nenhuma tarefa encontrada para esta data.")
         return
 
-    colunas_principais = [
-        "ID",
-        "Criada",
-        "Título",
-        "Descrição da tarefa",
-        "Data",
-        "Tipo de recorrência",
-        "Hora inicial",
-        "Hora final",
-    ]
-
-    planilha_principal = planilha_filtrada[
-        [c for c in colunas_principais if c in planilha_filtrada.columns]
-    ]
-
-    st.dataframe(planilha_principal, use_container_width=True)
-
-    colunas_extras = ["Lee", "Marcus", "Lázaro"]
-    colunas_extras = [c for c in colunas_extras if c in planilha_filtrada.columns]
-
-    
-    if colunas_extras:
-        st.divider()
-        st.subheader("📌 COMPARATIVO DIÁRIO")
-        st.dataframe(
-            planilha_filtrada[["ID"] + colunas_extras],
-            use_container_width=True,
-        )
+    st.subheader("📌 COMPARATIVO DE TAREFAS")
+    st.dataframe(planilha_Dados2)
 
     st.divider()
-    st.subheader("📌 COMPARATIVO DE TAREFAS")
+   
 
     #MAX
-    nome_gl = st.selectbox("Selecione o GL",colunas_extras)
-
-    contagemT = planilha_filtrada[nome_gl].count()
-    contagemC = planilha_Dados[nome_gl].astype(str).str.contains("Concluído",case=False,na=False).sum()
-    contagemP = planilha_Dados[nome_gl].astype(str).str.contains("Pendente",case=False,na=False).sum()
     
-    
-    st.subheader(f"Comparativo de {nome_gl}")
-
-    colf1,colf2,colf3 = st.columns(3)
-
-    with colf1:
-        st.text(f"📝 Total de Tarefas  : {contagemT}")
-    
-    with colf2:
-        st.text(f" 🟢 Tarefas Concluídas  : {contagemC}")
-    
-    with colf3:
-        st.text(f" 🟡 Tarefas Pendentes : {contagemP}")
-
-
-
     if st.button("Atualizar"):
         st.rerun()
+

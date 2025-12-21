@@ -190,20 +190,6 @@ def criar_page():
             hora_final.strftime("%H:%M"),
             data.strftime("%d/%m/%Y"),
             recorrencia,
-            "Pendente",
-            "Pendente",
-            "Pendente",
-            "Pendente",
-            "Pendente",
-            "Pendente",
-            "Pendente",
-            "Pendente",
-            "Pendente",
-            "Pendente",
-            "Pendente",
-            "Pendente",
-            "Pendente",
-            "Pendente",
         ])
 
         st.success("Tarefa enviada com sucesso!")
