@@ -105,9 +105,7 @@ def visualizar_tarefas_gvs():
         planilha_Dados2 = planilha_Dados2[planilha_Dados2["GL"].str.contains(nome,case =False)]
 
 
-    if planilha_Dados2.empty:
-        st.warning("Nenhuma tarefa encontrada.")
-        return
+    
     
     contagemT = planilha_Dados2["Titulo"].count()
 
@@ -230,10 +228,6 @@ def visualizar_tarefas_intermedio():
     
     contagemT = planilha_Dados2["Titulo"].count()
 
-
-    if planilha_Dados2.empty:
-        st.warning("Nenhuma tarefa encontrada.")
-        return
 
 
     planilha_Dados2["Data"] = pd.to_datetime(
@@ -368,10 +362,7 @@ def visualizar_tarefas_fechamento():
 
     contagemT = planilha_Dados2["Titulo"].count()
 
-    if planilha_Dados2.empty:
-        st.warning("Nenhuma tarefa encontrada.")
-        return
-
+    
 
     planilha_Dados2["Data"] = pd.to_datetime(
         planilha_Dados2["Data"], dayfirst=True, errors="coerce"
