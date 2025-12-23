@@ -421,7 +421,7 @@ def visualizar_tarefas_itinerantes():
 
     gvs = ["ITINERANTES"]
     lojas_por_carteira = {"ITINERANTES": ["ITINERANTES"]}
-    nomes_por_loja = {"ITINERANTES": ["ITINERANTES"]}
+    nomes_por_loja = {"ITINERANTES": ["Lee","Marcus","Lázaro"]}
 
     image_logo = Image.open("image/Image (2).png")
     cola, colb, colc = st.columns([4, 1, 1])
@@ -465,12 +465,13 @@ def visualizar_tarefas_itinerantes():
             "Selecione o período:", value=(datetime.today(), datetime.today())
         )
   
-    aba2 = planilha.worksheet("ITINERANTES")
+    aba2 = planilha.worksheet("REGISTROS(ITINERANTES)")
     planilha_Dados2 = pd.DataFrame(aba2.get_all_records())
       
     if nome:
         planilha_Dados2 = planilha_Dados2[planilha_Dados2["GL"].str.contains(nome,case =False)]
 
+    contagemT = planilha_Dados2["Titulo"].count()
 
     if planilha_Dados2.empty:
         st.warning("Nenhuma tarefa encontrada.")
@@ -498,6 +499,9 @@ def visualizar_tarefas_itinerantes():
 
     st.subheader("📌 COMPARATIVO DE TAREFAS")
     st.dataframe(planilha_Dados2)
+    st.write(f"Total de tarefas realizadas: {contagemT}")
+    st.divider()
+    
 
     st.divider()
    
@@ -506,4 +510,4 @@ def visualizar_tarefas_itinerantes():
     
     if st.button("Atualizar"):
         st.rerun()
-
+   
