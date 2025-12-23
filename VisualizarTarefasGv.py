@@ -340,7 +340,7 @@ def visualizar_tarefas_fechamento():
 
     cliente = gspread.authorize(creds)
     planilha = cliente.open_by_key(planilha_chave)
-    aba = planilha.worksheet("GLS(INTERMEDIO)")
+    aba = planilha.worksheet("GLS(FECHAMENTO)")
     planilha_Dados = pd.DataFrame(aba.get_all_records())
 
 
