@@ -2236,157 +2236,6 @@ def tarefas_ssa2_fechamento():
 
 
 
-def tarefas_ssa2_fechamento():
-    icon = Image.open("image/vivo.png")
-
-    st.set_page_config(page_title="R.E.G SALVADOR ||", page_icon=icon, layout="wide")
-
-    # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role not in ["Salvador2", "Admin"]:
-        st.error("⚠️ Acesso negado!")
-        st.stop()
-
-    # ---------------------------
-    # LISTAS E DICIONÁRIOS
-    # ---------------------------
-    gvs = [ 
-            "GLS DA CARTEIRA DE FABIANA",
-            ]
-        
-    lojas_por_carteira = {
-    " ": [" "],  
-
-    "GLS DA CARTEIRA DE FABIANA": [
-                "LOJA SSA ||"
-    ]
-    }
-
-    nomes_por_loja = {
-    " ": [" "],
-    "LOJA SSA ||": ["GLS(FECHAMENTO)"],
-    
-    }
-
-
-    # ---------------------------
-    # INTERFACE
-    # ---------------------------
-    icon = Image.open("image/vivo.png")
-    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
-
-    image_logo = Image.open("image/Image (2).png")
-
-    cola, colb, colc = st.columns([4, 1, 1])
-
-    with colc:
-        st.image(image_logo)
-
-    with cola:
-        st.title("📝 R.E.G - TAREFAS")
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        carteira = st.selectbox("Selecione a carteira:", gvs)
-
-    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
-
-    with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
-
-    with col3:
-        nomes_filtrados = nomes_por_loja.get(loja, [" "])
-        nome = st.selectbox("Nome:", nomes_filtrados)
-
-    with col4:
-        data = st.date_input("Selecione a data:")
-
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["tafgl"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-    def carregar_pedidos():
-        aba = planilha.worksheet(nome)
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
-
-    # ---------------------------
-    # CARREGAR E FILTRAR DADOS
-    # ---------------------------
-    planilha_Dados = carregar_pedidos()
-
-    colunas_desejadas = ["ID", "Criada", "Título","Descrição da tarefa","Hora inicial","Hora final", "Tipo de recorrência","Mailan"]
-    planilha_Dados = planilha_Dados[colunas_desejadas]
-
-    if planilha_Dados.empty:
-        st.warning("Nenhuma tarefa encontrada.")
-        return
-
-    # ---------------------------
-    # CHECKBOX PARA CONCLUIR TAREFA
-    # ---------------------------
-    planilha_Dados["Concluir"] = (
-        planilha_Dados["Mailan"].astype(str).str.lower() == "concluído"
-    )
-
-    df_editado = st.data_editor(
-        planilha_Dados,
-        column_config={
-            "Concluir": st.column_config.CheckboxColumn(
-                "Concluir tarefa",
-                help="Marque para concluir a tarefa"
-            )
-        },
-        disabled=["Data", "ID"]
-    )
-
-    df_editado["Mailan"] = df_editado["Concluir"].apply(
-        lambda x: "Concluído" if x else "Pendente"
-    )
-
-    # ---------------------------
-    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
-    # ---------------------------
-    col11, col12, col13, col14, col15 = st.columns(5)
-
-    with col11:
-        if st.button("Salvar alterações"):
-            aba = planilha.worksheet(nome)
-            dados_atual = aba.get_all_records()
-
-            df_original = pd.DataFrame(dados_atual)
-
-            for _, row in df_editado.iterrows():
-                tarefa_id = row["ID"]
-
-                linhas = df_original.index[df_original["ID"] == tarefa_id].tolist()
-
-                if linhas:
-                    linha_sheet = linhas[0] + 2  # Cabeçalho + index base 1
-
-                    coluna_status = df_original.columns.get_loc("Mailan") + 1
-                    aba.update_cell(linha_sheet, coluna_status, row["Mailan"])
-
-            st.success("✔️ Alterações salvas com sucesso!")
-
-    with col12:
-        if st.button("Atualizar"):
-            st.rerun()
-
-
 def tarefas_bela_abertura():
     icon = Image.open("image/vivo.png")
 
@@ -4654,12 +4503,10 @@ def tarefas_lapa_abertura():
     "LOJA LAPA": ["Rafael"],
    
     }
-    # ---------------------------
+
     # INTERFACE
     # ---------------------------
     icon = Image.open("image/vivo.png")
-    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
-
     image_logo = Image.open("image/Image (2).png")
 
     cola, colb, colc = st.columns([4, 1, 1])
@@ -4671,19 +4518,6 @@ def tarefas_lapa_abertura():
         st.title("📝 R.E.G - TAREFAS")
 
     col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        carteira = st.selectbox("Selecione a carteira:", gvs)
-
-    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
-
-    with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
-
-    with col3:
-        nomes_filtrados = nomes_por_loja.get(loja, [" "])
-        nome = st.selectbox("Nome:", nomes_filtrados)
-
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -4703,7 +4537,7 @@ def tarefas_lapa_abertura():
     planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
-        aba = planilha.worksheet(nome)
+        aba = planilha.worksheet("GLS(ABERTURA)")
         dados = aba.get_all_records()
         return pd.DataFrame(dados)
 
@@ -4711,69 +4545,134 @@ def tarefas_lapa_abertura():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+
+    if "df_tarefas" not in st.session_state:
+        st.session_state.df_tarefas = planilha_Dados.copy()
+    
     def registrar_execucao(planilha, row):
         aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
-        agora = datetime.now()
 
-        aba_exec.append_row([
+        agora = datetime.now()
+        data_hoje = agora.strftime("%d/%m/%Y")
+        hora_agora = agora.strftime("%H:%M:%S")
+
+        # lê todos os registros
+        registros = aba_exec.get_all_records()
+
+        linha_para_atualizar = None
+
+        for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
+            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+                linha_para_atualizar = i
+                break
+
+        valores = [
             row["ID"],
             row["Título"],
             row["Descrição da tarefa"],
-            "Rafael",
+            "Rafel",
             "Lapa",
-            agora.strftime("%d/%m/%Y"),
-            agora.strftime("%H:%M:%S")
-        ])
+            data_hoje,
+            hora_agora,
+            row["Observação"],
+        ]
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
+        if linha_para_atualizar:
+            aba_exec.update(f"A{linha_para_atualizar}:H{linha_para_atualizar}", [valores])
+        else:
+    
+            aba_exec.append_row(valores)
+
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
-
-
-    if planilha_Dados.empty:
-        st.warning("Nenhuma tarefa encontrada.")
-        return
-
   
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = False
+    if "Concluir" not in planilha_Dados.columns:
+        planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
         column_config={
             "Concluir": st.column_config.CheckboxColumn(
-                "Concluir tarefa",
-                help="Marque para concluir a tarefa"
-            )
+                "Registrar",
+                help="Marque para registrar a conclusão da tarefa"
+            ),
+            "Observação": st.column_config.TextColumn(
+            "Observação",
+            help="Digite uma observação sobre a tarefa",
+            max_chars=200
+        )
         },
-        disabled=["Data", "ID"]
+        
+        disabled=["ID"]
     )
 
-  
+    st.divider()
+    
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
 
-    # ---------------------------
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data")
+
+    def carregar_registro():
+        aba = planilha.worksheet("EXECUCOES(ABERTURA)")
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    planilha_registros = carregar_registro()
+
+    colunas_desejadas2 = ["ID","Titulo", "Descrição da tarefa","GL","Loja","Data","Hora","Observação"]
+    planilha_registros = planilha_registros[colunas_desejadas2]
+
+    if nome:
+        planilha_registros = planilha_registros[planilha_registros["GL"].str.contains(nome,case =False)]
+
+    if data:
+            data_str = data.strftime("%d/%m/%Y")
+            planilha_registros = planilha_registros[planilha_registros["Data"] == data_str]
+
+    
+    st.subheader("Registro de Tarefas")
+    
+    if planilha_registros.empty:
+        st.warning("Nenhum registro nessa data")
+    else:
+        st.dataframe(planilha_registros)
+
+# ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
     # ---------------------------
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
            if st.button("Salvar alterações"):
+                
+                df_editado[df_editado["Concluir"]]
+
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
                             planilha,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
-
-                st.success("✔️ Execução registrada com sucesso!")
-
+                st.success("✔️ Registro efetuado com sucesso!")
+                st.rerun()
     with col12:
         if st.button("Atualizar"):
-            st.rerun()
-
-
-
+         st.rerun()
 
 
 
@@ -5009,16 +4908,12 @@ def tarefas_diasdavila():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA DIAS DAVILA": ["GLS(ABERTURA)","GLS(INTERMEDIO)","GLS(FECHAMENTO)"],
+    "LOJA DIAS DAVILA": ["Maise"],
     }
 
 
     # ---------------------------
-    # INTERFACE
-    # ---------------------------
     icon = Image.open("image/vivo.png")
-    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
-
     image_logo = Image.open("image/Image (2).png")
 
     cola, colb, colc = st.columns([4, 1, 1])
@@ -5030,21 +4925,6 @@ def tarefas_diasdavila():
         st.title("📝 R.E.G - TAREFAS")
 
     col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        carteira = st.selectbox("Selecione a carteira:", gvs)
-
-    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
-
-    with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
-
-    with col3:
-        nomes_filtrados = nomes_por_loja.get(loja, [" "])
-        nome = st.selectbox("Nome:", nomes_filtrados)
-
-    with col4:
-        data = st.date_input("Selecione a data:")
 
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
@@ -5064,7 +4944,7 @@ def tarefas_diasdavila():
     planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
-        aba = planilha.worksheet(nome)
+        aba = planilha.worksheet("GLS(INTERMEDIO)")
         dados = aba.get_all_records()
         return pd.DataFrame(dados)
 
@@ -5072,104 +4952,539 @@ def tarefas_diasdavila():
     # CARREGAR E FILTRAR DADOS
     # ---------------------------
     planilha_Dados = carregar_pedidos()
+
+    if "df_tarefas" not in st.session_state:
+        st.session_state.df_tarefas = planilha_Dados.copy()
+    
     def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
-        agora = datetime.now()
-
-        aba_exec.append_row([
-            row["ID"],
-            row["Título"],
-            row["Descrição da tarefa"],
-            "Maise",
-            "DIAS DAVILA",
-            agora.strftime("%d/%m/%Y"),
-            agora.strftime("%H:%M:%S")
-        ])
-    
-    def registrar_execucao2(planilha, row):
         aba_exec = planilha.worksheet("EXECUCOES(INTERMEDIO)")
-        agora = datetime.now()
 
-        aba_exec.append_row([
+        agora = datetime.now()
+        data_hoje = agora.strftime("%d/%m/%Y")
+        hora_agora = agora.strftime("%H:%M:%S")
+
+        # lê todos os registros
+        registros = aba_exec.get_all_records()
+
+        linha_para_atualizar = None
+
+        for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
+            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+                linha_para_atualizar = i
+                break
+
+        valores = [
             row["ID"],
             row["Título"],
             row["Descrição da tarefa"],
             "Maise",
-            "DIAS DAVILA",
-            agora.strftime("%d/%m/%Y"),
-            agora.strftime("%H:%M:%S")
-        ])
+            "Dias Davila",
+            data_hoje,
+            hora_agora,
+            row["Observação"],
+        ]
+
+        if linha_para_atualizar:
+            aba_exec.update(f"A{linha_para_atualizar}:H{linha_para_atualizar}", [valores])
+        else:
     
-    def registrar_execucao3(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-        agora = datetime.now()
+            aba_exec.append_row(valores)
 
-        aba_exec.append_row([
-            row["ID"],
-            row["Título"],
-            row["Descrição da tarefa"],
-            "Maise",
-            "DIAS DAVILA",
-            agora.strftime("%d/%m/%Y"),
-            agora.strftime("%H:%M:%S")
-        ])
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Tipo de recorrência"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
-
-
-    if planilha_Dados.empty:
-        st.warning("Nenhuma tarefa encontrada.")
-        return
-
   
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
     # ---------------------------
-    planilha_Dados["Concluir"] = False
+    if "Concluir" not in planilha_Dados.columns:
+        planilha_Dados["Concluir"] = False
 
     df_editado = st.data_editor(
         planilha_Dados,
         column_config={
             "Concluir": st.column_config.CheckboxColumn(
-                "Concluir tarefa",
-                help="Marque para concluir a tarefa"
-            )
+                "Registrar",
+                help="Marque para registrar a conclusão da tarefa"
+            ),
+            "Observação": st.column_config.TextColumn(
+            "Observação",
+            help="Digite uma observação sobre a tarefa",
+            max_chars=200
+        )
         },
-        disabled=["Data", "ID"]
+        
+        disabled=["ID"]
     )
 
-  
+    st.divider()
+    
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
 
-    # ---------------------------
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data")
+
+    def carregar_registro():
+        aba = planilha.worksheet("EXECUCOES(INTERMEDIO)")
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    planilha_registros = carregar_registro()
+
+    colunas_desejadas2 = ["ID","Titulo", "Descrição da tarefa","GL","Loja","Data","Hora","Observação"]
+    planilha_registros = planilha_registros[colunas_desejadas2]
+
+    if nome:
+        planilha_registros = planilha_registros[planilha_registros["GL"].str.contains(nome,case =False)]
+
+    if data:
+            data_str = data.strftime("%d/%m/%Y")
+            planilha_registros = planilha_registros[planilha_registros["Data"] == data_str]
+
+    
+    st.subheader("Registro de Tarefas")
+    
+    if planilha_registros.empty:
+        st.warning("Nenhum registro nessa data")
+    else:
+        st.dataframe(planilha_registros)
+
+# ---------------------------
     # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
     # ---------------------------
     col11, col12, col13, col14, col15 = st.columns(5)
 
     with col11:
            if st.button("Salvar alterações"):
+                
+                df_editado[df_editado["Concluir"]]
+
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
                             planilha,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
-                        registrar_execucao2(
-                            planilha,
-                            row,     # vem da aba de tarefas    # loja selecionada
-                        )
-                        registrar_execucao3(
-                            planilha,
-                            row,     # vem da aba de tarefas    # loja selecionada
-                        )
-
-                st.success("✔️ Execução registrada com sucesso!")
-
+                st.success("✔️ Registro efetuado com sucesso!")
+                st.rerun()
     with col12:
         if st.button("Atualizar"):
-            st.rerun()
+         st.rerun()
 
 
+
+
+def tarefas_diasdavila_abertura():
+    icon = Image.open("image/vivo.png")
+
+    st.set_page_config(page_title="R.E.G DIAS DAVILA", page_icon=icon, layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role not in ["Davila", "Admin"]:
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # ---------------------------
+    # LISTAS E DICIONÁRIOS
+    # ---------------------------
+    gvs = [ 
+            "GLS DA CARTEIRA DE FABIANA"]
+        
+    lojas_por_carteira = {
+    " ": [" "],
+
+    "GLS DA CARTEIRA DE FABIANA": [
+        "LOJA DIAS DAVILA"
+    ],      
+    }
+
+    nomes_por_loja = {
+    " ": [" "],
+    
+    "LOJA DIAS DAVILA": ["Maise"],
+    }
+
+
+    # ---------------------------
+    icon = Image.open("image/vivo.png")
+    image_logo = Image.open("image/Image (2).png")
+
+    cola, colb, colc = st.columns([4, 1, 1])
+
+    with colc:
+        st.image(image_logo)
+
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    # ---------------------------
+    # CONFIGURAÇÃO GOOGLE SHEETS
+    # ---------------------------
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+        aba = planilha.worksheet("GLS(ABERTURA)")
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    if "df_tarefas" not in st.session_state:
+        st.session_state.df_tarefas = planilha_Dados.copy()
+    
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+
+        agora = datetime.now()
+        data_hoje = agora.strftime("%d/%m/%Y")
+        hora_agora = agora.strftime("%H:%M:%S")
+
+        # lê todos os registros
+        registros = aba_exec.get_all_records()
+
+        linha_para_atualizar = None
+
+        for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
+            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+                linha_para_atualizar = i
+                break
+
+        valores = [
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Maise",
+            "Dias Davila",
+            data_hoje,
+            hora_agora,
+            row["Observação"],
+        ]
+
+        if linha_para_atualizar:
+            aba_exec.update(f"A{linha_para_atualizar}:H{linha_para_atualizar}", [valores])
+        else:
+    
+            aba_exec.append_row(valores)
+
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+  
+    # ---------------------------
+    # CHECKBOX PARA CONCLUIR TAREFA
+    # ---------------------------
+    if "Concluir" not in planilha_Dados.columns:
+        planilha_Dados["Concluir"] = False
+
+    df_editado = st.data_editor(
+        planilha_Dados,
+        column_config={
+            "Concluir": st.column_config.CheckboxColumn(
+                "Registrar",
+                help="Marque para registrar a conclusão da tarefa"
+            ),
+            "Observação": st.column_config.TextColumn(
+            "Observação",
+            help="Digite uma observação sobre a tarefa",
+            max_chars=200
+        )
+        },
+        
+        disabled=["ID"]
+    )
+
+    st.divider()
+    
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data")
+
+    def carregar_registro():
+        aba = planilha.worksheet("EXECUCOES(ABERTURA)")
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    planilha_registros = carregar_registro()
+
+    colunas_desejadas2 = ["ID","Titulo", "Descrição da tarefa","GL","Loja","Data","Hora","Observação"]
+    planilha_registros = planilha_registros[colunas_desejadas2]
+
+    if nome:
+        planilha_registros = planilha_registros[planilha_registros["GL"].str.contains(nome,case =False)]
+
+    if data:
+            data_str = data.strftime("%d/%m/%Y")
+            planilha_registros = planilha_registros[planilha_registros["Data"] == data_str]
+
+    
+    st.subheader("Registro de Tarefas")
+    
+    if planilha_registros.empty:
+        st.warning("Nenhum registro nessa data")
+    else:
+        st.dataframe(planilha_registros)
+
+# ---------------------------
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
+    # ---------------------------
+    col11, col12, col13, col14, col15 = st.columns(5)
+
+    with col11:
+           if st.button("Salvar alterações"):
+                
+                df_editado[df_editado["Concluir"]]
+
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
+                st.success("✔️ Registro efetuado com sucesso!")
+                st.rerun()
+    with col12:
+        if st.button("Atualizar"):
+         st.rerun()
+
+
+
+def tarefas_diasdavila_fechamento():
+    icon = Image.open("image/vivo.png")
+
+    st.set_page_config(page_title="R.E.G DIAS DAVILA", page_icon=icon, layout="wide")
+
+    # --- Controle de acesso ---
+    if "role" not in st.session_state or st.session_state.role not in ["Davila", "Admin"]:
+        st.error("⚠️ Acesso negado!")
+        st.stop()
+
+    # ---------------------------
+    # LISTAS E DICIONÁRIOS
+    # ---------------------------
+    gvs = [ 
+            "GLS DA CARTEIRA DE FABIANA"]
+        
+    lojas_por_carteira = {
+    " ": [" "],
+
+    "GLS DA CARTEIRA DE FABIANA": [
+        "LOJA DIAS DAVILA"
+    ],      
+    }
+
+    nomes_por_loja = {
+    " ": [" "],
+    
+    "LOJA DIAS DAVILA": ["Maise"],
+    }
+
+
+    # ---------------------------
+    icon = Image.open("image/vivo.png")
+    image_logo = Image.open("image/Image (2).png")
+
+    cola, colb, colc = st.columns([4, 1, 1])
+
+    with colc:
+        st.image(image_logo)
+
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    # ---------------------------
+    # CONFIGURAÇÃO GOOGLE SHEETS
+    # ---------------------------
+    gcp_info = st.secrets["tafgl"]
+    planilha_chave = st.secrets["planilha"]["chave"]
+
+    creds = Credentials.from_service_account_info(
+        dict(gcp_info),
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    )
+
+    cliente = gspread.authorize(creds)
+    planilha = cliente.open_by_key(planilha_chave)
+
+    def carregar_pedidos():
+        aba = planilha.worksheet("GLS(FECHAMENTO)")
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    # ---------------------------
+    # CARREGAR E FILTRAR DADOS
+    # ---------------------------
+    planilha_Dados = carregar_pedidos()
+
+    if "df_tarefas" not in st.session_state:
+        st.session_state.df_tarefas = planilha_Dados.copy()
+    
+    def registrar_execucao(planilha, row):
+        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+
+        agora = datetime.now()
+        data_hoje = agora.strftime("%d/%m/%Y")
+        hora_agora = agora.strftime("%H:%M:%S")
+
+        # lê todos os registros
+        registros = aba_exec.get_all_records()
+
+        linha_para_atualizar = None
+
+        for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
+            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+                linha_para_atualizar = i
+                break
+
+        valores = [
+            row["ID"],
+            row["Título"],
+            row["Descrição da tarefa"],
+            "Maise",
+            "Dias Davila",
+            data_hoje,
+            hora_agora,
+            row["Observação"],
+        ]
+
+        if linha_para_atualizar:
+            aba_exec.update(f"A{linha_para_atualizar}:H{linha_para_atualizar}", [valores])
+        else:
+    
+            aba_exec.append_row(valores)
+
+
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    planilha_Dados = planilha_Dados[colunas_desejadas]
+  
+    # ---------------------------
+    # CHECKBOX PARA CONCLUIR TAREFA
+    # ---------------------------
+    if "Concluir" not in planilha_Dados.columns:
+        planilha_Dados["Concluir"] = False
+
+    df_editado = st.data_editor(
+        planilha_Dados,
+        column_config={
+            "Concluir": st.column_config.CheckboxColumn(
+                "Registrar",
+                help="Marque para registrar a conclusão da tarefa"
+            ),
+            "Observação": st.column_config.TextColumn(
+            "Observação",
+            help="Digite uma observação sobre a tarefa",
+            max_chars=200
+        )
+        },
+        
+        disabled=["ID"]
+    )
+
+    st.divider()
+    
+    with col1:
+        carteira = st.selectbox("Selecione a carteira:", gvs)
+
+    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
+
+    with col2:
+        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
+
+    with col3:
+        nomes_filtrados = nomes_por_loja.get(loja, [" "])
+        nome = st.selectbox("Nome:", nomes_filtrados)
+
+    with col4:
+        data = st.date_input("Selecione a data")
+
+    def carregar_registro():
+        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        dados = aba.get_all_records()
+        return pd.DataFrame(dados)
+
+    planilha_registros = carregar_registro()
+
+    colunas_desejadas2 = ["ID","Titulo", "Descrição da tarefa","GL","Loja","Data","Hora","Observação"]
+    planilha_registros = planilha_registros[colunas_desejadas2]
+
+    if nome:
+        planilha_registros = planilha_registros[planilha_registros["GL"].str.contains(nome,case =False)]
+
+    if data:
+            data_str = data.strftime("%d/%m/%Y")
+            planilha_registros = planilha_registros[planilha_registros["Data"] == data_str]
+
+    
+    st.subheader("Registro de Tarefas")
+    
+    if planilha_registros.empty:
+        st.warning("Nenhum registro nessa data")
+    else:
+        st.dataframe(planilha_registros)
+
+# ---------------------------
+    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
+    # ---------------------------
+    col11, col12, col13, col14, col15 = st.columns(5)
+
+    with col11:
+           if st.button("Salvar alterações"):
+                
+                df_editado[df_editado["Concluir"]]
+
+                for _, row in df_editado.iterrows():
+                    if row["Concluir"]:
+                        registrar_execucao(
+                            planilha,
+                            row,     # vem da aba de tarefas    # loja selecionada
+                        )
+                st.success("✔️ Registro efetuado com sucesso!")
+                st.rerun()
+    with col12:
+        if st.button("Atualizar"):
+         st.rerun()
 
 
 
