@@ -77,8 +77,14 @@ def tarefas_iguatemi_abertura():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -123,8 +129,7 @@ def tarefas_iguatemi_abertura():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
-    planilha_Dados = planilha_Dados[colunas_desejadas]
+
   
     # ---------------------------
     # CHECKBOX PARA CONCLUIR TAREFA
@@ -168,8 +173,14 @@ def tarefas_iguatemi_abertura():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
 
     planilha_registros = carregar_registro()
 
@@ -287,8 +298,14 @@ def tarefas_iguatemi_fechamento():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -378,8 +395,15 @@ def tarefas_iguatemi_fechamento():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -679,9 +703,16 @@ def tarefas_iguatemi2_fechamento():
     planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
-        aba = planilha.worksheet("GLS(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        aba = planilha.worksheet("GLS(FECHAMENTO)")
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -770,9 +801,16 @@ def tarefas_iguatemi2_fechamento():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -881,8 +919,15 @@ def tarefas_nort_abertura():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -972,8 +1017,14 @@ def tarefas_nort_abertura():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
 
     planilha_registros = carregar_registro()
 
@@ -1083,9 +1134,16 @@ def tarefas_nort_fechamento():
     planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
-        aba = planilha.worksheet("GLS(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        aba = planilha.worksheet("GLS(FECHAMENTO)")
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -1175,8 +1233,15 @@ def tarefas_nort_fechamento():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -1289,8 +1354,15 @@ def tarefas_ssa1_abertura():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -1380,8 +1452,14 @@ def tarefas_ssa1_abertura():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
 
     planilha_registros = carregar_registro()
 
@@ -1493,8 +1571,15 @@ def tarefas_ssa1_intermedio():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(INTERMEDIO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -1584,8 +1669,14 @@ def tarefas_ssa1_intermedio():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(INTERMEDIO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
 
     planilha_registros = carregar_registro()
 
@@ -1695,8 +1786,15 @@ def tarefas_ssa1_fechamento():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -1786,8 +1884,15 @@ def tarefas_ssa1_fechamento():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -1895,8 +2000,15 @@ def tarefas_ssa2_abertura():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -1986,8 +2098,15 @@ def tarefas_ssa2_abertura():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -2097,8 +2216,15 @@ def tarefas_ssa2_fechamento():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -2188,8 +2314,15 @@ def tarefas_ssa2_fechamento():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -2301,8 +2434,15 @@ def tarefas_bela_abertura():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -2392,8 +2532,15 @@ def tarefas_bela_abertura():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -2502,8 +2649,15 @@ def tarefas_bela_fechamento():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -2514,7 +2668,7 @@ def tarefas_bela_fechamento():
         st.session_state.df_tarefas = planilha_Dados.copy()
     
     def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -2593,8 +2747,15 @@ def tarefas_bela_fechamento():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -2700,8 +2861,15 @@ def tarefas_parela_abertura():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -2790,9 +2958,16 @@ def tarefas_parela_abertura():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        aba = planilha.worksheet("EXECUCOES(ABERTURA)")
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -2904,8 +3079,15 @@ def tarefas_parela_fechamento():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -2995,8 +3177,15 @@ def tarefas_parela_fechamento():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -3108,8 +3297,14 @@ def tarefas_parque_abertura():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -3199,8 +3394,15 @@ def tarefas_parque_abertura():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -3315,9 +3517,16 @@ def tarefas_parque_fechamento():
     planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
-        aba = planilha.worksheet("GLS(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        aba = planilha.worksheet("GLS(FECHAMENTO)")
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -3407,8 +3616,14 @@ def tarefas_parque_fechamento():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
 
     planilha_registros = carregar_registro()
 
@@ -3520,8 +3735,15 @@ def tarefas_barra_abertura():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -3611,8 +3833,14 @@ def tarefas_barra_abertura():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
 
     planilha_registros = carregar_registro()
 
@@ -3722,8 +3950,14 @@ def tarefas_barra_intermedio():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(INTERMEDIO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -3812,9 +4046,16 @@ def tarefas_barra_intermedio():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        aba = planilha.worksheet("EXECUCOES(INTERMEDIO)")
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -3923,8 +4164,15 @@ def tarefas_barra_fechamento():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -4014,8 +4262,14 @@ def tarefas_barra_fechamento():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
 
     planilha_registros = carregar_registro()
 
@@ -4128,8 +4382,14 @@ def tarefas_piedade_abertura():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -4218,9 +4478,16 @@ def tarefas_piedade_abertura():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        aba = planilha.worksheet("EXECUCOES(ABERTURA)")
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -4331,9 +4598,15 @@ def tarefas_piedade_fechamento():
     planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
-        aba = planilha.worksheet("GLS(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        aba = planilha.worksheet("GLS(FECHAMENTO)")
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -4423,8 +4696,15 @@ def tarefas_piedade_fechamento():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -4538,8 +4818,15 @@ def tarefas_lapa_abertura():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -4629,8 +4916,15 @@ def tarefas_lapa_abertura():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -4743,8 +5037,15 @@ def tarefas_lapa_fechamento():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -4834,8 +5135,15 @@ def tarefas_lapa_fechamento():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -4945,8 +5253,14 @@ def tarefas_diasdavila():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(INTERMEDIO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -5036,8 +5350,14 @@ def tarefas_diasdavila():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(INTERMEDIO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
 
     planilha_registros = carregar_registro()
 
@@ -5148,8 +5468,15 @@ def tarefas_diasdavila_abertura():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -5239,8 +5566,15 @@ def tarefas_diasdavila_abertura():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -5350,8 +5684,15 @@ def tarefas_diasdavila_fechamento():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -5441,8 +5782,15 @@ def tarefas_diasdavila_fechamento():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -5554,8 +5902,15 @@ def tarefas_boulevard_abertura():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -5645,8 +6000,14 @@ def tarefas_boulevard_abertura():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
 
     planilha_registros = carregar_registro()
 
@@ -5754,9 +6115,16 @@ def tarefas_boulevard_fechamento():
     planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
-        aba = planilha.worksheet("GLS(ABERTURA)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        aba = planilha.worksheet("GLS(FECHAMENTO)")
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -5846,8 +6214,15 @@ def tarefas_boulevard_fechamento():
 
     def carregar_registro():
         aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 
@@ -5955,8 +6330,15 @@ def tarefas_boulevard_intermedio():
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(INTERMEDIO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     # ---------------------------
     # CARREGAR E FILTRAR DADOS
@@ -6045,9 +6427,16 @@ def tarefas_boulevard_intermedio():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
+        aba = planilha.worksheet("EXECUCOES(INTERMEDIO)")
+        valores = aba.get_all_values()
+
+        if len(valores) < 2:
+            return pd.DataFrame()
+
+        df = pd.DataFrame(valores[1:], columns=valores[0])
+        df["Observação"] = df["Observação"].fillna("")
+        return df
+
 
     planilha_registros = carregar_registro()
 

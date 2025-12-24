@@ -331,7 +331,7 @@ def visualizar_tarefas_fechamento():
             "https://www.googleapis.com/auth/drive",
         ],
     )
-
+    
     cliente = gspread.authorize(creds)
     planilha = cliente.open_by_key(planilha_chave)
     aba = planilha.worksheet("GLS(FECHAMENTO)")
