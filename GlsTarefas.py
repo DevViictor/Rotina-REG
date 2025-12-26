@@ -61,7 +61,7 @@ def tarefas_iguatemi_abertura():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["geral"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -282,7 +282,7 @@ def tarefas_iguatemi_fechamento():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["geral"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -494,7 +494,7 @@ def tarefas_iguatemi2_abertura():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["geral"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -688,7 +688,7 @@ def tarefas_iguatemi2_fechamento():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["geral"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -903,7 +903,7 @@ def tarefas_nort_abertura():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["fel"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -1119,7 +1119,7 @@ def tarefas_nort_fechamento():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["fel"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -1338,7 +1338,7 @@ def tarefas_ssa1_abertura():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["fabi"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -1555,7 +1555,7 @@ def tarefas_ssa1_intermedio():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["fabi"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -1770,7 +1770,7 @@ def tarefas_ssa1_fechamento():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["fabi"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -1984,7 +1984,7 @@ def tarefas_ssa2_abertura():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["fabi"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -2200,7 +2200,7 @@ def tarefas_ssa2_fechamento():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["fabi"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -2418,7 +2418,7 @@ def tarefas_bela_abertura():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["fabi"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -2633,7 +2633,7 @@ def tarefas_bela_fechamento():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["fabi"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -2845,7 +2845,7 @@ def tarefas_parela_abertura():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["fabi"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -3063,7 +3063,7 @@ def tarefas_parela_fechamento():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["fabi"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -3281,7 +3281,7 @@ def tarefas_parque_abertura():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["fabi"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -3502,7 +3502,7 @@ def tarefas_parque_fechamento():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["fabi"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -3719,7 +3719,7 @@ def tarefas_barra_abertura():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["joh"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -3934,7 +3934,7 @@ def tarefas_barra_intermedio():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["joh"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -4148,7 +4148,7 @@ def tarefas_barra_fechamento():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["joh"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -4366,7 +4366,7 @@ def tarefas_piedade_abertura():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["joh"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -4583,7 +4583,7 @@ def tarefas_piedade_fechamento():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["joh"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -4802,7 +4802,7 @@ def tarefas_lapa_abertura():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["joh"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -5021,7 +5021,7 @@ def tarefas_lapa_fechamento():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["joh"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -5237,7 +5237,7 @@ def tarefas_diasdavila():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["chr"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -5452,7 +5452,7 @@ def tarefas_diasdavila_abertura():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["chr"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -5668,7 +5668,7 @@ def tarefas_diasdavila_fechamento():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["chr"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -5886,7 +5886,7 @@ def tarefas_boulevard_abertura():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["chr"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -6100,7 +6100,7 @@ def tarefas_boulevard_fechamento():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["chr"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
@@ -6314,7 +6314,7 @@ def tarefas_boulevard_intermedio():
     # ---------------------------
     # CONFIGURAÇÃO GOOGLE SHEETS
     # ---------------------------
-    gcp_info = st.secrets["tafgl"]
+    gcp_info = st.secrets["chr"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(
