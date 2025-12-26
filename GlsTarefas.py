@@ -3260,7 +3260,7 @@ def tarefas_parque_abertura():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA PARQUE SHOP": ["Denise"],
+    "LOJA PARQUE SHOP": ["Denise_Parque"],
     
     }
 
