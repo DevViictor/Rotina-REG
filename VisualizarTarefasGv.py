@@ -41,7 +41,7 @@ def visualizar_tarefas_gvs():
         }
     nomes_por_loja = {
             "": [""],
-            "LOJA SSA |": ["Ana"],
+            "LOJA SSA |": ["Mércia"],
             "LOJA SSA ||": ["Vitor"],
             "LOJA BELA VISTA": ["Danilo"],
             "LOJA DIAS DAVILA": ["Maise"],
