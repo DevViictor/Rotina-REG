@@ -207,20 +207,6 @@ def visualizar_tarefas_intermedio():
         st.title("📝 R.E.G - TAREFAS")
 
    
-
-    gcp_info = st.secrets["tafgl"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive",
-        ],
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
     aba = planilha.worksheet("GLS(INTERMEDIO)")
     planilha_Dados = pd.DataFrame(aba.get_all_records())
 
@@ -241,7 +227,7 @@ def visualizar_tarefas_intermedio():
             "Selecione o período:", value=(datetime.today(), datetime.today())
         )
   
-    aba2 = planilha.worksheet("EXECUCOES(INTERMEDIO)")
+    aba2 = planilha_exc.worksheet("EXECUCOES(INTERMEDIO)")
     planilha_Dados2 = pd.DataFrame(aba2.get_all_records())
       
     if nome:
@@ -342,19 +328,6 @@ def visualizar_tarefas_fechamento():
 
    
 
-    gcp_info = st.secrets["tafgl"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive",
-        ],
-    )
-    
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
     aba = planilha.worksheet("GLS(FECHAMENTO)")
     planilha_Dados = pd.DataFrame(aba.get_all_records())
 
@@ -375,7 +348,7 @@ def visualizar_tarefas_fechamento():
             "Selecione o período:", value=(datetime.today(), datetime.today())
         )
   
-    aba2 = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+    aba2 = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
     planilha_Dados2 = pd.DataFrame(aba2.get_all_records())
       
     if nome:
@@ -443,20 +416,6 @@ def visualizar_tarefas_itinerantes():
         st.title("📝 R.E.G - TAREFAS")
 
    
-
-    gcp_info = st.secrets["tafgl"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive",
-        ],
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
     aba = planilha.worksheet("ITINERANTES")
     planilha_Dados = pd.DataFrame(aba.get_all_records())
 
@@ -477,7 +436,7 @@ def visualizar_tarefas_itinerantes():
             "Selecione o período:", value=(datetime.today(), datetime.today())
         )
   
-    aba2 = planilha.worksheet("REGISTROS(ITINERANTES)")
+    aba2 = planilha_exc.worksheet("REGISTROS(ITINERANTES)")
     planilha_Dados2 = pd.DataFrame(aba2.get_all_records())
       
     if nome:
