@@ -8,6 +8,38 @@ from PIL import Image
 from datetime import datetime, timedelta
 
 
+gcp_info = st.secrets["geral"]
+planilha_chave = st.secrets["planilha"]["chave"]
+
+creds = Credentials.from_service_account_info(
+    dict(gcp_info),
+    scopes=[
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+)
+
+cliente = gspread.authorize(creds)
+planilha = cliente.open_by_key(planilha_chave)
+
+
+
+gcp_info = st.secrets["gcp"]
+planilha_chave_execucoes = st.secrets["planilha_execucoes"]["chave2"]
+
+creds = Credentials.from_service_account_info(
+    dict(gcp_info),
+    scopes=[
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+)
+
+cliente = gspread.authorize(creds)
+planilha_exc = cliente.open_by_key(planilha_chave_execucoes)
+
+
+
 def tarefas_iguatemi_abertura():
 
 
@@ -58,23 +90,7 @@ def tarefas_iguatemi_abertura():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["geral"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
+  
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
         valores = aba.get_all_values()
@@ -94,8 +110,8 @@ def tarefas_iguatemi_abertura():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -129,11 +145,6 @@ def tarefas_iguatemi_abertura():
             aba_exec.append_row(valores)
 
 
-
-  
-    # ---------------------------
-    # CHECKBOX PARA CONCLUIR TAREFA
-    # ---------------------------
     if "Concluir" not in planilha_Dados.columns:
         planilha_Dados["Concluir"] = False
 
@@ -171,8 +182,9 @@ def tarefas_iguatemi_abertura():
     with col4:
         data = st.date_input("Selecione a data")
 
+    
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(ABERTURA)")
+        aba = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -215,7 +227,7 @@ def tarefas_iguatemi_abertura():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -278,24 +290,9 @@ def tarefas_iguatemi_fechamento():
         st.title("📝 R.E.G - TAREFAS")
 
     col1, col2, col3, col4 = st.columns(4)
+    
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["geral"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
+  
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
         valores = aba.get_all_values()
@@ -315,8 +312,9 @@ def tarefas_iguatemi_fechamento():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -394,7 +392,7 @@ def tarefas_iguatemi_fechamento():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        aba = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -438,7 +436,7 @@ def tarefas_iguatemi_fechamento():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -491,22 +489,6 @@ def tarefas_iguatemi2_abertura():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["geral"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
@@ -521,8 +503,8 @@ def tarefas_iguatemi2_abertura():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -600,7 +582,7 @@ def tarefas_iguatemi2_abertura():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(ABERTURA)")
+        aba = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
         dados = aba.get_all_records()
         return pd.DataFrame(dados)
 
@@ -637,7 +619,7 @@ def tarefas_iguatemi2_abertura():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -685,22 +667,6 @@ def tarefas_iguatemi2_fechamento():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["geral"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
@@ -722,8 +688,8 @@ def tarefas_iguatemi2_fechamento():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -801,7 +767,7 @@ def tarefas_iguatemi2_fechamento():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        aba = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -845,7 +811,7 @@ def tarefas_iguatemi2_fechamento():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -900,22 +866,7 @@ def tarefas_nort_abertura():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["fel"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
+   
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
@@ -1016,7 +967,7 @@ def tarefas_nort_abertura():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(ABERTURA)")
+        aba = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -1059,7 +1010,7 @@ def tarefas_nort_abertura():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -1116,22 +1067,6 @@ def tarefas_nort_fechamento():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["fel"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
@@ -1153,8 +1088,8 @@ def tarefas_nort_fechamento():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -1232,7 +1167,7 @@ def tarefas_nort_fechamento():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        aba = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -1276,7 +1211,7 @@ def tarefas_nort_fechamento():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -1335,22 +1270,6 @@ def tarefas_ssa1_abertura():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["fabi"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
@@ -1372,8 +1291,8 @@ def tarefas_ssa1_abertura():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -1451,7 +1370,7 @@ def tarefas_ssa1_abertura():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(ABERTURA)")
+        aba = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -1494,7 +1413,7 @@ def tarefas_ssa1_abertura():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -1552,23 +1471,7 @@ def tarefas_ssa1_intermedio():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["fabi"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
+   
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(INTERMEDIO)")
         valores = aba.get_all_values()
@@ -1589,8 +1492,8 @@ def tarefas_ssa1_intermedio():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(INTERMEDIO)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(INTERMEDIO)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -1668,7 +1571,7 @@ def tarefas_ssa1_intermedio():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(INTERMEDIO)")
+        aba = planilha_exc.worksheet("EXECUCOES(INTERMEDIO)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -1711,7 +1614,7 @@ def tarefas_ssa1_intermedio():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -1767,19 +1670,7 @@ def tarefas_ssa1_fechamento():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["fabi"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
+   
 
     cliente = gspread.authorize(creds)
     planilha = cliente.open_by_key(planilha_chave)
@@ -1804,8 +1695,8 @@ def tarefas_ssa1_fechamento():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -1883,7 +1774,7 @@ def tarefas_ssa1_fechamento():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        aba = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -1927,7 +1818,7 @@ def tarefas_ssa1_fechamento():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -1981,22 +1872,7 @@ def tarefas_ssa2_abertura():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["fabi"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
+    
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
@@ -2018,8 +1894,8 @@ def tarefas_ssa2_abertura():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -2097,7 +1973,7 @@ def tarefas_ssa2_abertura():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(ABERTURA)")
+        aba = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -2141,7 +2017,7 @@ def tarefas_ssa2_abertura():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -2197,23 +2073,7 @@ def tarefas_ssa2_fechamento():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["fabi"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
+    
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
         valores = aba.get_all_values()
@@ -2234,8 +2094,8 @@ def tarefas_ssa2_fechamento():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -2313,7 +2173,7 @@ def tarefas_ssa2_fechamento():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        aba = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -2357,7 +2217,7 @@ def tarefas_ssa2_fechamento():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -2415,22 +2275,6 @@ def tarefas_bela_abertura():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["fabi"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
@@ -2452,8 +2296,8 @@ def tarefas_bela_abertura():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -2531,7 +2375,7 @@ def tarefas_bela_abertura():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(ABERTURA)")
+        aba = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -2575,7 +2419,7 @@ def tarefas_bela_abertura():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -2630,22 +2474,7 @@ def tarefas_bela_fechamento():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["fabi"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
+   
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
@@ -2667,8 +2496,8 @@ def tarefas_bela_fechamento():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -2746,7 +2575,7 @@ def tarefas_bela_fechamento():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        aba = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -2790,7 +2619,7 @@ def tarefas_bela_fechamento():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -2842,22 +2671,6 @@ def tarefas_parela_abertura():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["fabi"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
@@ -2879,8 +2692,8 @@ def tarefas_parela_abertura():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -2958,7 +2771,7 @@ def tarefas_parela_abertura():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(ABERTURA)")
+        aba = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -3002,7 +2815,7 @@ def tarefas_parela_abertura():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -3060,22 +2873,7 @@ def tarefas_parela_fechamento():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["fabi"]
-    planilha_chave = st.secrets["planilha"]["chave"]
 
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
@@ -3097,8 +2895,8 @@ def tarefas_parela_fechamento():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -3176,7 +2974,7 @@ def tarefas_parela_fechamento():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        aba = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -3220,7 +3018,7 @@ def tarefas_parela_fechamento():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -3278,22 +3076,6 @@ def tarefas_parque_abertura():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["fabi"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
@@ -3314,8 +3096,8 @@ def tarefas_parque_abertura():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -3335,7 +3117,7 @@ def tarefas_parque_abertura():
             row["ID"],
             row["Título"],
             row["Descrição da tarefa"],
-            "Denise",
+            "Denise_Parque",
             "Parque",
             data_hoje,
             hora_agora,
@@ -3393,7 +3175,7 @@ def tarefas_parque_abertura():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(ABERTURA)")
+        aba = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -3437,7 +3219,7 @@ def tarefas_parque_abertura():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -3499,22 +3281,6 @@ def tarefas_parque_fechamento():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["fabi"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
@@ -3536,8 +3302,8 @@ def tarefas_parque_fechamento():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -3615,7 +3381,7 @@ def tarefas_parque_fechamento():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        aba = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -3658,7 +3424,7 @@ def tarefas_parque_fechamento():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -3716,22 +3482,6 @@ def tarefas_barra_abertura():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["joh"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
@@ -3753,8 +3503,8 @@ def tarefas_barra_abertura():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -3832,7 +3582,7 @@ def tarefas_barra_abertura():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(ABERTURA)")
+        aba = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -3875,7 +3625,7 @@ def tarefas_barra_abertura():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -3931,22 +3681,7 @@ def tarefas_barra_intermedio():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["joh"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
+    
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(INTERMEDIO)")
@@ -3967,8 +3702,8 @@ def tarefas_barra_intermedio():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(INTERMEDIO)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(INTERMEDIO)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -4046,7 +3781,7 @@ def tarefas_barra_intermedio():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(INTERMEDIO)")
+        aba = planilha_exc.worksheet("EXECUCOES(INTERMEDIO)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -4090,7 +3825,7 @@ def tarefas_barra_intermedio():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -4145,23 +3880,7 @@ def tarefas_barra_fechamento():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["joh"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
+    
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
         valores = aba.get_all_values()
@@ -4182,8 +3901,8 @@ def tarefas_barra_fechamento():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -4261,7 +3980,7 @@ def tarefas_barra_fechamento():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        aba = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -4304,7 +4023,7 @@ def tarefas_barra_fechamento():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -4345,7 +4064,7 @@ def tarefas_piedade_abertura():
 
     nomes_por_loja = {
     " ": [" "],
-    "LOJA PIEDADE": ["Diego"],
+    "LOJA PIEDADE": ["DiegoP"],
     
     }
    
@@ -4363,22 +4082,7 @@ def tarefas_piedade_abertura():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["joh"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
+   
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
@@ -4399,8 +4103,8 @@ def tarefas_piedade_abertura():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -4478,7 +4182,7 @@ def tarefas_piedade_abertura():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(ABERTURA)")
+        aba = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -4522,7 +4226,7 @@ def tarefas_piedade_abertura():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -4530,6 +4234,7 @@ def tarefas_piedade_abertura():
     with col12:
         if st.button("Atualizar"):
          st.rerun()
+
 
 def tarefas_piedade_fechamento():
     icon = Image.open("image/vivo.png")
@@ -4580,22 +4285,7 @@ def tarefas_piedade_fechamento():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["joh"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
+    
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
@@ -4616,8 +4306,8 @@ def tarefas_piedade_fechamento():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -4637,7 +4327,7 @@ def tarefas_piedade_fechamento():
             row["ID"],
             row["Título"],
             row["Descrição da tarefa"],
-            "DiegoP",
+            "Marcusl",
             "Piedade",
             data_hoje,
             hora_agora,
@@ -4695,7 +4385,7 @@ def tarefas_piedade_fechamento():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        aba = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -4739,7 +4429,7 @@ def tarefas_piedade_fechamento():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -4799,23 +4489,7 @@ def tarefas_lapa_abertura():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["joh"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
+    
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
         valores = aba.get_all_values()
@@ -4836,8 +4510,8 @@ def tarefas_lapa_abertura():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -4857,7 +4531,7 @@ def tarefas_lapa_abertura():
             row["ID"],
             row["Título"],
             row["Descrição da tarefa"],
-            "Rafel",
+            "Rafael",
             "Lapa",
             data_hoje,
             hora_agora,
@@ -4915,7 +4589,7 @@ def tarefas_lapa_abertura():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(ABERTURA)")
+        aba = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -4959,7 +4633,7 @@ def tarefas_lapa_abertura():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -5018,22 +4692,7 @@ def tarefas_lapa_fechamento():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["joh"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
+    
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
@@ -5055,8 +4714,8 @@ def tarefas_lapa_fechamento():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -5134,7 +4793,7 @@ def tarefas_lapa_fechamento():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        aba = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -5178,7 +4837,7 @@ def tarefas_lapa_fechamento():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -5188,219 +4847,6 @@ def tarefas_lapa_fechamento():
          st.rerun()
 
         
-
-def tarefas_diasdavila():
-    icon = Image.open("image/vivo.png")
-
-    st.set_page_config(page_title="R.E.G DIAS DAVILA", page_icon=icon, layout="wide")
-
-    # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role not in ["Davila", "Admin"]:
-        st.error("⚠️ Acesso negado!")
-        st.stop()
-
-    # ---------------------------
-    # LISTAS E DICIONÁRIOS
-    # ---------------------------
-    gvs = [ 
-            "GLS DA CARTEIRA DE FABIANA"]
-        
-    lojas_por_carteira = {
-    " ": [" "],
-
-    "GLS DA CARTEIRA DE FABIANA": [
-        "LOJA DIAS DAVILA"
-    ],      
-    }
-
-    nomes_por_loja = {
-    " ": [" "],
-    
-    "LOJA DIAS DAVILA": ["Maise"],
-    }
-
-
-    # ---------------------------
-    icon = Image.open("image/vivo.png")
-    image_logo = Image.open("image/Image (2).png")
-
-    cola, colb, colc = st.columns([4, 1, 1])
-
-    with colc:
-        st.image(image_logo)
-
-    with cola:
-        st.title("📝 R.E.G - TAREFAS")
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["chr"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-    def carregar_pedidos():
-        aba = planilha.worksheet("GLS(INTERMEDIO)")
-        valores = aba.get_all_values()
-
-        if len(valores) < 2:
-            return pd.DataFrame()
-
-        df = pd.DataFrame(valores[1:], columns=valores[0])
-        df["Observação"] = df["Observação"].fillna("")
-        return df
-
-    # ---------------------------
-    # CARREGAR E FILTRAR DADOS
-    # ---------------------------
-    planilha_Dados = carregar_pedidos()
-
-    if "df_tarefas" not in st.session_state:
-        st.session_state.df_tarefas = planilha_Dados.copy()
-    
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(INTERMEDIO)")
-
-        agora = datetime.now()
-        data_hoje = agora.strftime("%d/%m/%Y")
-        hora_agora = agora.strftime("%H:%M:%S")
-
-        # lê todos os registros
-        registros = aba_exec.get_all_records()
-
-        linha_para_atualizar = None
-
-        for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
-                linha_para_atualizar = i
-                break
-
-        valores = [
-            row["ID"],
-            row["Título"],
-            row["Descrição da tarefa"],
-            "Maise",
-            "Dias Davila",
-            data_hoje,
-            hora_agora,
-            row["Observação"],
-        ]
-
-        if linha_para_atualizar:
-            aba_exec.update(f"A{linha_para_atualizar}:H{linha_para_atualizar}", [valores])
-        else:
-    
-            aba_exec.append_row(valores)
-
-
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
-    planilha_Dados = planilha_Dados[colunas_desejadas]
-  
-    # ---------------------------
-    # CHECKBOX PARA CONCLUIR TAREFA
-    # ---------------------------
-    if "Concluir" not in planilha_Dados.columns:
-        planilha_Dados["Concluir"] = False
-
-    df_editado = st.data_editor(
-        planilha_Dados,
-        column_config={
-            "Concluir": st.column_config.CheckboxColumn(
-                "Registrar",
-                help="Marque para registrar a conclusão da tarefa"
-            ),
-            "Observação": st.column_config.TextColumn(
-            "Observação",
-            help="Digite uma observação sobre a tarefa",
-            max_chars=200
-        )
-        },
-        
-        disabled=["ID"]
-    )
-
-    st.divider()
-    
-    with col1:
-        carteira = st.selectbox("Selecione a carteira:", gvs)
-
-    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
-
-    with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
-
-    with col3:
-        nomes_filtrados = nomes_por_loja.get(loja, [" "])
-        nome = st.selectbox("Nome:", nomes_filtrados)
-
-    with col4:
-        data = st.date_input("Selecione a data")
-
-    def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(INTERMEDIO)")
-        valores = aba.get_all_values()
-
-        if len(valores) < 2:
-            return pd.DataFrame()
-
-        df = pd.DataFrame(valores[1:], columns=valores[0])
-        df["Observação"] = df["Observação"].fillna("")
-        return df
-
-    planilha_registros = carregar_registro()
-
-    colunas_desejadas2 = ["ID","Titulo", "Descrição da tarefa","GL","Loja","Data","Hora","Observação"]
-    planilha_registros = planilha_registros[colunas_desejadas2]
-
-    if nome:
-        planilha_registros = planilha_registros[planilha_registros["GL"].str.contains(nome,case =False)]
-
-    if data:
-            data_str = data.strftime("%d/%m/%Y")
-            planilha_registros = planilha_registros[planilha_registros["Data"] == data_str]
-
-    
-    st.subheader("Registro de Tarefas")
-    
-    if planilha_registros.empty:
-        st.warning("Nenhum registro nessa data")
-    else:
-        st.dataframe(planilha_registros)
-
-# ---------------------------
-    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
-    # ---------------------------
-    col11, col12, col13, col14, col15 = st.columns(5)
-
-    with col11:
-           if st.button("Salvar alterações"):
-                
-                df_editado[df_editado["Concluir"]]
-
-                for _, row in df_editado.iterrows():
-                    if row["Concluir"]:
-                        registrar_execucao(
-                            planilha,
-                            row,     # vem da aba de tarefas    # loja selecionada
-                        )
-                st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
-    with col12:
-        if st.button("Atualizar"):
-         st.rerun()
-
 
 
 
@@ -5449,23 +4895,6 @@ def tarefas_diasdavila_abertura():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["chr"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
         valores = aba.get_all_values()
@@ -5486,8 +4915,8 @@ def tarefas_diasdavila_abertura():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -5565,7 +4994,7 @@ def tarefas_diasdavila_abertura():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(ABERTURA)")
+        aba = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -5609,7 +5038,7 @@ def tarefas_diasdavila_abertura():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -5617,225 +5046,6 @@ def tarefas_diasdavila_abertura():
     with col12:
         if st.button("Atualizar"):
          st.rerun()
-
-
-
-def tarefas_diasdavila_fechamento():
-    icon = Image.open("image/vivo.png")
-
-    st.set_page_config(page_title="R.E.G DIAS DAVILA", page_icon=icon, layout="wide")
-
-    # --- Controle de acesso ---
-    if "role" not in st.session_state or st.session_state.role not in ["Davila", "Admin"]:
-        st.error("⚠️ Acesso negado!")
-        st.stop()
-
-    # ---------------------------
-    # LISTAS E DICIONÁRIOS
-    # ---------------------------
-    gvs = [ 
-            "GLS DA CARTEIRA DE FABIANA"]
-        
-    lojas_por_carteira = {
-    " ": [" "],
-
-    "GLS DA CARTEIRA DE FABIANA": [
-        "LOJA DIAS DAVILA"
-    ],      
-    }
-
-    nomes_por_loja = {
-    " ": [" "],
-    
-    "LOJA DIAS DAVILA": ["Maise"],
-    }
-
-
-    # ---------------------------
-    icon = Image.open("image/vivo.png")
-    image_logo = Image.open("image/Image (2).png")
-
-    cola, colb, colc = st.columns([4, 1, 1])
-
-    with colc:
-        st.image(image_logo)
-
-    with cola:
-        st.title("📝 R.E.G - TAREFAS")
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["chr"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-    def carregar_pedidos():
-        aba = planilha.worksheet("GLS(FECHAMENTO)")
-        valores = aba.get_all_values()
-
-        if len(valores) < 2:
-            return pd.DataFrame()
-
-        df = pd.DataFrame(valores[1:], columns=valores[0])
-        df["Observação"] = df["Observação"].fillna("")
-        return df
-
-
-    # ---------------------------
-    # CARREGAR E FILTRAR DADOS
-    # ---------------------------
-    planilha_Dados = carregar_pedidos()
-
-    if "df_tarefas" not in st.session_state:
-        st.session_state.df_tarefas = planilha_Dados.copy()
-    
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-
-        agora = datetime.now()
-        data_hoje = agora.strftime("%d/%m/%Y")
-        hora_agora = agora.strftime("%H:%M:%S")
-
-        # lê todos os registros
-        registros = aba_exec.get_all_records()
-
-        linha_para_atualizar = None
-
-        for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
-                linha_para_atualizar = i
-                break
-
-        valores = [
-            row["ID"],
-            row["Título"],
-            row["Descrição da tarefa"],
-            "Maise",
-            "Dias Davila",
-            data_hoje,
-            hora_agora,
-            row["Observação"],
-        ]
-
-        if linha_para_atualizar:
-            aba_exec.update(f"A{linha_para_atualizar}:H{linha_para_atualizar}", [valores])
-        else:
-    
-            aba_exec.append_row(valores)
-
-
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
-    planilha_Dados = planilha_Dados[colunas_desejadas]
-  
-    # ---------------------------
-    # CHECKBOX PARA CONCLUIR TAREFA
-    # ---------------------------
-    if "Concluir" not in planilha_Dados.columns:
-        planilha_Dados["Concluir"] = False
-
-    df_editado = st.data_editor(
-        planilha_Dados,
-        column_config={
-            "Concluir": st.column_config.CheckboxColumn(
-                "Registrar",
-                help="Marque para registrar a conclusão da tarefa"
-            ),
-            "Observação": st.column_config.TextColumn(
-            "Observação",
-            help="Digite uma observação sobre a tarefa",
-            max_chars=200
-        )
-        },
-        
-        disabled=["ID"]
-    )
-
-    st.divider()
-    
-    with col1:
-        carteira = st.selectbox("Selecione a carteira:", gvs)
-
-    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
-
-    with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
-
-    with col3:
-        nomes_filtrados = nomes_por_loja.get(loja, [" "])
-        nome = st.selectbox("Nome:", nomes_filtrados)
-
-    with col4:
-        data = st.date_input("Selecione a data")
-
-    def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
-        valores = aba.get_all_values()
-
-        if len(valores) < 2:
-            return pd.DataFrame()
-
-        df = pd.DataFrame(valores[1:], columns=valores[0])
-        df["Observação"] = df["Observação"].fillna("")
-        return df
-
-
-    planilha_registros = carregar_registro()
-
-    colunas_desejadas2 = ["ID","Titulo", "Descrição da tarefa","GL","Loja","Data","Hora","Observação"]
-    planilha_registros = planilha_registros[colunas_desejadas2]
-
-    if nome:
-        planilha_registros = planilha_registros[planilha_registros["GL"].str.contains(nome,case =False)]
-
-    if data:
-            data_str = data.strftime("%d/%m/%Y")
-            planilha_registros = planilha_registros[planilha_registros["Data"] == data_str]
-
-    
-    st.subheader("Registro de Tarefas")
-    
-    if planilha_registros.empty:
-        st.warning("Nenhum registro nessa data")
-    else:
-        st.dataframe(planilha_registros)
-
-# ---------------------------
-    # SALVAR ALTERAÇÕES NO GOOGLE SHEETS
-    # ---------------------------
-    col11, col12, col13, col14, col15 = st.columns(5)
-
-    with col11:
-           if st.button("Salvar alterações"):
-                
-                df_editado[df_editado["Concluir"]]
-
-                for _, row in df_editado.iterrows():
-                    if row["Concluir"]:
-                        registrar_execucao(
-                            planilha,
-                            row,     # vem da aba de tarefas    # loja selecionada
-                        )
-                st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
-    with col12:
-        if st.button("Atualizar"):
-         st.rerun()
-
-
-
 
 
 
@@ -5883,22 +5093,6 @@ def tarefas_boulevard_abertura():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["chr"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(ABERTURA)")
@@ -5920,8 +5114,8 @@ def tarefas_boulevard_abertura():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(ABERTURA)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -5999,7 +5193,7 @@ def tarefas_boulevard_abertura():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(ABERTURA)")
+        aba = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -6042,7 +5236,7 @@ def tarefas_boulevard_abertura():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -6097,22 +5291,6 @@ def tarefas_boulevard_fechamento():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["chr"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(FECHAMENTO)")
@@ -6134,8 +5312,8 @@ def tarefas_boulevard_fechamento():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -6213,7 +5391,7 @@ def tarefas_boulevard_fechamento():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(FECHAMENTO)")
+        aba = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -6257,7 +5435,7 @@ def tarefas_boulevard_fechamento():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -6311,22 +5489,6 @@ def tarefas_boulevard_intermedio():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["chr"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(INTERMEDIO)")
@@ -6348,8 +5510,8 @@ def tarefas_boulevard_intermedio():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("EXECUCOES(INTERMEDIO)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("EXECUCOES(INTERMEDIO)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -6427,7 +5589,7 @@ def tarefas_boulevard_intermedio():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("EXECUCOES(INTERMEDIO)")
+        aba = planilha_exc.worksheet("EXECUCOES(INTERMEDIO)")
         valores = aba.get_all_values()
 
         if len(valores) < 2:
@@ -6471,7 +5633,7 @@ def tarefas_boulevard_intermedio():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -6531,22 +5693,6 @@ def tarefas_itinerante_lee():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["tafgl"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
 
     def carregar_pedidos():
         aba = planilha.worksheet("ITINERANTES")
@@ -6561,8 +5707,8 @@ def tarefas_itinerante_lee():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("REGISTROS(ITINERANTES)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("REGISTROS(ITINERANTES)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -6640,7 +5786,7 @@ def tarefas_itinerante_lee():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("REGISTROS(ITINERANTES)")
+        aba = planilha_exc.worksheet("REGISTROS(ITINERANTES)")
         dados = aba.get_all_records()
         return pd.DataFrame(dados)
 
@@ -6677,7 +5823,7 @@ def tarefas_itinerante_lee():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -6732,23 +5878,7 @@ def tarefas_itinerante_marcus():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["tafgl"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
+   
     def carregar_pedidos():
         aba = planilha.worksheet("ITINERANTES")
         dados = aba.get_all_records()
@@ -6762,8 +5892,8 @@ def tarefas_itinerante_marcus():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("REGISTROS(ITINERANTES)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("REGISTROS(ITINERANTES)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -6841,7 +5971,7 @@ def tarefas_itinerante_marcus():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("REGISTROS(ITINERANTES)")
+        aba = planilha_exc.worksheet("REGISTROS(ITINERANTES)")
         dados = aba.get_all_records()
         return pd.DataFrame(dados)
 
@@ -6878,7 +6008,7 @@ def tarefas_itinerante_marcus():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
@@ -6935,22 +6065,7 @@ def tarefas_itinerante_lazaro():
 
     col1, col2, col3, col4 = st.columns(4)
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["tafgl"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
+   
 
     def carregar_pedidos():
         aba = planilha.worksheet("ITINERANTES")
@@ -6965,8 +6080,8 @@ def tarefas_itinerante_lazaro():
     if "df_tarefas" not in st.session_state:
         st.session_state.df_tarefas = planilha_Dados.copy()
     
-    def registrar_execucao(planilha, row):
-        aba_exec = planilha.worksheet("REGISTROS(ITINERANTES)")
+    def registrar_execucao(planilha_exc, row):
+        aba_exec = planilha_exc.worksheet("REGISTROS(ITINERANTES)")
 
         agora = datetime.now()
         data_hoje = agora.strftime("%d/%m/%Y")
@@ -7044,7 +6159,7 @@ def tarefas_itinerante_lazaro():
         data = st.date_input("Selecione a data")
 
     def carregar_registro():
-        aba = planilha.worksheet("REGISTROS(ITINERANTES)")
+        aba = planilha_exc.worksheet("REGISTROS(ITINERANTES)")
         dados = aba.get_all_records()
         return pd.DataFrame(dados)
 
@@ -7081,7 +6196,7 @@ def tarefas_itinerante_lazaro():
                 for _, row in df_editado.iterrows():
                     if row["Concluir"]:
                         registrar_execucao(
-                            planilha,
+                            planilha_exc,
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")

@@ -4,7 +4,7 @@ from PIL import Image
 from CriarTarefas import criar_page,criar_page_fabiana,criar_page_chrys,criar_page_felipe,criar_page_john
 from VisualizarTarefas import visualizar_tarefas,visualizar_tarefas_fabiana, visualizar_tarefas_chrys ,visualizar_tarefas_felipe ,visualizar_tarefas_john
 from TarefasProntas import modelos_prontos,modelos_prontos_fabiana, modelos_prontos_chrys, modelos_prontos_felipe, modelos_prontos_john
-from GlsTarefas import tarefas_diasdavila , tarefas_barra_abertura , tarefas_barra_fechamento , tarefas_barra_intermedio ,tarefas_bela_abertura,tarefas_bela_fechamento,tarefas_boulevard_abertura,tarefas_boulevard_fechamento,tarefas_boulevard_intermedio,tarefas_iguatemi2_abertura,tarefas_iguatemi2_fechamento,tarefas_iguatemi_abertura,tarefas_iguatemi_fechamento,tarefas_lapa_abertura,tarefas_lapa_fechamento,tarefas_nort_abertura,tarefas_nort_fechamento,tarefas_parela_abertura,tarefas_parela_fechamento,tarefas_parque_abertura,tarefas_parque_fechamento,tarefas_piedade_abertura,tarefas_ssa1_abertura,tarefas_ssa1_fechamento,tarefas_ssa1_intermedio,tarefas_ssa2_abertura,tarefas_ssa2_fechamento,tarefas_piedade_fechamento,tarefas_itinerante_lazaro,tarefas_itinerante_lee,tarefas_itinerante_marcus,tarefas_diasdavila_abertura,tarefas_diasdavila_fechamento
+from GlsTarefas import  tarefas_barra_abertura , tarefas_barra_fechamento , tarefas_barra_intermedio ,tarefas_bela_abertura,tarefas_bela_fechamento,tarefas_boulevard_abertura,tarefas_boulevard_fechamento,tarefas_boulevard_intermedio,tarefas_iguatemi2_abertura,tarefas_iguatemi2_fechamento,tarefas_iguatemi_abertura,tarefas_iguatemi_fechamento,tarefas_lapa_abertura,tarefas_lapa_fechamento,tarefas_nort_abertura,tarefas_nort_fechamento,tarefas_parela_abertura,tarefas_parela_fechamento,tarefas_parque_abertura,tarefas_parque_fechamento,tarefas_piedade_abertura,tarefas_ssa1_abertura,tarefas_ssa1_fechamento,tarefas_ssa1_intermedio,tarefas_ssa2_abertura,tarefas_ssa2_fechamento,tarefas_piedade_fechamento,tarefas_itinerante_lazaro,tarefas_itinerante_lee,tarefas_itinerante_marcus,tarefas_diasdavila_abertura
 from GvTarefas import tarefas_chyrs,tarefas_fabiana,tarefas_felipe,tarefas_john
 from VisualizarTarefasGv import  visualizar_tarefas_gvs, visualizar_tarefas_fechamento , visualizar_tarefas_intermedio,visualizar_tarefas_itinerantes
 
@@ -128,8 +128,7 @@ def run_navigation():
     Tarefas_parque_fechamento = st.Page(tarefas_parque_fechamento,title="🏬 LOJA PARQUE (FECHAMENTO)")
     
     Tarefas_davila_abertura = st.Page(tarefas_diasdavila_abertura,title="🏬 LOJA DIAS DAVILA(ABERTURA)")
-    Tarefas_davila = st.Page(tarefas_diasdavila,title="🏬 LOJA DIAS DAVILA(INTERMEDIO)")
-    Tarefas_davila_fechamento = st.Page(tarefas_diasdavila_fechamento,title="🏬 LOJA DIAS DAVILA(FECHAMENTO)")
+
 
 
 
@@ -223,7 +222,7 @@ def run_navigation():
                 Tarefas_ssa1_intermedio,
                 Tarefas_barra_intermedio,
                 Tarefas_boulevard_intermedio,
-                Tarefas_davila
+    
             ]
         }
         menu3 = {
@@ -241,7 +240,6 @@ def run_navigation():
                 Tarefas_piedade_fechamento,
                 Tarefas_lapa_fechamento,
                 Tarefas_boulevard_fechamentio,
-                Tarefas_davila_fechamento
                 #falta piedade
             ],
         }

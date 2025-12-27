@@ -7,6 +7,38 @@ from datetime import datetime
 
 
 
+gcp_info = st.secrets["tafgl"]
+planilha_chave = st.secrets["planilha"]["chave"]
+
+creds = Credentials.from_service_account_info(
+    dict(gcp_info),
+    scopes=[
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive",
+    ],
+)
+
+cliente = gspread.authorize(creds)
+planilha = cliente.open_by_key(planilha_chave)
+
+
+
+gcp_info = st.secrets["gcp"]
+planilha_chave_execucoes = st.secrets["planilha_execucoes"]["chave2"]
+
+creds = Credentials.from_service_account_info(
+    dict(gcp_info),
+    scopes=[
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+)
+
+cliente = gspread.authorize(creds)
+planilha_exc = cliente.open_by_key(planilha_chave_execucoes)
+
+
+
 # =========================================================
 # ===================== GLS ABERTURA ======================
 # =========================================================
@@ -66,19 +98,7 @@ def visualizar_tarefas_gvs():
 
    
 
-    gcp_info = st.secrets["tafgl"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive",
-        ],
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
+   
     aba = planilha.worksheet("GLS(ABERTURA)")
     planilha_Dados = pd.DataFrame(aba.get_all_records())
 
@@ -99,7 +119,7 @@ def visualizar_tarefas_gvs():
             "Selecione o período:", value=(datetime.today(), datetime.today())
         )
   
-    aba2 = planilha.worksheet("EXECUCOES(ABERTURA)")
+    aba2 = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
     planilha_Dados2 = pd.DataFrame(aba2.get_all_records())
       
     if nome:
