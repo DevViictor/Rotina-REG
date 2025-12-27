@@ -231,7 +231,7 @@ def tarefas_iguatemi_abertura():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -348,7 +348,7 @@ def tarefas_iguatemi_fechamento():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -440,7 +440,7 @@ def tarefas_iguatemi_fechamento():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -538,12 +538,10 @@ def tarefas_iguatemi2_abertura():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
-    # ---------------------------
-    # CHECKBOX PARA CONCLUIR TAREFA
-    # ---------------------------
+   
     if "Concluir" not in planilha_Dados.columns:
         planilha_Dados["Concluir"] = False
 
@@ -623,7 +621,7 @@ def tarefas_iguatemi2_abertura():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -723,7 +721,7 @@ def tarefas_iguatemi2_fechamento():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -815,7 +813,7 @@ def tarefas_iguatemi2_fechamento():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -923,7 +921,7 @@ def tarefas_nort_abertura():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -1014,7 +1012,7 @@ def tarefas_nort_abertura():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -1123,7 +1121,7 @@ def tarefas_nort_fechamento():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -1215,7 +1213,7 @@ def tarefas_nort_fechamento():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -1326,7 +1324,7 @@ def tarefas_ssa1_abertura():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -1417,7 +1415,7 @@ def tarefas_ssa1_abertura():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -1527,7 +1525,7 @@ def tarefas_ssa1_intermedio():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -1618,7 +1616,7 @@ def tarefas_ssa1_intermedio():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -1730,7 +1728,7 @@ def tarefas_ssa1_fechamento():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -1822,7 +1820,7 @@ def tarefas_ssa1_fechamento():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+    
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -1929,7 +1927,7 @@ def tarefas_ssa2_abertura():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -2021,7 +2019,7 @@ def tarefas_ssa2_abertura():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -2129,7 +2127,7 @@ def tarefas_ssa2_fechamento():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -2221,7 +2219,7 @@ def tarefas_ssa2_fechamento():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+            
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -2331,7 +2329,7 @@ def tarefas_bela_abertura():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -2423,7 +2421,7 @@ def tarefas_bela_abertura():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -2531,7 +2529,7 @@ def tarefas_bela_fechamento():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -2623,7 +2621,7 @@ def tarefas_bela_fechamento():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -2727,7 +2725,7 @@ def tarefas_parela_abertura():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -2819,7 +2817,7 @@ def tarefas_parela_abertura():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -2930,7 +2928,7 @@ def tarefas_parela_fechamento():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -3022,7 +3020,7 @@ def tarefas_parela_fechamento():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+            
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -3131,7 +3129,7 @@ def tarefas_parque_abertura():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -3223,7 +3221,7 @@ def tarefas_parque_abertura():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -3428,7 +3426,7 @@ def tarefas_parque_fechamento():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -3538,7 +3536,7 @@ def tarefas_barra_abertura():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -3629,7 +3627,7 @@ def tarefas_barra_abertura():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -3737,7 +3735,7 @@ def tarefas_barra_intermedio():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -3936,7 +3934,7 @@ def tarefas_barra_fechamento():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -4027,7 +4025,7 @@ def tarefas_barra_fechamento():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -4138,7 +4136,7 @@ def tarefas_piedade_abertura():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -4230,7 +4228,7 @@ def tarefas_piedade_abertura():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -4341,7 +4339,7 @@ def tarefas_piedade_fechamento():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -4433,7 +4431,7 @@ def tarefas_piedade_fechamento():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -4545,7 +4543,7 @@ def tarefas_lapa_abertura():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -4637,7 +4635,7 @@ def tarefas_lapa_abertura():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -4749,7 +4747,7 @@ def tarefas_lapa_fechamento():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -4806,7 +4804,7 @@ def tarefas_lapa_fechamento():
 
     planilha_registros = carregar_registro()
 
-    colunas_desejadas2 = ["ID","Titulo", "Descrição da tarefa","GL","Loja","Data","Hora","Observação"]
+    colunas_desejadas2 = ["ID","Titulo", "Descrição da tarefa","GL","Loja","Hora","Data","Observação"]
     planilha_registros = planilha_registros[colunas_desejadas2]
 
     if nome:
@@ -4841,7 +4839,7 @@ def tarefas_lapa_fechamento():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+    
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -4950,7 +4948,7 @@ def tarefas_diasdavila_abertura():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -5042,7 +5040,7 @@ def tarefas_diasdavila_abertura():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -5149,7 +5147,7 @@ def tarefas_boulevard_abertura():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -5240,7 +5238,7 @@ def tarefas_boulevard_abertura():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -5347,7 +5345,7 @@ def tarefas_boulevard_fechamento():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -5439,7 +5437,7 @@ def tarefas_boulevard_fechamento():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -5545,7 +5543,7 @@ def tarefas_boulevard_intermedio():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -5637,7 +5635,7 @@ def tarefas_boulevard_intermedio():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -5742,7 +5740,7 @@ def tarefas_itinerante_lee():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -5827,7 +5825,7 @@ def tarefas_itinerante_lee():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -5927,7 +5925,7 @@ def tarefas_itinerante_marcus():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -6012,7 +6010,7 @@ def tarefas_itinerante_marcus():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
@@ -6115,7 +6113,7 @@ def tarefas_itinerante_lazaro():
             aba_exec.append_row(valores)
 
 
-    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Observação"]
+    colunas_desejadas = ["ID","Criada", "Título", "Descrição da tarefa","Hora inicial","Hora final","Data","Observação"]
     planilha_Dados = planilha_Dados[colunas_desejadas]
   
     # ---------------------------
@@ -6200,7 +6198,7 @@ def tarefas_itinerante_lazaro():
                             row,     # vem da aba de tarefas    # loja selecionada
                         )
                 st.success("✔️ Registro efetuado com sucesso!")
-                st.rerun()
+                
     with col12:
         if st.button("Atualizar"):
          st.rerun()
