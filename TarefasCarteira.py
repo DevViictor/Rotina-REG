@@ -256,7 +256,7 @@ def tarefas_carteira_john():
 
     nomes_por_loja = {
         " ": [" "],
-        "LOJA BARRA": ["Igor"],
+        "LOJA BARRA": ["Carol"],
         "LOJA PIEDADE": ["Marcus"],
         "LOJA LAPA": ["Rafael"],
 
@@ -264,7 +264,7 @@ def tarefas_carteira_john():
 
         "LOJA BARRA (FECHAMENTO)": ["Carol"],
         "LOJA PIEDADE (FECHAMENTO)": ["DiegoP"],
-        "LOJA LAPA (FECHAMENTO)": ["Rafael"],
+        "LOJA LAPA (FECHAMENTO)": ["Igor"],
 
        
         }
