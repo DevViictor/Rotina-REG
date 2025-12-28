@@ -258,7 +258,7 @@ def tarefas_carteira_john():
         " ": [" "],
         "LOJA BARRA": ["Igor"],
         "LOJA PIEDADE": ["Marcus"],
-        "LOJA LAPA": ["Sara"],
+        "LOJA LAPA": ["Rafael"],
 
         "LOJA BARRA (INTERMEDIO)": ["Alana"],
 
