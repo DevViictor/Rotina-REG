@@ -51,44 +51,7 @@ def visualizar_tarefas_gvs():
         st.error("⚠️ Acesso negado!")
         st.stop()
 
-    gvs = ["GLS DA CARTEIRA DE FABIANA",
-           "GLS DA CARTEIRA DE FELIPE",
-            "GLS DA CARTEIRA DE JOHN",
-            "GLS DA CARTEIRA DE CHRYS"
-            ]
-    lojas_por_carteira = {
-            "": [""],
-            "GLS DA CARTEIRA DE FABIANA": [
-                "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA DIAS DAVILA","LOJA PARALELA","LOJA PARQUE SHOP"
-            ],
-            "GLS DA CARTEIRA DE FELIPE": [
-                "LOJA IGUATEMI | BA","LOJA IGUATEMI || BA","LOJA NORT SHOP"
-            ],
-            "GLS DA CARTEIRA DE JOHN": [
-            "LOJA BARRA","LOJA PIEDADE","LOJA LAPA"
-            ],
-            "GLS DA CARTEIRA DE CHRYS": [
-            "LOJA BOULEVARD"
-            ],
-          
-        }
-    nomes_por_loja = {
-            "": [""],
-            "LOJA SSA |": ["Mércia"],
-            "LOJA SSA ||": ["Vitor"],
-            "LOJA BELA VISTA": ["Danilo"],
-            "LOJA DIAS DAVILA": ["Maise"],
-            "LOJA PARALELA": ["Crislaine"],
-            "LOJA PARQUE SHOP": ["Denise_Parque"],
-            "LOJA IGUATEMI | BA": ["Max"],
-            "LOJA IGUATEMI || BA": ["Andressa"],
-            "LOJA NORT SHOP": ["Jairo"],
-            "LOJA BARRA": ["Carol"],
-            "LOJA PIEDADE": ["Diego"],
-            "LOJA LAPA": ["Rafael"],
-            "LOJA BOULEVARD": ["Bruno"],
-        }
-
+    
     image_logo = Image.open("image/Image (2).png")
     cola, colb, colc = st.columns([4, 1, 1])
     with colc:
@@ -96,39 +59,30 @@ def visualizar_tarefas_gvs():
     with cola:
         st.title("📝 R.E.G - TAREFAS")
 
-   
 
-   
-    aba = planilha.worksheet("GLS(ABERTURA)")
-    planilha_Dados = pd.DataFrame(aba.get_all_records())
+    gvs = ["GLS DA CARTEIRA DE FABIANA",
+            "GLS DA CARTEIRA DE FELIPE",
+            "GLS DA CARTEIRA DE JOHN",
+            "GLS DA CARTEIRA DE CHRYS"
+            ]
+    
 
-
-    st.dataframe(planilha_Dados, use_container_width=True)
-
-    st.divider()
-
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2 = st.columns(2)
     with col1:
         carteira = st.selectbox("Selecione a carteira:", gvs)
+    
     with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
-    with col3:
-        nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
-    with col4:
         data_selecionada = st.date_input(
             "Selecione o período:", value=(datetime.today(), datetime.today())
         )
   
+
+
+    aba = planilha.worksheet("GLS(ABERTURA)")
+    planilha_Dados = pd.DataFrame(aba.get_all_records())
+
     aba2 = planilha_exc.worksheet("EXECUCOES(ABERTURA)")
     planilha_Dados2 = pd.DataFrame(aba2.get_all_records())
-      
-    if nome:
-        planilha_Dados2 = planilha_Dados2[planilha_Dados2["GL"].str.contains(nome,case =False)]
-
-
-    
-    
-    contagemT = planilha_Dados2["Titulo"].count()
 
 
     planilha_Dados2["Data"] = pd.to_datetime(
@@ -146,25 +100,136 @@ def visualizar_tarefas_gvs():
         & (planilha_Dados2["Data"] <= data_fim)
     ]
 
-    if planilha_filtrada.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
 
-    st.subheader("📌 COMPARATIVO DE TAREFAS")
-    st.dataframe(planilha_Dados2)
-    st.write(f"Total de tarefas realizadas: {contagemT}")
-    st.divider()
+
+    #Fabiana
+    
+    contagemT = planilha_Dados["Título"].count()
+
+    contagemCris = planilha_filtrada["GL"].value_counts().get("Crislaine",0)
+
+    contagemDeniseP = planilha_filtrada["GL"].value_counts().get("Denise_Parque",0)
+
+    contagemMercia = planilha_filtrada["GL"].value_counts().get("Mércia",0)
+
+    contagemMaise = planilha_filtrada["GL"].value_counts().get("Maise",0)
+
+    contagemVitor = planilha_filtrada["GL"].value_counts().get("Vitor",0)
+
+
+    #Felipe
+
+    contagemT = planilha_Dados["Título"].count()
+
+    contagemMax = planilha_filtrada["GL"].value_counts().get("Max",0)
+
+    contagemJairo = planilha_filtrada["GL"].value_counts().get("Jairo",0)
+
+    contagemAndressa = planilha_filtrada["GL"].value_counts().get("Andressa",0)
+
+
+    #John
+
+    contagemT = planilha_Dados["Título"].count()
+
+    contagemCarol = planilha_filtrada["GL"].value_counts().get("Carol",0)
+
+    contagemDiego = planilha_filtrada["GL"].value_counts().get("Diego",0)
+
+    contagemRafael = planilha_filtrada["GL"].value_counts().get("Rafael",0)
+
+
+    #Chrys
+
+    contagemT = planilha_Dados["Título"].count()
+
+    contagemBruno = planilha_filtrada["GL"].value_counts().get("Bruno",0)
+
+
+    conclusao_tarefas_fabiana = pd.DataFrame({
+    "GLS(ABERTURA)": [
+       
+        "Crislaine",
+        "Denise",
+        "Mércia",
+        "Vitor",
+        "Maise",
+
+        "Tarefas criadas"
+    ],
+    "Conclusão": [
+        contagemCris,
+        contagemDeniseP,
+        contagemMercia,
+        contagemVitor,
+        contagemMaise,
+        contagemT
+    ]
+    
+    })
+
+
+    conclusao_tarefas_felipe = pd.DataFrame({
+    "GLS(ABERTURA)": [
+        "Andressa",
+        "Jairo",
+        "Max",
+        "Total de tarefas criadas"
+    ],
+    "Conclusão": [
+        contagemAndressa,
+        contagemJairo,
+        contagemMax,
+        contagemT
+    ]
+    })
+
+
+    conclusao_tarefas_john = pd.DataFrame({
+    "GLS(ABERTURA)": [
+        "Carol",
+        "Diego",
+        "Rafael",
+        "Total de tarefas criadas"
+    ],
+    "Conclusão": [
+        contagemCarol,
+        contagemDiego,
+        contagemRafael,
+        contagemT
+    ]
+    })
+
+
+    conclusao_tarefas_chrys = pd.DataFrame({
+    "GLS": [
+        "Bruno",
+        "Total de tarefas criadas"
+    ],
+    "Conclusão": [
+        contagemBruno,
+        contagemT
+    ]
+    })
+
+
+    #Visualizar as tarefas
+
+    if carteira == "GLS DA CARTEIRA DE FABIANA":
+        st.write(conclusao_tarefas_fabiana)
+
+    elif carteira == "GLS DA CARTEIRA DE FELIPE":
+        st.write(conclusao_tarefas_felipe)
+
+    elif carteira == "GLS DA CARTEIRA DE JOHN":
+        st.write(conclusao_tarefas_john)
+
+    elif carteira == "GLS DA CARTEIRA DE CHRYS":
+        st.write(conclusao_tarefas_chrys)
+   
    
 
-    #MAX
-    
-    if st.button("Atualizar"):
-        st.rerun()
 
-
-# =========================================================
-# ==================== GLS INTERMEDIO =====================
-# =========================================================
 def visualizar_tarefas_intermedio():
 
     icon = Image.open("image/vivo.png")
@@ -174,67 +239,27 @@ def visualizar_tarefas_intermedio():
         st.error("⚠️ Acesso negado!")
         st.stop()
 
-    gvs = ["GLS DA CARTEIRA DE FABIANA",
-            "GLS DA CARTEIRA DE JOHN",
-            "GLS DA CARTEIRA DE CHRYS"
-            ]
-    lojas_por_carteira = {
-            "": [""],
-            "GLS DA CARTEIRA DE FABIANA": [
-                "LOJA SSA |","LOJA DIAS DAVILA"
-            ],
-            "GLS DA CARTEIRA DE JOHN": [
-            "LOJA BARRA",
-            ],
-            "GLS DA CARTEIRA DE CHRYS": [
-            "LOJA BOULEVARD"
-            ],
-          
-        }
-    nomes_por_loja = {
-            "": [""],
-            "LOJA SSA |": ["Francisca"],
-            "LOJA DIAS DAVILA": ["Maise"],
-            "LOJA BARRA": ["Alana"],
-            "LOJA BOULEVARD": ["Camyla"],
-        }
     
-    image_logo = Image.open("image/Image (2).png")
-    cola, colb, colc = st.columns([4, 1, 1])
-    with colc:
-        st.image(image_logo)
-    with cola:
-        st.title("📝 R.E.G - TAREFAS")
+    gvs = ["GLS(INTERMEDIO)",
+            ]
+    
 
-   
-    aba = planilha.worksheet("GLS(INTERMEDIO)")
-    planilha_Dados = pd.DataFrame(aba.get_all_records())
-
-
-    st.dataframe(planilha_Dados, use_container_width=True)
-
-    st.divider()
-
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2 = st.columns(2)
     with col1:
         carteira = st.selectbox("Selecione a carteira:", gvs)
+    
     with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
-    with col3:
-        nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
-    with col4:
         data_selecionada = st.date_input(
             "Selecione o período:", value=(datetime.today(), datetime.today())
         )
   
+
+
+    aba = planilha.worksheet("GLS(INTERMEDIO)")
+    planilha_Dados = pd.DataFrame(aba.get_all_records())
+
     aba2 = planilha_exc.worksheet("EXECUCOES(INTERMEDIO)")
     planilha_Dados2 = pd.DataFrame(aba2.get_all_records())
-      
-    if nome:
-        planilha_Dados2 = planilha_Dados2[planilha_Dados2["GL"].str.contains(nome,case =False)]
-    
-    contagemT = planilha_Dados2["Titulo"].count()
-
 
 
     planilha_Dados2["Data"] = pd.to_datetime(
@@ -252,24 +277,50 @@ def visualizar_tarefas_intermedio():
         & (planilha_Dados2["Data"] <= data_fim)
     ]
 
-    if planilha_filtrada.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
 
-    st.subheader("📌 COMPARATIVO DE TAREFAS")
-    st.dataframe(planilha_Dados2)
-    st.write(f"Total de tarefas realizadas: {contagemT}")
-    st.divider()
 
-    st.divider()
-   
     
-    if st.button("Atualizar"):
-        st.rerun()
+    
+    contagemT = planilha_Dados["Título"].count()
 
-# =========================================================
-# ==================== GLS FECHAMENTO =====================
-# =========================================================
+    contagemFran = planilha_filtrada["GL"].value_counts().get("Francisca",0)
+
+
+    #John
+
+    contagemAlana = planilha_filtrada["GL"].value_counts().get("Alana",0)
+
+
+
+    #Chrys
+
+    contagemCamyla = planilha_filtrada["GL"].value_counts().get("Camyla",0)
+
+
+    conclusao_tarefas_fabiana = pd.DataFrame({
+    "GLS(INTERMEDIO)": [
+       
+        "Francisca(SSA|)",
+        "Alana(BARRA)",
+        "Camyla(BOULEVARD)",
+
+        "Tarefas criadas"
+    ],
+    "Conclusão": [
+        contagemFran,
+        contagemAlana,
+        contagemCamyla,
+        contagemT
+    ]
+    
+    })
+
+    if carteira == "GLS(INTERMEDIO)":
+        st.write(conclusao_tarefas_fabiana)
+
+   
+   
+
 def visualizar_tarefas_fechamento():
 
     icon = Image.open("image/vivo.png")
@@ -281,82 +332,29 @@ def visualizar_tarefas_fechamento():
 
     
     gvs = ["GLS DA CARTEIRA DE FABIANA",
-           "GLS DA CARTEIRA DE FELIPE",
+            "GLS DA CARTEIRA DE FELIPE",
             "GLS DA CARTEIRA DE JOHN",
             "GLS DA CARTEIRA DE CHRYS"
             ]
     
-    lojas_por_carteira = {
-            "": [""],
-            "GLS DA CARTEIRA DE FABIANA": [
-                "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA DIAS DAVILA","LOJA PARALELA","LOJA PARQUE SHOP"
-            ],
-            "GLS DA CARTEIRA DE FELIPE": [
-                "LOJA IGUATEMI | BA","LOJA IGUATEMI || BA","LOJA NORT SHOP"
-            ],
-            "GLS DA CARTEIRA DE JOHN": [
-            "LOJA BARRA","LOJA PIEDADE","LOJA LAPA"
-            ],
-            "GLS DA CARTEIRA DE CHRYS": [
-            "LOJA BOULEVARD"
-            ],
-          
-        }
-    nomes_por_loja = {
-            "": [""],
-            "LOJA SSA |": ["Vinicius"],
-            "LOJA SSA ||": ["Mailan"],
-            "LOJA BELA VISTA": ["Vanessa"],
-            "LOJA DIAS DAVILA": ["Maise"],
-            "LOJA PARALELA": ["Neide"],
-            "LOJA PARQUE SHOP": ["Denise_Parque"],
-            "LOJA IGUATEMI | BA": ["Denise"],
-            "LOJA IGUATEMI || BA": ["Diego"],
-            "LOJA NORT SHOP": ["Wanderlei"],
-            "LOJA BARRA": ["Igor"],
-            "LOJA PIEDADE": ["Marcusl"],
-            "LOJA LAPA": ["Sara"],
-            "LOJA BOULEVARD": ["Gilvania"],
-        }
-    
-    image_logo = Image.open("image/Image (2).png")
-    cola, colb, colc = st.columns([4, 1, 1])
-    with colc:
-        st.image(image_logo)
-    with cola:
-        st.title("📝 R.E.G - TAREFAS")
 
-   
-
-    aba = planilha.worksheet("GLS(FECHAMENTO)")
-    planilha_Dados = pd.DataFrame(aba.get_all_records())
-
-
-    st.dataframe(planilha_Dados, use_container_width=True)
-
-    st.divider()
-
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2 = st.columns(2)
     with col1:
         carteira = st.selectbox("Selecione a carteira:", gvs)
+    
     with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
-    with col3:
-        nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
-    with col4:
         data_selecionada = st.date_input(
             "Selecione o período:", value=(datetime.today(), datetime.today())
         )
   
+
+
+    aba = planilha.worksheet("GLS(FECHAMENTO)")
+    planilha_Dados = pd.DataFrame(aba.get_all_records())
+
     aba2 = planilha_exc.worksheet("EXECUCOES(FECHAMENTO)")
     planilha_Dados2 = pd.DataFrame(aba2.get_all_records())
-      
-    if nome:
-        planilha_Dados2 = planilha_Dados2[planilha_Dados2["GL"].str.contains(nome,case =False)]
 
-    contagemT = planilha_Dados2["Titulo"].count()
-
-    
 
     planilha_Dados2["Data"] = pd.to_datetime(
         planilha_Dados2["Data"], dayfirst=True, errors="coerce"
@@ -373,27 +371,131 @@ def visualizar_tarefas_fechamento():
         & (planilha_Dados2["Data"] <= data_fim)
     ]
 
-    if planilha_filtrada.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
 
-    st.subheader("📌 COMPARATIVO DE TAREFAS")
-    st.dataframe(planilha_Dados2)
-    st.write(f"Total de tarefas realizadas: {contagemT}")
-    st.divider()
+
+    #Fabiana
     
+    contagemT = planilha_Dados["Título"].count()
 
-    st.divider()
-   
+    contagemVini = planilha_filtrada["GL"].value_counts().get("Vinicius",0)
 
-    #MAX
+    contagemMai = planilha_filtrada["GL"].value_counts().get("Mailan",0)
+
+    contagemVanessa = planilha_filtrada["GL"].value_counts().get("Vanessa",0)
+
+    contagemNeide = planilha_filtrada["GL"].value_counts().get("Neide",0)
+
+    contagemAdrielle = planilha_filtrada["GL"].value_counts().get("Adriele",0)
+
+
+    #Felipe
+
+    contagemT = planilha_Dados["Título"].count()
+
+    contagemDenise = planilha_filtrada["GL"].value_counts().get("Denise",0)
+
+    contagemDiego = planilha_filtrada["GL"].value_counts().get("Diego",0)
+
+    contagemWanerdeli = planilha_filtrada["GL"].value_counts().get("Wanderlei",0)
+
+
+    #John
+
+    contagemT = planilha_Dados["Título"].count()
+
+    contagemIgor = planilha_filtrada["GL"].value_counts().get("Igor",0)
+
+    contagemMarcus = planilha_filtrada["GL"].value_counts().get("Marcusl",0)
+
+    contagemSara = planilha_filtrada["GL"].value_counts().get("Sara",0)
+
+
+    #Chrys
+
+    contagemT = planilha_Dados["Título"].count()
+
+    contagemGilvania = planilha_filtrada["GL"].value_counts().get("Gilvania",0)
+
+
+    conclusao_tarefas_fabiana = pd.DataFrame({
+    "GLS(FECHAMENTO)": [
+       
+        "Vinicius",
+        "Mailan",
+        "Vanessa",
+        "Neide",
+        "Adriele",
+        "Tarefas criadas"
+    ],
+    "Conclusão": [
+        contagemVini,
+        contagemMai,
+        contagemVanessa,
+        contagemNeide,
+        contagemAdrielle,
+        contagemT
+    ]
     
-    if st.button("Atualizar"):
-        st.rerun()
+    })
+
+
+    conclusao_tarefas_felipe = pd.DataFrame({
+    "GLS(FECHAMENTO)": [
+        "Denise",
+        "Diego",
+        "Wanderlei",
+        "Total de tarefas criadas"
+    ],
+    "Conclusão": [
+        contagemDenise,
+        contagemDiego,
+        contagemWanerdeli,
+        contagemT
+    ]
+    })
+
+    conclusao_tarefas_john = pd.DataFrame({
+    "GLS(FECHAMENTO)": [
+        "Igor",
+        "Marcus",
+        "Sara",
+        "Total de tarefas criadas"
+    ],
+    "Conclusão": [
+        contagemIgor,
+        contagemMarcus,
+        contagemSara,
+        contagemT
+    ]
+    })
+
+
+    conclusao_tarefas_chrys = pd.DataFrame({
+    "GLS(FECHAMENTO)": [
+        "Gilvania",
+        "Total de tarefas criadas"
+    ],
+    "Conclusão": [
+        contagemGilvania,
+        contagemT
+    ]
+    })
+
+
+    #Visualizar as tarefas
+
+    if carteira == "GLS DA CARTEIRA DE FABIANA":
+        st.write(conclusao_tarefas_fabiana)
+
+    elif carteira == "GLS DA CARTEIRA DE FELIPE":
+        st.write(conclusao_tarefas_felipe)
+
+    elif carteira == "GLS DA CARTEIRA DE JOHN":
+        st.write(conclusao_tarefas_john)
+
+    elif carteira == "GLS DA CARTEIRA DE CHRYS":
+        st.write(conclusao_tarefas_chrys)
    
-
-
-
 
 def visualizar_tarefas_itinerantes():
 
@@ -404,49 +506,27 @@ def visualizar_tarefas_itinerantes():
         st.error("⚠️ Acesso negado!")
         st.stop()
 
-    gvs = ["ITINERANTES"]
-    lojas_por_carteira = {"ITINERANTES": ["ITINERANTES"]}
-    nomes_por_loja = {"ITINERANTES": ["Lee","Marcus","Lázaro"]}
+     
+    gvs = ["ITINERANTES",
+            ]
+    
 
-    image_logo = Image.open("image/Image (2).png")
-    cola, colb, colc = st.columns([4, 1, 1])
-    with colc:
-        st.image(image_logo)
-    with cola:
-        st.title("📝 R.E.G - TAREFAS")
-
-   
-    aba = planilha.worksheet("ITINERANTES")
-    planilha_Dados = pd.DataFrame(aba.get_all_records())
-
-
-    st.dataframe(planilha_Dados, use_container_width=True)
-
-    st.divider()
-
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2 = st.columns(2)
     with col1:
         carteira = st.selectbox("Selecione a carteira:", gvs)
+    
     with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
-    with col3:
-        nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
-    with col4:
         data_selecionada = st.date_input(
             "Selecione o período:", value=(datetime.today(), datetime.today())
         )
   
+
+
+    aba = planilha.worksheet("ITINERANTES")
+    planilha_Dados = pd.DataFrame(aba.get_all_records())
+
     aba2 = planilha_exc.worksheet("REGISTROS(ITINERANTES)")
     planilha_Dados2 = pd.DataFrame(aba2.get_all_records())
-      
-    if nome:
-        planilha_Dados2 = planilha_Dados2[planilha_Dados2["GL"].str.contains(nome,case =False)]
-
-    contagemT = planilha_Dados2["Titulo"].count()
-
-    if planilha_Dados2.empty:
-        st.warning("Nenhuma tarefa encontrada.")
-        return
 
 
     planilha_Dados2["Data"] = pd.to_datetime(
@@ -464,21 +544,40 @@ def visualizar_tarefas_itinerantes():
         & (planilha_Dados2["Data"] <= data_fim)
     ]
 
-    if planilha_filtrada.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
 
-    st.subheader("📌 COMPARATIVO DE TAREFAS")
-    st.dataframe(planilha_Dados2)
-    st.write(f"Total de tarefas realizadas: {contagemT}")
-    st.divider()
+
     
+    
+    contagemT = planilha_Dados["Título"].count()
 
-    st.divider()
+    contagemLee = planilha_filtrada["GL"].value_counts().get("Lee",0)
+    contagemMarcus = planilha_filtrada["GL"].value_counts().get("Marcus",0)
+    contagemLázaro = planilha_filtrada["GL"].value_counts().get("Lázaro",0)
+
+
+    #John
+
    
 
-    #MAX
+    conclusao_tarefas_itinerantes = pd.DataFrame({
+    "ITINERANTES": [
+       
+        "Lee",
+        "Marcus",
+        "Lázaro",
+
+        "Tarefas criadas"
+    ],
+    "Conclusão": [
+        contagemLee,
+        contagemMarcus,
+        contagemLázaro,
+        contagemT
+    ]
     
-    if st.button("Atualizar"):
-        st.rerun()
+    })
+
+    if carteira == "ITINERANTES":
+        st.write(conclusao_tarefas_itinerantes)
+
    

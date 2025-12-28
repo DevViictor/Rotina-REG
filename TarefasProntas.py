@@ -6,7 +6,7 @@ from PIL import Image
 
 
 def modelos_prontos():
-    gcp_info = st.secrets["taf"]
+    gcp_info = st.secrets["geral"]
     planilha_chave = st.secrets["planilha"]["chave"]
 
     creds = Credentials.from_service_account_info(

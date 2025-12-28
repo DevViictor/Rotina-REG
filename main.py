@@ -150,7 +150,7 @@ def run_navigation():
     Tarefas_boulevard_fechamentio = st.Page(tarefas_boulevard_fechamento,title="🏬 LOJA BOULEVARD (FECHAMENTO)")
     
     #Itinerantes victor
-    Visualizar_tarefas_itinerantes = st.Page(visualizar_tarefas_itinerantes,title="🏬 ITINERANTES")
+    Visualizar_tarefas_itinerantes = st.Page(visualizar_tarefas_itinerantes,title="R.E.G (ITINERANTES)")
 
     # PESSAOS
     Visualizar_tarefas_itinerantesL = st.Page(tarefas_itinerante_lee,title="🏬 LEE")

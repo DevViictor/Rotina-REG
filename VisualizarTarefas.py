@@ -74,14 +74,12 @@ def visualizar_tarefas():
                 nomes_filtrados = nomes_por_loja.get(loja, [" "])
                 nome = st.selectbox("Nome:", nomes_filtrados)
 
-        with col4:
-                data = st.date_input("Selecione a data:")
-
+       
         
         # ---------------------------
         # CONFIGURAÇÃO GOOGLE SHEETS
         # ---------------------------
-        gcp_info = st.secrets["taf"]
+        gcp_info = st.secrets["geral"]
         planilha_chave = st.secrets["planilha"]["chave"]
 
         creds = Credentials.from_service_account_info(
@@ -111,13 +109,6 @@ def visualizar_tarefas():
                 colunas_desejadas = ["ID", "Criada", "Título", "Descrição da tarefa", "Data","Tipo de recorrência"]
                 planilha_Dados = planilha_Dados[colunas_desejadas]
 
-                planilha_Dados["Data"] = pd.to_datetime(
-                        planilha_Dados["Data"],
-                        dayfirst=True,
-                        errors="coerce"
-                ).dt.date
-
-                planilha_Dados = planilha_Dados[planilha_Dados["Data"] == data]
 
                 contagemA = planilha_Dados["Criada"].astype(str).str.contains("Victor", case=False, na=False).sum()
 
@@ -791,4 +782,6 @@ def visualizar_tarefas_chrys():
 
                                 st.success(f"{count} tarefa(s) excluída(s) com sucesso!")
                                 st.rerun()
+
+
 
