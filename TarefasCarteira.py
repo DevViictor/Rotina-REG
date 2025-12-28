@@ -262,9 +262,9 @@ def tarefas_carteira_john():
 
         "LOJA BARRA (INTERMEDIO)": ["Alana"],
 
-        "LOJA BARRA (FECHAMENTO)": ["Carol"],
+        "LOJA BARRA (FECHAMENTO)": ["Igor"],
         "LOJA PIEDADE (FECHAMENTO)": ["DiegoP"],
-        "LOJA LAPA (FECHAMENTO)": ["Igor"],
+        "LOJA LAPA (FECHAMENTO)": ["Sara"],
 
        
         }
