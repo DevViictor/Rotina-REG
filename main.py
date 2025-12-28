@@ -1,9 +1,9 @@
 import streamlit as st
 from TarefasCarteira import tarefas_carteira_chrys,tarefas_carteira_fabiana,tarefas_carteira_felipe,tarefas_carteira_john
 from PIL import Image
-from CriarTarefas import criar_page,criar_page_fabiana,criar_page_chrys,criar_page_felipe,criar_page_john
-from VisualizarTarefas import visualizar_tarefas,visualizar_tarefas_fabiana, visualizar_tarefas_chrys ,visualizar_tarefas_felipe ,visualizar_tarefas_john
-from TarefasProntas import modelos_prontos,modelos_prontos_fabiana, modelos_prontos_chrys, modelos_prontos_felipe, modelos_prontos_john
+from CriarTarefas import criar_page
+from VisualizarTarefas import visualizar_tarefas
+from TarefasProntas import modelos_prontos
 from GlsTarefas import  tarefas_barra_abertura , tarefas_barra_fechamento , tarefas_barra_intermedio ,tarefas_bela_abertura,tarefas_bela_fechamento,tarefas_boulevard_abertura,tarefas_boulevard_fechamento,tarefas_boulevard_intermedio,tarefas_iguatemi2_abertura,tarefas_iguatemi2_fechamento,tarefas_iguatemi_abertura,tarefas_iguatemi_fechamento,tarefas_lapa_abertura,tarefas_lapa_fechamento,tarefas_nort_abertura,tarefas_nort_fechamento,tarefas_parela_abertura,tarefas_parela_fechamento,tarefas_parque_abertura,tarefas_parque_fechamento,tarefas_piedade_abertura,tarefas_ssa1_abertura,tarefas_ssa1_fechamento,tarefas_ssa1_intermedio,tarefas_ssa2_abertura,tarefas_ssa2_fechamento,tarefas_piedade_fechamento,tarefas_itinerante_lazaro,tarefas_itinerante_lee,tarefas_itinerante_marcus,tarefas_diasdavila_abertura
 from GvTarefas import tarefas_chyrs,tarefas_fabiana,tarefas_felipe,tarefas_john
 from VisualizarTarefasGv import  visualizar_tarefas_gvs, visualizar_tarefas_fechamento , visualizar_tarefas_intermedio,visualizar_tarefas_itinerantes
@@ -59,14 +59,13 @@ def run_navigation():
 
     #CriarTarefas
     cadastro = st.Page(criar_page, title="📝 Criar tarefas")
-    cadastro_fabiana = st.Page(criar_page_fabiana, title="📝 Criar")
-    cadastro_felipe =  st.Page(criar_page_felipe, title="📝 Criar")
-    cadastro_john =  st.Page(criar_page_john, title="📝 Criar")
-    cadastro_chrys =  st.Page(criar_page_chrys, title="📝 Criar")
+
 
     #FElipe:
 
     Tarefas_carteria_felipe = st.Page(tarefas_carteira_felipe, title="LOJAS")
+
+
    
 
     #Fabiana 
@@ -85,11 +84,6 @@ def run_navigation():
 
     #Tarefas
     Visualizar_tarefas_victor = st.Page(visualizar_tarefas,title="📝 Tarefas criadas")
-    Visualizar_tarefas_fabiana = st.Page(visualizar_tarefas_fabiana,title="📝 Tarefas criadas ")
-    Visualizar_tarefas_felipe = st.Page(visualizar_tarefas_felipe,title="📝 Tarefas criadas ")
-    Visualizar_tarefas_johon = st.Page(visualizar_tarefas_john,title="📝 Tarefas criadas ")
-    Visualizar_tarefas_chrys = st.Page(visualizar_tarefas_chrys,title="📝 Tarefas criadas ")
-
     #TarefasGVs
     Fabiana_Tarefa = st.Page(tarefas_fabiana,title="SEU R.E.G")
     Felipe_Tarefa = st.Page(tarefas_felipe,title="SEU R.E.G")
@@ -129,9 +123,6 @@ def run_navigation():
     
     Tarefas_davila_abertura = st.Page(tarefas_diasdavila_abertura,title="🏬 LOJA DIAS DAVILA(ABERTURA)")
 
-
-
-
     #JHON
     Tarefas_barra_abertura = st.Page(tarefas_barra_abertura,title="🏬 LOJA BARRA (ABERTURA)")
     Tarefas_barra_intermedio = st.Page(tarefas_barra_intermedio,title="🏬 LOJA BARRA (INTERMEDIO)")
@@ -160,13 +151,7 @@ def run_navigation():
     
     #modelos
     Visualizar_modelos = st.Page(modelos_prontos,title="📝 Modelos de tarefas")
-    Visualizar_modelos_fabiana = st.Page(modelos_prontos_fabiana,title="📝 Modelos de tarefas")
-    Visualizar_modelos_felipe = st.Page(modelos_prontos_felipe,title="📝 Modelos de tarefas ")
-    Visualizar_modelos_john = st.Page(modelos_prontos_john,title="📝 Modelos de tarefas")
-    Visualizar_modelos_chrys = st.Page(modelos_prontos_chrys,title="📝 Modelos de tarefas")
-
-    #noficar
-   
+    
 
     # Menus por role
     if role == "Victor":
@@ -264,8 +249,92 @@ def run_navigation():
                 Visualizar_tarefas_itinerantesL2
             ],
         }
+
+    if role == "Felipe":
+
+        menu = {
     
-   
+            "R.E.G(ABERTURA) ": [
+              Tarefas_carteria_felipe
+            ],
+        }
+        menu2 = {
+            "R.E.G (FECHAMENTO)": [
+                ]
+        }
+        
+        menu3 = {
+    
+            "🏬 R.E.G (Lázaro)": [
+            ],
+        }
+    
+    if role == "Fabiana":
+
+        menu = {
+    
+            "R.E.G(ABERTURA) ": [
+              Tarefas_carteria_fabiana
+            ],
+        }
+        menu2 = {
+            "R.E.G (INTERMEDIO)": [
+                
+                ]
+        }
+        
+        menu3 = {
+    
+            "R.E.G (FECHAMENTO)": [
+                
+            ],
+        }
+
+    if role == "John":
+
+        menu = {
+    
+            "R.E.G(ABERTURA) ": [
+              Tarefas_carteria_johm
+            ],
+        }
+        menu2 = {
+            "R.E.G (INTERMEDIO)": [
+                
+                ]
+        }
+        
+        menu3 = {
+    
+            "R.E.G (FECHAMENTO)": [
+                
+            ],
+        }
+    
+
+    if role == "Chrys":
+
+        menu = {
+    
+            "R.E.G(ABERTURA) ": [
+              Tarefas_carteria_chrys
+            ],
+        }
+        menu2 = {
+            "R.E.G (INTERMEDIO)": [
+                
+                ]
+        }
+        
+        menu3 = {
+    
+            "R.E.G (FECHAMENTO)": [
+                
+            ],
+        }
+    
+    
+    
     
 
     # Criar navegação

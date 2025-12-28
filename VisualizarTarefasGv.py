@@ -239,7 +239,13 @@ def visualizar_tarefas_intermedio():
         st.error("⚠️ Acesso negado!")
         st.stop()
 
-    
+
+    image_logo = Image.open("image/Image (2).png")
+    cola, colb, colc = st.columns([4, 1, 1])
+    with colc:
+        st.image(image_logo)
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
     gvs = ["GLS(INTERMEDIO)",
             ]
     
@@ -291,7 +297,6 @@ def visualizar_tarefas_intermedio():
     contagemAlana = planilha_filtrada["GL"].value_counts().get("Alana",0)
 
 
-
     #Chrys
 
     contagemCamyla = planilha_filtrada["GL"].value_counts().get("Camyla",0)
@@ -330,7 +335,12 @@ def visualizar_tarefas_fechamento():
         st.error("⚠️ Acesso negado!")
         st.stop()
 
-    
+    image_logo = Image.open("image/Image (2).png")
+    cola, colb, colc = st.columns([4, 1, 1])
+    with colc:
+        st.image(image_logo)
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
     gvs = ["GLS DA CARTEIRA DE FABIANA",
             "GLS DA CARTEIRA DE FELIPE",
             "GLS DA CARTEIRA DE JOHN",
@@ -370,7 +380,6 @@ def visualizar_tarefas_fechamento():
         (planilha_Dados2["Data"] >= data_inicio)
         & (planilha_Dados2["Data"] <= data_fim)
     ]
-
 
 
     #Fabiana
@@ -506,7 +515,12 @@ def visualizar_tarefas_itinerantes():
         st.error("⚠️ Acesso negado!")
         st.stop()
 
-     
+    image_logo = Image.open("image/Image (2).png")
+    cola, colb, colc = st.columns([4, 1, 1])
+    with colc:
+        st.image(image_logo)
+    with cola:
+        st.title("📝 R.E.G - TAREFAS")
     gvs = ["ITINERANTES",
             ]
     
@@ -545,9 +559,6 @@ def visualizar_tarefas_itinerantes():
     ]
 
 
-
-    
-    
     contagemT = planilha_Dados["Título"].count()
 
     contagemLee = planilha_filtrada["GL"].value_counts().get("Lee",0)

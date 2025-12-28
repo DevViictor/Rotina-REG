@@ -8,148 +8,115 @@ from datetime import datetime
 
 icon = Image.open("image/vivo.png") 
 
+gcp_info = st.secrets["gcp"]
+planilha_chave_execucoes = st.secrets["planilha_execucoes"]["chave2"]
+
+creds = Credentials.from_service_account_info(
+    dict(gcp_info),
+    scopes=[
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+)
+
+cliente = gspread.authorize(creds)
+planilha_exc = cliente.open_by_key(planilha_chave_execucoes)
 
 
 def tarefas_carteira_felipe():
     icon = Image.open("image/vivo.png")
 
     gvs = [ 
-            "GLS DA CARTEIRA DE FELIPE",
+            "EXECUCOES(ABERTURA)",
+            "EXECUCOES(FECHAMENTO)",
+
             ]
         
     lojas_por_carteira = {
         " ": [" "],
-        "GLS DA CARTEIRA DE FELIPE": [
+        "EXECUCOES(ABERTURA)": [
                 "LOJA IGUATEMI | BA","LOJA IGUATEMI || BA","LOJA NORT SHOP"
+        ],
+        "EXECUCOES(FECHAMENTO)": [
+                "LOJA IGUATEMI | (FECHAMENTO) BA","LOJA IGUATEMI || (FECHAMENTO) BA","LOJA NORT SHOP (FECHAMENTO)"
         ]
         }
 
     nomes_por_loja = {
         " ": [" "],
       
-        "LOJA IGUATEMI | BA": ["Todos Iguatemi |","Max","Denise"],
-        "LOJA IGUATEMI || BA": ["Todos Iguatemi ||","Diego","Andressa"],
-        "LOJA NORT SHOP": ["Jairo","Wanderlei"],
+        "LOJA IGUATEMI | BA": ["Max"],
+        "LOJA IGUATEMI || BA": ["Andressa"],
+        "LOJA NORT SHOP": ["Jairo"],
+
+        "LOJA IGUATEMI | (FECHAMENTO) BA": ["Denise"],
+        "LOJA IGUATEMI || (FECHAMENTO) BA": ["Diego"],
+        "LOJA NORT SHOP (FECHAMENTO)": ["Wanderlei"],
         }
 
 
 
     st.set_page_config(page_title="R.E.G", page_icon=icon,layout="wide")
 
-    # --- Controle de acesso ---
     if "role" not in st.session_state or st.session_state.role != "Felipe":
-        st.error("⚠️ Acesso negado!")
-        st.stop()
-    icon = Image.open("image/vivo.png")
-    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
+                st.error("⚠️ Acesso negado!")
+                st.stop()
 
     image_logo = Image.open("image/Image (2).png")
-
     cola, colb, colc = st.columns([4, 1, 1])
+    
     with colc:
-        st.image(image_logo)
+            st.image(image_logo)
     with cola:
-        st.title("📝 R.E.G - TAREFAS")
+            st.title("📝 R.E.G - TAREFAS")
 
     col1, col2, col3, col4 = st.columns(4)
-
     with col1:
-        carteira = st.selectbox("Selecione a carteira:", gvs)
-
-    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
-
+            carteira = st.selectbox("Selecione a carteira:", gvs)
     with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
-
+            loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
     with col3:
-        nomes_filtrados = nomes_por_loja.get(loja, [" "])
-        nome = st.selectbox("Nome:", nomes_filtrados)
-
+            nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
     with col4:
-        data_selecionada = st.date_input(
-            "Selecione o período:",
-            value=(datetime.today(), datetime.today())
-        )
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["fel"]
-    planilha_chave = st.secrets["planilha"]["chave"]
+            data_selecionada = st.date_input(
+            "Selecione o período:", value=(datetime.today(), datetime.today())
+            )
 
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-    def carregar_pedidos():
-        aba = planilha.worksheet(nome)
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
-
-    # ---------------------------
-    # CARREGAR E FILTRAR DADOS
-    # ---------------------------
-    planilha_Dados = carregar_pedidos()
-
-
-    if planilha_Dados.empty:
-        st.warning("Nenhum modelo encontrado.")
-        return
-
+    aba2 = planilha_exc.worksheet(carteira)
     
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
+    planilha_Dados2 = pd.DataFrame(aba2.get_all_records())
+    if nome:
+            planilha_Dados2 = planilha_Dados2[planilha_Dados2["GL"].str.contains(nome,case =False)]
+
+
+    planilha_Dados2["Data"] = pd.to_datetime(
+    planilha_Dados2["Data"], dayfirst=True, errors="coerce"
+        ).dt.date
 
     if not isinstance(data_selecionada, tuple) or len(data_selecionada) != 2:
-        st.warning("⚠️ Selecione um período com data inicial e final.")
-        return
-    # Converter data da planilha
+            st.warning("⚠️ Selecione um período com data inicial e final.")
+            return
+
     data_inicio, data_fim = data_selecionada
 
-    planilha_filtrada = planilha_Dados[
-        (planilha_Dados["Data"] >= data_inicio) &
-        (planilha_Dados["Data"] <= data_fim)
-    ]
+    planilha_filtrada = planilha_Dados2[
+    (planilha_Dados2["Data"] >= data_inicio)
+    & (planilha_Dados2["Data"] <= data_fim)
+        ]
 
     if planilha_filtrada.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
+            st.info("Nenhuma tarefa encontrada para esta data.")
+            return
 
-    
-    contagemT = planilha_filtrada["Situação da tarefa"].count()
-    contagemC = planilha_filtrada["Situação da tarefa"].astype(str).str.contains("Concluído",case=False,na=False).sum()
-    contagemP = planilha_filtrada["Situação da tarefa"].astype(str).str.contains("Pendente",case=False,na=False).sum()
+    contagemT = planilha_filtrada["Titulo"].count()
 
-    col11,col12,col13 = st.columns(3)
-    with col11:
-        st.text(f"📝 Total de Tarefas : {contagemT}")
-
-    with col12:
-        st.text(f" 🟢 Tarefas Concluídas : {contagemC}")
-
-    with col13:
-        st.text(f" 🟡 Tarefas Pendentes: {contagemP}")
-    # Padronizar colunas para evitar erro
-    planilha_Dados.columns = planilha_Dados.columns.str.strip()
-
-    # ---------------------------
-    # 🔥 NOTIFICAÇÕES
-    # --------------------------
-
+    st.subheader("📌 COMPARATIVO DE TAREFAS")
     st.dataframe(planilha_filtrada)
-    
-    if st.button("Atualizar"):
-        st.rerun()
+    st.write(f"Total de tarefas realizadas: {contagemT}")
 
+    st.divider()
+    if st.button("Atualizar"):
+            st.rerun()
 
 
 
@@ -157,136 +124,110 @@ def tarefas_carteira_fabiana():
     icon = Image.open("image/vivo.png")
 
     gvs = [ 
-            "GLS DA CARTEIRA DE FABIANA"
+            "EXECUCOES(ABERTURA)",
+            "EXECUCOES(INTERMEDIO)",
+            "EXECUCOES(FECHAMENTO)",
+
             ]
         
     lojas_por_carteira = {
         " ": [" "],
-         "GLS DA CARTEIRA DE FABIANA": [
+         "EXECUCOES(ABERTURA)": [
             "LOJA SSA |","LOJA SSA ||","LOJA BELA VISTA","LOJA PARALELA","LOJA PARQUE SHOP"
         ],
+         "EXECUCOES(INTERMEDIO)": [
+            "LOJA SSA | (INTERMEDIO)"
+        ],
+         "EXECUCOES(FECHAMENTO)": [
+            "LOJA SSA | (FECHAMENTO)","LOJA SSA || (FECHAMENTO)","LOJA BELA VISTA (FECHAMENTO)","LOJA PARALELA (FECHAMENTO)","LOJA PARQUE SHOP (FECHAMENTO)"
+        ],
+
+        
+        
 
         }
+  
 
     nomes_por_loja = {
         " ": [" "],
       
-        "LOJA SSA |": ["Ana","Francisca","Vinicius"],
-        "LOJA SSA ||": ["Vitor","Mailan"],
-        "LOJA BELA VISTA": ["Vanessa","Danilo"],
-        "LOJA PARALELA": ["Crislaine","Neide"],
-        "LOJA PARQUE SHOP": ["Denise_Parque","Adrielle"],
+        "LOJA SSA |": ["Mércia"],
+        "LOJA SSA ||": ["Vitor"],
+        "LOJA BELA VISTA": ["Danilo"],
+        "LOJA PARALELA": ["Crislaine"],
+        "LOJA PARQUE SHOP": ["Denise_Parque"],
+
+        "LOJA SSA | (INTERMEDIO)": ["Francisca"],
+
+        "LOJA SSA | (FECHAMENTO)": ["Vinicius"],
+        "LOJA SSA || (FECHAMENTO)": ["Mailan"],
+        "LOJA BELA VISTA (FECHAMENTO)": ["Vanessa"],
+        "LOJA PARALELA (FECHAMENTO)": ["Neide"],
+        "LOJA PARQUE SHOP (FECHAMENTO)": ["Adrielle"],
+       
         }
 
+    
 
     # --- Controle de acesso ---
     if "role" not in st.session_state or st.session_state.role != "Fabiana":
         st.error("⚠️ Acesso negado!")
         st.stop()
-    icon = Image.open("image/vivo.png")
-    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
-
     image_logo = Image.open("image/Image (2).png")
-
     cola, colb, colc = st.columns([4, 1, 1])
+    
     with colc:
-        st.image(image_logo)
+            st.image(image_logo)
     with cola:
-        st.title("📝 R.E.G - TAREFAS")
+            st.title("📝 R.E.G - TAREFAS")
 
     col1, col2, col3, col4 = st.columns(4)
-
     with col1:
-        carteira = st.selectbox("Selecione a carteira:", gvs)
-
-    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
-
+            carteira = st.selectbox("Selecione a carteira:", gvs)
     with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
-
+            loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
     with col3:
-        nomes_filtrados = nomes_por_loja.get(loja, [" "])
-        nome = st.selectbox("Nome:", nomes_filtrados)
-
+            nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
     with col4:
-         data_selecionada = st.date_input(
-            "Selecione o período:",
-            value=(datetime.today(), datetime.today())
-        )
+            data_selecionada = st.date_input(
+            "Selecione o período:", value=(datetime.today(), datetime.today())
+            )
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["fabi"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-    def carregar_pedidos():
-        aba = planilha.worksheet(nome)
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
-
-    # ---------------------------
-    # CARREGAR E FILTRAR DADOS
-    # ---------------------------
-    planilha_Dados = carregar_pedidos()
-
-
-
-
-    # Padronizar colunas para evitar erro
-    planilha_Dados.columns = planilha_Dados.columns.str.strip()
+    aba2 = planilha_exc.worksheet(carteira)
     
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
+    planilha_Dados2 = pd.DataFrame(aba2.get_all_records())
+    if nome:
+            planilha_Dados2 = planilha_Dados2[planilha_Dados2["GL"].str.contains(nome,case =False)]
+
+
+    planilha_Dados2["Data"] = pd.to_datetime(
+    planilha_Dados2["Data"], dayfirst=True, errors="coerce"
+        ).dt.date
+
     if not isinstance(data_selecionada, tuple) or len(data_selecionada) != 2:
-        st.warning("⚠️ Selecione um período com data inicial e final.")
-        return
-    # Converter data da planilha
+            st.warning("⚠️ Selecione um período com data inicial e final.")
+            return
+
     data_inicio, data_fim = data_selecionada
 
-    planilha_filtrada = planilha_Dados[
-        (planilha_Dados["Data"] >= data_inicio) &
-        (planilha_Dados["Data"] <= data_fim)
-    ]
+    planilha_filtrada = planilha_Dados2[
+    (planilha_Dados2["Data"] >= data_inicio)
+    & (planilha_Dados2["Data"] <= data_fim)
+        ]
 
     if planilha_filtrada.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
+            st.info("Nenhuma tarefa encontrada para esta data.")
+            return
 
-    contagemT = planilha_filtrada["Situação da tarefa"].count()
-    contagemC = planilha_filtrada["Situação da tarefa"].astype(str).str.contains("Concluído",case=False,na=False).sum()
-    contagemP = planilha_filtrada["Situação da tarefa"].astype(str).str.contains("Pendente",case=False,na=False).sum()
+    contagemT = planilha_filtrada["Titulo"].count()
 
-    col11,col12,col13 = st.columns(3)
-    with col11:
-        st.text(f"📝 Total de Tarefas : {contagemT}")
-
-    with col12:
-        st.text(f" 🟢 Tarefas Concluídas : {contagemC}")
-
-    with col13:
-        st.text(f" 🟡 Tarefas Pendentes: {contagemP}")
-    
-
+    st.subheader("📌 COMPARATIVO DE TAREFAS")
     st.dataframe(planilha_filtrada)
-    
-    if st.button("Atualizar"):
-        st.rerun()
+    st.write(f"Total de tarefas realizadas: {contagemT}")
 
+    st.divider()
+    if st.button("Atualizar"):
+            st.rerun()
 
 
 
@@ -294,22 +235,38 @@ def tarefas_carteira_john():
     icon = Image.open("image/vivo.png")
 
     gvs = [ 
-            "GLS DA CARTEIRA DE JOHN"
+            "EXECUCOES(ABERTURA)",
+            "EXECUCOES(INTERMEDIO)",
+            "EXECUCOES(FECHAMENTO)",
             ]
         
     lojas_por_carteira = {
         " ": [" "],
-        "GLS DA CARTEIRA DE JOHN": [
+        "EXECUCOES(ABERTURA)": [
             "LOJA BARRA","LOJA PIEDADE","LOJA LAPA"
+        ],
+        "EXECUCOES(INTERMEDIO)": [
+            "LOJA BARRA (INTERMEDIO)"
+        ],
+        "EXECUCOES(FECHAMENTO)": [
+            "LOJA BARRA (FECHAMENTO)","LOJA PIEDADE (FECHAMENTO)","LOJA LAPA (FECHAMENTO)"
         ],
 
         }
 
     nomes_por_loja = {
         " ": [" "],
-        "LOJA BARRA": ["Igor","Carol","Alana"],
-        "LOJA PIEDADE": ["DiegoL","Marcusl"],
-        "LOJA LAPA": ["Sara","Rafael"],
+        "LOJA BARRA": ["Igor"],
+        "LOJA PIEDADE": ["Marcus"],
+        "LOJA LAPA": ["Sara"],
+
+        "LOJA BARRA (INTERMEDIO)": ["Alana"],
+
+        "LOJA BARRA (FECHAMENTO)": ["Carol"],
+        "LOJA PIEDADE (FECHAMENTO)": ["DiegoP"],
+        "LOJA LAPA (FECHAMENTO)": ["Rafael"],
+
+       
         }
 
 
@@ -318,117 +275,62 @@ def tarefas_carteira_john():
     if "role" not in st.session_state or st.session_state.role != "John":
         st.error("⚠️ Acesso negado!")
         st.stop()
-    icon = Image.open("image/vivo.png")
-    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
-
+    
     image_logo = Image.open("image/Image (2).png")
-
     cola, colb, colc = st.columns([4, 1, 1])
+    
     with colc:
-        st.image(image_logo)
+            st.image(image_logo)
     with cola:
-        st.title("📝 R.E.G - TAREFAS")
+            st.title("📝 R.E.G - TAREFAS")
 
     col1, col2, col3, col4 = st.columns(4)
-
     with col1:
-        carteira = st.selectbox("Selecione a carteira:", gvs)
-
-    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
-
+            carteira = st.selectbox("Selecione a carteira:", gvs)
     with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
-
+            loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
     with col3:
-        nomes_filtrados = nomes_por_loja.get(loja, [" "])
-        nome = st.selectbox("Nome:", nomes_filtrados)
-
+            nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
     with col4:
-        data_selecionada = st.date_input(
-            "Selecione o período:",
-            value=(datetime.today(), datetime.today())
-        )
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["joh"]
-    planilha_chave = st.secrets["planilha"]["chave"]
+            data_selecionada = st.date_input(
+            "Selecione o período:", value=(datetime.today(), datetime.today())
+            )
 
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-    def carregar_pedidos():
-        aba = planilha.worksheet(nome)
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
-
-    # ---------------------------
-    # CARREGAR E FILTRAR DADOS
-    # ---------------------------
-    planilha_Dados = carregar_pedidos()
-
-    contagemT = planilha_filtrada["Situação da tarefa"].count()
-    contagemC = planilha_filtrada["Situação da tarefa"].astype(str).str.contains("Concluído",case=False,na=False).sum()
-    contagemP = planilha_filtrada["Situação da tarefa"].astype(str).str.contains("Pendente",case=False,na=False).sum()
-
-    col11,col12,col13 = st.columns(3)
-    with col11:
-        st.text(f"📝 Total de Tarefas : {contagemT}")
-
-    with col12:
-        st.text(f" 🟢 Tarefas Concluídas : {contagemC}")
-
-    with col13:
-        st.text(f" 🟡 Tarefas Pendentes: {contagemP}")
+    aba2 = planilha_exc.worksheet(carteira)
+    
+    planilha_Dados2 = pd.DataFrame(aba2.get_all_records())
+    if nome:
+            planilha_Dados2 = planilha_Dados2[planilha_Dados2["GL"].str.contains(nome,case =False)]
 
 
-    if planilha_Dados.empty:
-        st.warning("Nenhum modelo encontrado.")
-        return
-
-    planilha_Dados.columns = planilha_Dados.columns.str.strip()
-
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
+    planilha_Dados2["Data"] = pd.to_datetime(
+    planilha_Dados2["Data"], dayfirst=True, errors="coerce"
+        ).dt.date
 
     if not isinstance(data_selecionada, tuple) or len(data_selecionada) != 2:
-        st.warning("⚠️ Selecione um período com data inicial e final.")
-        return
-    # Padronizar colunas para evitar erro
+            st.warning("⚠️ Selecione um período com data inicial e final.")
+            return
+
     data_inicio, data_fim = data_selecionada
 
-    planilha_filtrada = planilha_Dados[
-        (planilha_Dados["Data"] >= data_inicio) &
-        (planilha_Dados["Data"] <= data_fim)
-    ]
-
-    # Filtrar pela data escolhida
-    planilha_filtrada = planilha_Dados[planilha_Dados["Data"] == data_selecionada]
+    planilha_filtrada = planilha_Dados2[
+    (planilha_Dados2["Data"] >= data_inicio)
+    & (planilha_Dados2["Data"] <= data_fim)
+        ]
 
     if planilha_filtrada.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
+            st.info("Nenhuma tarefa encontrada para esta data.")
+            return
 
-    # ---------------------------
-    # 🔥 NOTIFICAÇÕES
-    # ---------------------------
-    
+    contagemT = planilha_filtrada["Titulo"].count()
 
+    st.subheader("📌 COMPARATIVO DE TAREFAS")
     st.dataframe(planilha_filtrada)
-    
+    st.write(f"Total de tarefas realizadas: {contagemT}")
+
+    st.divider()
     if st.button("Atualizar"):
-        st.rerun()
+            st.rerun()
 
 
 
@@ -436,19 +338,33 @@ def tarefas_carteira_chrys():
     icon = Image.open("image/vivo.png")
 
     gvs = [ 
-            "GLS DA CARTEIRA DE CHRYS",
+            "EXECUCOES(ABERTURA)",
+            "EXECUCOES(INTERMEDIO)",
+            "EXECUCOES(FECHAMENTO)",
             ]
         
     lojas_por_carteira = {
         " ": [" "],
-        "GLS DA CARTEIRA DE CHRYS": [
-            "LOJA BOULEVARD"
+        "EXECUCOES(ABERTURA)": [
+            "LOJA BOULEVARD (ABERTURA)"
+        ],
+        "EXECUCOES(INTERMEDIO)": [
+            "LOJA BOULEVARD (INTERMEDIO)"
+        ],
+        "EXECUCOES(FECHAMENTO)": [
+            "LOJA BOULEVARD (FECHAMENTO)"
         ],
         }
 
     nomes_por_loja = {
         " ": [" "],
-        "LOJA BOULEVARD": ["Camyla","Bruno","Gilvania"],
+        "LOJA BOULEVARD (ABERTURA)": ["Bruno"],
+
+        "LOJA BOULEVARD (INTERMEDIO)": ["Camyla"],
+
+        "LOJA BOULEVARD (FECHAMENTO)": ["Gilvania"],
+
+
         }
 
 
@@ -457,115 +373,61 @@ def tarefas_carteira_chrys():
     if "role" not in st.session_state or st.session_state.role != "Chrys":
         st.error("⚠️ Acesso negado!")
         st.stop()
-    icon = Image.open("image/vivo.png")
-    st.set_page_config(page_title="Tarefas", page_icon=icon, layout="wide")
-
     image_logo = Image.open("image/Image (2).png")
-
     cola, colb, colc = st.columns([4, 1, 1])
+    
     with colc:
-        st.image(image_logo)
+            st.image(image_logo)
     with cola:
-        st.title("📝 R.E.G - TAREFAS")
+            st.title("📝 R.E.G - TAREFAS")
 
     col1, col2, col3, col4 = st.columns(4)
-
     with col1:
-        carteira = st.selectbox("Selecione a carteira:", gvs)
-
-    lojas_filtradas = lojas_por_carteira.get(carteira, [" "])
-
+            carteira = st.selectbox("Selecione a carteira:", gvs)
     with col2:
-        loja = st.selectbox("Selecione a loja:", lojas_filtradas)
-
+            loja = st.selectbox("Selecione a loja:", lojas_por_carteira.get(carteira, []))
     with col3:
-        nomes_filtrados = nomes_por_loja.get(loja, [" "])
-        nome = st.selectbox("Nome:", nomes_filtrados)
-
+            nome = st.selectbox("Nome:", nomes_por_loja.get(loja, []))
     with col4:
-        data_selecionada = st.date_input(
-            "Selecione o período:",
-            value=(datetime.today(), datetime.today())
-        )
+            data_selecionada = st.date_input(
+            "Selecione o período:", value=(datetime.today(), datetime.today())
+            )
 
-    # ---------------------------
-    # CONFIGURAÇÃO GOOGLE SHEETS
-    # ---------------------------
-    gcp_info = st.secrets["chr"]
-    planilha_chave = st.secrets["planilha"]["chave"]
-
-    creds = Credentials.from_service_account_info(
-        dict(gcp_info),
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-    )
-
-    cliente = gspread.authorize(creds)
-    planilha = cliente.open_by_key(planilha_chave)
-
-    def carregar_pedidos():
-        aba = planilha.worksheet(nome)
-        dados = aba.get_all_records()
-        return pd.DataFrame(dados)
-
-    # ---------------------------
-    # CARREGAR E FILTRAR DADOS
-    # ---------------------------
-    planilha_Dados = carregar_pedidos()
-
-    contagemT = planilha_filtrada["Situação da tarefa"].count()
-    contagemC = planilha_filtrada["Situação da tarefa"].astype(str).str.contains("Concluído",case=False,na=False).sum()
-    contagemP = planilha_filtrada["Situação da tarefa"].astype(str).str.contains("Pendente",case=False,na=False).sum()
-
-    col11,col12,col13 = st.columns(3)
-    with col11:
-        st.text(f"📝 Total de Tarefas : {contagemT}")
-
-    with col12:
-        st.text(f" 🟢 Tarefas Concluídas : {contagemC}")
-
-    with col13:
-        st.text(f" 🟡 Tarefas Pendentes: {contagemP}")
+    aba2 = planilha_exc.worksheet(carteira)
+    
+    planilha_Dados2 = pd.DataFrame(aba2.get_all_records())
+    if nome:
+            planilha_Dados2 = planilha_Dados2[planilha_Dados2["GL"].str.contains(nome,case =False)]
 
 
-    if planilha_Dados.empty:
-        st.warning("Nenhum modelo encontrado.")
-        return
-
-    # Padronizar colunas para evitar erro
-    planilha_Dados.columns = planilha_Dados.columns.str.strip()
-
-    planilha_Dados["Data"] = pd.to_datetime(
-        planilha_Dados["Data"],
-        dayfirst=True,
-        errors="coerce"
-    ).dt.date
+    planilha_Dados2["Data"] = pd.to_datetime(
+    planilha_Dados2["Data"], dayfirst=True, errors="coerce"
+        ).dt.date
 
     if not isinstance(data_selecionada, tuple) or len(data_selecionada) != 2:
-        st.warning("⚠️ Selecione um período com data inicial e final.")
-        return
-    # Converter data da planilha
+            st.warning("⚠️ Selecione um período com data inicial e final.")
+            return
+
     data_inicio, data_fim = data_selecionada
 
-    planilha_filtrada = planilha_Dados[
-        (planilha_Dados["Data"] >= data_inicio) &
-        (planilha_Dados["Data"] <= data_fim)
-    ]
+    planilha_filtrada = planilha_Dados2[
+    (planilha_Dados2["Data"] >= data_inicio)
+    & (planilha_Dados2["Data"] <= data_fim)
+        ]
+
     if planilha_filtrada.empty:
-        st.info("Nenhuma tarefa encontrada para esta data.")
-        return
+            st.info("Nenhuma tarefa encontrada para esta data.")
+            return
 
-    # ---------------------------
-    # 🔥 NOTIFICAÇÕES
-    # ---------------------------
-    
+    contagemT = planilha_filtrada["Titulo"].count()
 
+    st.subheader("📌 COMPARATIVO DE TAREFAS")
     st.dataframe(planilha_filtrada)
-    
+    st.write(f"Total de tarefas realizadas: {contagemT}")
+
+    st.divider()
     if st.button("Atualizar"):
-        st.rerun()
+            st.rerun()
 
 
 
