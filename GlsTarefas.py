@@ -5470,7 +5470,7 @@ def tarefas_boulevard_intermedio():
     nomes_por_loja = {
     " ": [" "],
     
-    "LOJA BOULEVARD": ["Alana"],
+    "LOJA BOULEVARD": ["Camyla"],
     }
 
     # ---------------------------
