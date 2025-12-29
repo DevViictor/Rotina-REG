@@ -5473,6 +5473,7 @@ def tarefas_boulevard_intermedio():
     "LOJA BOULEVARD": ["Camyla"],
     }
 
+   # ----------------------------
     # ---------------------------
     icon = Image.open("image/vivo.png")
     image_logo = Image.open("image/Image (2).png")
@@ -5487,7 +5488,7 @@ def tarefas_boulevard_intermedio():
 
     col1, col2, col3, col4 = st.columns(4)
 
-
+   
     def carregar_pedidos():
         aba = planilha.worksheet("GLS(INTERMEDIO)")
         valores = aba.get_all_values()
@@ -5597,7 +5598,6 @@ def tarefas_boulevard_intermedio():
         df["Observação"] = df["Observação"].fillna("")
         return df
 
-
     planilha_registros = carregar_registro()
 
     colunas_desejadas2 = ["ID","Titulo", "Descrição da tarefa","GL","Loja","Data","Hora","Observação"]
@@ -5639,9 +5639,6 @@ def tarefas_boulevard_intermedio():
     with col12:
         if st.button("Atualizar"):
          st.rerun()
-
-
-
 
 
 

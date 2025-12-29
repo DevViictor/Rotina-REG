@@ -134,7 +134,7 @@ def visualizar_tarefas_gvs():
 
     contagemCarol = planilha_filtrada["GL"].value_counts().get("Carol",0)
 
-    contagemDiego = planilha_filtrada["GL"].value_counts().get("Diego",0)
+    contagemDiego = planilha_filtrada["GL"].value_counts().get("DiegoP",0)
 
     contagemRafael = planilha_filtrada["GL"].value_counts().get("Rafael",0)
 
@@ -174,6 +174,7 @@ def visualizar_tarefas_gvs():
         "Andressa",
         "Jairo",
         "Max",
+        
         "Total de tarefas criadas"
     ],
     "Conclusão": [
