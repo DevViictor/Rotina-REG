@@ -123,7 +123,12 @@ def tarefas_iguatemi_abertura():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Iguatemi |"
+                and r["GL"] == "Max"
+            ):
                 linha_para_atualizar = i
                 break
 
@@ -326,9 +331,15 @@ def tarefas_iguatemi_fechamento():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Iguatemi |"
+                and r["GL"] == "Denise"
+            ):
                 linha_para_atualizar = i
                 break
+
 
         valores = [
             row["ID"],
@@ -516,9 +527,15 @@ def tarefas_iguatemi2_abertura():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Iguatemi ||"
+                and r["GL"] == "Andressa"
+            ):
                 linha_para_atualizar = i
                 break
+
 
         valores = [
             row["ID"],
@@ -699,9 +716,15 @@ def tarefas_iguatemi2_fechamento():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Iguatemi ||"
+                and r["GL"] == "Diego"
+            ):
                 linha_para_atualizar = i
                 break
+
 
         valores = [
             row["ID"],
@@ -899,9 +922,15 @@ def tarefas_nort_abertura():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Nort Shop"
+                and r["GL"] == "Jairo"
+            ):
                 linha_para_atualizar = i
                 break
+
 
         valores = [
             row["ID"],
@@ -1099,9 +1128,15 @@ def tarefas_nort_fechamento():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Nort Shop"
+                and r["GL"] == "Wanderlei"
+            ):
                 linha_para_atualizar = i
                 break
+
 
         valores = [
             row["ID"],
@@ -1302,9 +1337,15 @@ def tarefas_ssa1_abertura():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "SSA |"
+                and r["GL"] == "Mércia"
+            ):
                 linha_para_atualizar = i
                 break
+
 
         valores = [
             row["ID"],
@@ -1503,9 +1544,15 @@ def tarefas_ssa1_intermedio():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "SSA |"
+                and r["GL"] == "Francisca"
+            ):
                 linha_para_atualizar = i
                 break
+
 
         valores = [
             row["ID"],
@@ -1706,9 +1753,15 @@ def tarefas_ssa1_fechamento():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "SSA |"
+                and r["GL"] == "Vinicius"
+            ):
                 linha_para_atualizar = i
                 break
+
 
         valores = [
             row["ID"],
@@ -1905,16 +1958,22 @@ def tarefas_ssa2_abertura():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+             if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "SSA ||"
+                and r["GL"] == "Vitor"
+            ):
                 linha_para_atualizar = i
                 break
+
 
         valores = [
             row["ID"],
             row["Título"],
             row["Descrição da tarefa"],
             "Vitor",
-            "SSA |",
+            "SSA ||",
             data_hoje,
             hora_agora,
             row["Observação"],
@@ -2105,7 +2164,12 @@ def tarefas_ssa2_fechamento():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+             if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "SSA ||"
+                and r["GL"] == "Mailan"
+            ):
                 linha_para_atualizar = i
                 break
 
@@ -2507,7 +2571,12 @@ def tarefas_bela_fechamento():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+             if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Bela"
+                and r["GL"] == "Vanessa"
+            ):
                 linha_para_atualizar = i
                 break
 
@@ -2703,10 +2772,14 @@ def tarefas_parela_abertura():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Paralela"
+                and r["GL"] == "Crislaine"
+            ):
                 linha_para_atualizar = i
                 break
-
         valores = [
             row["ID"],
             row["Título"],
@@ -2906,7 +2979,12 @@ def tarefas_parela_fechamento():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+             if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Paralela"
+                and r["GL"] == "Neide"
+            ):
                 linha_para_atualizar = i
                 break
 
@@ -3107,7 +3185,12 @@ def tarefas_parque_abertura():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+             if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Parque"
+                and r["GL"] == "Denise_Parque"
+            ):
                 linha_para_atualizar = i
                 break
 
@@ -3313,7 +3396,12 @@ def tarefas_parque_fechamento():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+             if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Parque"
+                and r["GL"] == "Adrielle"
+            ):
                 linha_para_atualizar = i
                 break
 
@@ -3514,10 +3602,14 @@ def tarefas_barra_abertura():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Barra"
+                and r["GL"] == "Carol"
+            ):
                 linha_para_atualizar = i
                 break
-
         valores = [
             row["ID"],
             row["Título"],
@@ -3713,7 +3805,12 @@ def tarefas_barra_intermedio():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Barra"
+                and r["GL"] == "Alana"
+            ):
                 linha_para_atualizar = i
                 break
 
@@ -3912,7 +4009,12 @@ def tarefas_barra_fechamento():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Barra"
+                and r["GL"] == "Igor"
+            ):
                 linha_para_atualizar = i
                 break
 
@@ -4114,7 +4216,12 @@ def tarefas_piedade_abertura():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Piedade"
+                and r["GL"] == "DiegoP"
+            ):
                 linha_para_atualizar = i
                 break
 
@@ -4317,10 +4424,14 @@ def tarefas_piedade_fechamento():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+             if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Piedade"
+                and r["GL"] == "Marcusl"
+            ):
                 linha_para_atualizar = i
                 break
-
         valores = [
             row["ID"],
             row["Título"],
@@ -4521,7 +4632,12 @@ def tarefas_lapa_abertura():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Lapa"
+                and r["GL"] == "Rafael"
+            ):
                 linha_para_atualizar = i
                 break
 
@@ -4725,7 +4841,12 @@ def tarefas_lapa_fechamento():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Lapa"
+                and r["GL"] == "Sara"
+            ):
                 linha_para_atualizar = i
                 break
 
@@ -4926,7 +5047,12 @@ def tarefas_diasdavila_abertura():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Dias Davila"
+                and r["GL"] == "Maise"
+            ):
                 linha_para_atualizar = i
                 break
 
@@ -5125,10 +5251,15 @@ def tarefas_boulevard_abertura():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Boulevard"
+                and r["GL"] == "Bruno"
+            ):
                 linha_para_atualizar = i
                 break
-
+        
         valores = [
             row["ID"],
             row["Título"],
@@ -5323,7 +5454,12 @@ def tarefas_boulevard_fechamento():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Boulevard"
+                and r["GL"] == "Gilvania"
+            ):
                 linha_para_atualizar = i
                 break
 
@@ -5522,7 +5658,12 @@ def tarefas_boulevard_intermedio():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Boulevard"
+                and r["GL"] == "Camyla"
+            ):
                 linha_para_atualizar = i
                 break
 
@@ -5715,7 +5856,12 @@ def tarefas_itinerante_lee():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Itinerante"
+                and r["GL"] == "Lee"
+            ):
                 linha_para_atualizar = i
                 break
 
@@ -5900,7 +6046,12 @@ def tarefas_itinerante_marcus():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Itinerante"
+                and r["GL"] == "Marcus"
+            ):
                 linha_para_atualizar = i
                 break
 
@@ -6088,7 +6239,12 @@ def tarefas_itinerante_lazaro():
         linha_para_atualizar = None
 
         for i, r in enumerate(registros, start=2):  # start=2 por causa do cabeçalho
-            if str(r["ID"]) == str(row["ID"]) and r["Data"] == data_hoje:
+            if (
+                str(r["ID"]) == str(row["ID"])
+                and r["Data"] == data_hoje
+                and r["Loja"] == "Itinerante"
+                and r["GL"] == "Lázaro"
+            ):
                 linha_para_atualizar = i
                 break
 
