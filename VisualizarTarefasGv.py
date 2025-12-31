@@ -395,7 +395,7 @@ def visualizar_tarefas_fechamento():
 
     contagemNeide = planilha_filtrada["GL"].value_counts().get("Neide",0)
 
-    contagemAdrielle = planilha_filtrada["GL"].value_counts().get("Adriele",0)
+    contagemAdrielle = planilha_filtrada["GL"].value_counts().get("Adrielle",0)
 
 
     #Felipe
@@ -434,7 +434,7 @@ def visualizar_tarefas_fechamento():
         "Mailan",
         "Vanessa",
         "Neide",
-        "Adriele",
+        "Adrielle",
         "Tarefas criadas"
     ],
     "Conclusão": [
