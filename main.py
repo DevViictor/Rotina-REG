@@ -5,7 +5,6 @@ from CriarTarefas import criar_page
 from VisualizarTarefas import visualizar_tarefas
 from TarefasProntas import modelos_prontos
 from GlsTarefas import  tarefas_barra_abertura , tarefas_barra_fechamento , tarefas_barra_intermedio ,tarefas_bela_abertura,tarefas_bela_fechamento,tarefas_boulevard_abertura,tarefas_boulevard_fechamento,tarefas_boulevard_intermedio,tarefas_iguatemi2_abertura,tarefas_iguatemi2_fechamento,tarefas_iguatemi_abertura,tarefas_iguatemi_fechamento,tarefas_lapa_abertura,tarefas_lapa_fechamento,tarefas_nort_abertura,tarefas_nort_fechamento,tarefas_parela_abertura,tarefas_parela_fechamento,tarefas_parque_abertura,tarefas_parque_fechamento,tarefas_piedade_abertura,tarefas_ssa1_abertura,tarefas_ssa1_fechamento,tarefas_ssa1_intermedio,tarefas_ssa2_abertura,tarefas_ssa2_fechamento,tarefas_piedade_fechamento,tarefas_itinerante_lazaro,tarefas_itinerante_lee,tarefas_itinerante_marcus,tarefas_diasdavila_abertura
-from GvTarefas import tarefas_chyrs,tarefas_fabiana,tarefas_felipe,tarefas_john
 from VisualizarTarefasGv import  visualizar_tarefas_gvs, visualizar_tarefas_fechamento , visualizar_tarefas_intermedio,visualizar_tarefas_itinerantes
 
 st.sidebar.image("image/Image (2).png")
@@ -84,13 +83,7 @@ def run_navigation():
 
     #Tarefas
     Visualizar_tarefas_victor = st.Page(visualizar_tarefas,title="📝 Tarefas criadas")
-    #TarefasGVs
-    Fabiana_Tarefa = st.Page(tarefas_fabiana,title="SEU R.E.G")
-    Felipe_Tarefa = st.Page(tarefas_felipe,title="SEU R.E.G")
-    John_Tarefa = st.Page(tarefas_john,title="SEU R.E.G")
-    Chrys_Tarefa = st.Page(tarefas_chyrs,title="SEU R.E.G")
-
-
+  
     #tarefas_loja
     #FELIPE
     Tarefas_iguatemi_abertura = st.Page(tarefas_iguatemi_abertura,title="🏬 LOJA IGUATEMI | (ABERTURA)")
